@@ -1,0 +1,18 @@
+{
+  "name": "vortex",
+  "version": "0.0.1",
+  "description": "The data capture system where all your data disappears into a black hole",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/concord-consortium/vortex.git"
+  },
+  "author": "Concord Consortium",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/concord-consortium/vortex/issues"
+  },
+  "homepage": "https://github.com/concord-consortium/vortex#readme"
+}
