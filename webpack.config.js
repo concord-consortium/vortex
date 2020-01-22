@@ -11,10 +11,14 @@ module.exports = (env, argv) => {
   return {
     context: __dirname, // to automatically find tsconfig.json
     devtool: 'source-map',
-    entry: './src/index.tsx',
+    entry: {
+      'lara-app': './src/lara-app/index.tsx',
+      'mobile-app': './src/mobile-app/index.tsx'
+    },
     mode: 'development',
     output: {
-      filename: 'assets/index.[hash].js'
+      filename: '[name]/assets/index.[hash].js',
+      publicPath: "../" // <-- this is a hack to get the injected js/css paths pointing to the correct folder, need to fix probably when wrapping mobile app
     },
     performance: { hints: false },
     module: {
@@ -64,14 +68,29 @@ module.exports = (env, argv) => {
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
       new MiniCssExtractPlugin({
-        filename: devMode ? "assets/index.css" : "assets/index.[hash].css"
+        filename: devMode ? "[name]/assets/index.css" : "[name]/assets/index.[hash].css"
       }),
       new HtmlWebpackPlugin({
+        chunks: ['lara-app'],
+        filename: 'lara-app/index.html',
+        template: 'src/lara-app/index.html'
+      }),
+      new HtmlWebpackPlugin({
+        chunks: ['mobile-app'],
+        filename: 'mobile-app/index.html',
+        template: 'src/mobile-app/index.html'
+      }),
+      // note: this next html file is only created on build, the dev-server doesn't copy it
+      new HtmlWebpackPlugin({
+        chunks: [],
         filename: 'index.html',
         template: 'src/index.html'
       }),
       new CopyWebpackPlugin([
-        {from: 'src/public'}
+        {from: 'src/lara-app/public', to: 'lara-app/'}
+      ]),
+      new CopyWebpackPlugin([
+        {from: 'src/mobile-app/public', to: 'mobile-app/'}
       ])
     ]
   };

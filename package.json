@@ -1,10 +1,10 @@
 {
-  "name": "starter-projects",
+  "name": "vortex",
   "version": "0.0.1",
-  "description": "Concord Consortium starter projects",
+  "description": "Vortex: the data capture system where all your data disappears into a black hole",
   "main": "index.js",
   "jest": {
-    "testURL": "https://starter-projects.unexisting.url.com",
+    "testURL": "https://vortex.unexisting.url.com",
     "setupFilesAfterEnv": [
       "<rootDir>src/setupTests.js"
     ],
@@ -54,14 +54,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/concord-consortium/starter-projects.git"
+    "url": "git+https://github.com/concord-consortium/vortex.git"
   },
   "author": "Concord Consortium",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/concord-consortium/starter-projects/issues"
+    "url": "https://github.com/concord-consortium/vortex/issues"
   },
-  "homepage": "https://github.com/concord-consortium/starter-projects#readme",
+  "homepage": "https://github.com/concord-consortium/vortex#readme",
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^3.0.1",
     "@types/enzyme": "^3.10.3",
