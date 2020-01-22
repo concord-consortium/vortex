@@ -41,6 +41,6 @@ Inside of your `package.json` file:
 
 ## License
 
-Vortex is Copyright 2018 (c) by the Concord Consortium and is distributed under the [MIT license](http://www.opensource.org/licenses/MIT).
+Vortex is Copyright 2020 (c) by the Concord Consortium and is distributed under the [MIT license](http://www.opensource.org/licenses/MIT).
 
 See license.md for the complete license text.
