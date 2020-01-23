@@ -3,7 +3,7 @@ import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
 
 import "./index.sass";
-import { IDataSchema } from "./types";
+import { IDataSchema } from "./experiment-schema-types";
 
 ReactDOM.render(
   <Experiment
