@@ -4,11 +4,12 @@ import { SectionButton } from "./section-button";
 import { Section } from "./section";
 import { ISection, IExperimentSchema, IExperimentData } from "../experiment-schema-types";
 import css from "./experiment.module.scss";
+import { IExperiment } from "../../mobile-app/hooks/use-experiments";
 
 const DEFAULT_BOOTSTRAP_CSS = "../shared/themes/bootstrap-flatly.css";
 
 interface IProps {
-  experimentSchema: IExperimentSchema;
+  experiment: IExperiment;
 }
 
 const addCSS = (href: string, asFirst = false) => {
@@ -33,18 +34,19 @@ const removeCSS = (href: string) => {
   }
 };
 
-export const Experiment: React.FC<IProps> = ({ experimentSchema }) => {
-  const sections = experimentSchema.sections;
+export const Experiment: React.FC<IProps> = ({ experiment }) => {
+  const { schema } = experiment;
+  const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
   const [experimentData, setExperimentData] = useState<IExperimentData>({});
 
   useEffect(() => {
     // Append bootstrap css before our custom styles.
-    addCSS(experimentSchema.theme?.bootstrapCSS || DEFAULT_BOOTSTRAP_CSS, true);
-    experimentSchema.theme?.themeCSS?.forEach(link => addCSS(link));
+    addCSS(schema.theme?.bootstrapCSS || DEFAULT_BOOTSTRAP_CSS, true);
+    schema.theme?.themeCSS?.forEach(link => addCSS(link));
     return () => {
-      removeCSS(experimentSchema.theme?.bootstrapCSS || DEFAULT_BOOTSTRAP_CSS);
-      experimentSchema.theme?.themeCSS?.forEach(link => removeCSS(link));
+      removeCSS(schema.theme?.bootstrapCSS || DEFAULT_BOOTSTRAP_CSS);
+      schema.theme?.themeCSS?.forEach(link => removeCSS(link));
     }
   }, []);
 
@@ -60,8 +62,8 @@ export const Experiment: React.FC<IProps> = ({ experimentSchema }) => {
       <div className={css.sectionContainer}>
         <Section
           section={section}
-          dataSchema={experimentSchema.dataSchema}
-          formUiSchema={experimentSchema.formUiSchema}
+          dataSchema={schema.dataSchema}
+          formUiSchema={schema.formUiSchema}
           formData={experimentData}
           onDataChange={setExperimentData}
         />
