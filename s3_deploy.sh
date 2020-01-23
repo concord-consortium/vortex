@@ -1,6 +1,7 @@
 #!/bin/bash
 SRC_DIR='dist'
-DISTRIBUTION_ID='E1YPVV3YLYS4J7'
+DISTRIBUTION_ID='E1QHTGVGYD1DWZ'
+RESOURCE_DIR='vortex'
 # name of branch to deploy to root of site
 PRODUCTION_BRANCH='production'
 
@@ -29,21 +30,21 @@ if [ "$TRAVIS_BRANCH" = "$CURRENT_TAG" ]; then
   mkdir -p _site/version
   S3_DEPLOY_DIR="version/$TRAVIS_BRANCH"
   DEPLOY_DEST="_site/$S3_DEPLOY_DIR"
-  INVAL_PATH="/version/$TRAVIS_BRANCH/index.html"
+  INVAL_PATH="/$RESOURCE_DIR/version/$TRAVIS_BRANCH/index.html"
   # used by s3_website.yml
   export S3_DEPLOY_DIR
 
 # production branch builds deploy to root of site
 elif [ "$TRAVIS_BRANCH" = "$PRODUCTION_BRANCH" ]; then
   DEPLOY_DEST="_site"
-  INVAL_PATH="/index.html"
+  INVAL_PATH="/$RESOURCE_DIR/index.html"
 
 # branch builds deploy to /branch/BRANCH_NAME
 else
   mkdir -p _site/branch
   S3_DEPLOY_DIR="branch/$DEPLOY_DIR_NAME"
   DEPLOY_DEST="_site/$S3_DEPLOY_DIR"
-  INVAL_PATH="/branch/$DEPLOY_DIR_NAME/index.html"
+  INVAL_PATH="/$RESOURCE_DIR/branch/$DEPLOY_DIR_NAME/index.html"
   # used by s3_website.yml
   export S3_DEPLOY_DIR
 fi
