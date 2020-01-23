@@ -17,8 +17,7 @@ module.exports = (env, argv) => {
     },
     mode: 'development',
     output: {
-      filename: '[name]/assets/index.[hash].js',
-      publicPath: "../" // <-- this is a hack to get the injected js/css paths pointing to the correct folder, need to fix probably when wrapping mobile app
+      filename: '[name]/assets/index.[hash].js'
     },
     performance: { hints: false },
     module: {
@@ -71,6 +70,10 @@ module.exports = (env, argv) => {
         filename: devMode ? "[name]/assets/index.css" : "[name]/assets/index.[hash].css"
       }),
       new HtmlWebpackPlugin({
+        filename: 'index.html',
+        template: 'src/index.html'
+      }),
+      new HtmlWebpackPlugin({
         chunks: ['lara-app'],
         filename: 'lara-app/index.html',
         template: 'src/lara-app/index.html'
@@ -81,11 +84,6 @@ module.exports = (env, argv) => {
         template: 'src/mobile-app/index.html'
       }),
       // note: this next html file is only created on build, the dev-server doesn't copy it
-      new HtmlWebpackPlugin({
-        chunks: [],
-        filename: 'index.html',
-        template: 'src/index.html'
-      }),
       new CopyWebpackPlugin([
         {from: 'src/lara-app/public', to: 'lara-app/'}
       ]),
