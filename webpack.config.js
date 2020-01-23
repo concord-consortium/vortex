@@ -13,7 +13,8 @@ module.exports = (env, argv) => {
     devtool: 'source-map',
     entry: {
       'lara-app': './src/lara-app/index.tsx',
-      'mobile-app': './src/mobile-app/index.tsx'
+      'mobile-app': './src/mobile-app/index.tsx',
+      'shared': './src/shared/index.tsx'
     },
     mode: 'development',
     output: {
@@ -40,10 +41,28 @@ module.exports = (env, argv) => {
           }
         },
         {
-          test: /\.(sa|sc|c)ss$/i,
+          test: /^(?!.*module).*\.(sa|sc|c)ss$/i,
           use: [
             devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
             'css-loader',
+            'postcss-loader',
+            'sass-loader'
+          ]
+        },
+        {
+          test: /\.module\.(sa|sc|c)ss$/i,
+          use: [
+            devMode ? 'style-loader' : MiniCssExtractPlugin.loader,
+            {
+              loader: 'css-loader',
+              options: {
+                modules: {
+                  localIdentName: '[name]-[local]-vortex'
+                },
+                sourceMap: true,
+                importLoaders: 1
+              }
+            },
             'postcss-loader',
             'sass-loader'
           ]
@@ -83,12 +102,19 @@ module.exports = (env, argv) => {
         filename: 'mobile-app/index.html',
         template: 'src/mobile-app/index.html'
       }),
-      // note: this next html file is only created on build, the dev-server doesn't copy it
+      new HtmlWebpackPlugin({
+        chunks: ['shared'],
+        filename: 'shared/index.html',
+        template: 'src/shared/index.html'
+      }),
       new CopyWebpackPlugin([
         {from: 'src/lara-app/public', to: 'lara-app/'}
       ]),
       new CopyWebpackPlugin([
         {from: 'src/mobile-app/public', to: 'mobile-app/'}
+      ]),
+      new CopyWebpackPlugin([
+        {from: 'src/shared/public', to: 'shared/'}
       ])
     ]
   };
