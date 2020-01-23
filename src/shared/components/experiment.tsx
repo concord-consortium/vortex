@@ -5,7 +5,7 @@ import { Section } from "./section";
 import { ISection, IExperimentSchema, IExperimentData } from "../experiment-schema-types";
 import css from "./experiment.module.scss";
 
-const DEFAULT_BOOTSTRAP_CSS = "/shared/themes/bootstrap-flatly.css";
+const DEFAULT_BOOTSTRAP_CSS = "../shared/themes/bootstrap-flatly.css";
 
 interface IProps {
   experimentSchema: IExperimentSchema;
