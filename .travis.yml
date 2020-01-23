@@ -1,0 +1,15 @@
+sudo: false
+dist: bionic
+language: node_js
+node_js: lts/*
+cache:
+  bundler: true
+  pip: true
+  directories:
+    - "$HOME/.npm"
+    - "$HOME/.cache"
+install:
+- travis_retry npm ci
+script:
+- npm run build
+- npm run test:coverage -- --runInBand --forceExit
