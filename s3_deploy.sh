@@ -1,6 +1,6 @@
 #!/bin/bash
 SRC_DIR='dist'
-DISTRIBUTION_ID='E2W8IY4BDP03XF'
+DISTRIBUTION_ID='E1QHTGVGYD1DWZ'
 RESOURCE_DIR='vortex'
 # name of branch to deploy to root of site
 PRODUCTION_BRANCH='production'

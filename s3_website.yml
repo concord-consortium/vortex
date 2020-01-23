@@ -1,9 +1,9 @@
-s3_bucket: cc-project-resources
+s3_bucket: models-resources
 s3_key_prefix: vortex
 s3_endpoint: us-east-1
 gzip: true
 
-cloudfront_distribution_id: E2W8IY4BDP03XF
+cloudfront_distribution_id: E1QHTGVGYD1DWZ
 cloudfront_invalidate_root: false
 cloudfront_wildcard_invalidation: false
 
@@ -26,4 +26,4 @@ cloudfront_distribution_config:
   aliases:
     quantity: 1
     items:
-      - project-resources.concord.org
+      - models-resources.concord.org
