@@ -89,6 +89,7 @@ module.exports = (env, argv) => {
         filename: devMode ? "[name]/assets/index.css" : "[name]/assets/index.[hash].css"
       }),
       new HtmlWebpackPlugin({
+        chunks: [],
         filename: 'index.html',
         template: 'src/index.html'
       }),
