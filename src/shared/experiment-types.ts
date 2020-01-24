@@ -34,5 +34,12 @@ export interface IExperimentSchema {
   theme?: ITheme;
 }
 
+export interface IExperiment {
+  uuid: string;
+  name: string;
+  initials: string;
+  schema: IExperimentSchema;
+}
+
 // The only assumptions that can be made about experiment data is that it's an object.
 export type IExperimentData = object;

@@ -1,5 +1,6 @@
 import React from "react";
-import { IExperiment, useExperiments } from "../hooks/use-experiments";
+import { useExperiments } from "../hooks/use-experiments";
+import { IExperiment } from "../../shared/experiment-types";
 
 interface IProps {
   setExperiment: (experiment: IExperiment) => void;
