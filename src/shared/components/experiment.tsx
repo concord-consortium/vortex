@@ -2,9 +2,8 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
-import { ISection, IExperimentSchema, IExperimentData } from "../experiment-schema-types";
+import { ISection, IExperimentData, IExperiment } from "../experiment-schema-types";
 import css from "./experiment.module.scss";
-import { IExperiment } from "../../mobile-app/hooks/use-experiments";
 
 const DEFAULT_BOOTSTRAP_CSS = "../shared/themes/bootstrap-flatly.css";
 

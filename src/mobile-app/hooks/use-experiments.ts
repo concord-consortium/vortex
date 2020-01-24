@@ -1,22 +1,11 @@
 import { useState, useEffect } from "react";
 import { runningTests } from "../../shared/test/running-tests";
-import { IExperimentSchema } from "../../shared/experiment-schema-types";
-
+import { IExperiment } from "../../shared/experiment-schema-types";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
 const updateUrl = "https://models-resources.concord.org/vortex/data/experiments.json";
 const localStorageKey = "experiments";
 
-export interface IExperiment {
-  uuid: string;
-  name: string;
-  initials: string;
-  schema: IExperimentSchema;
-}
 export type Experiments = IExperiment[];
-
-export interface IExperimentMap {
-  [key: string]: IExperiment;
-}
 
 export interface IExperimentStorage {
   load: () => Experiments | undefined;

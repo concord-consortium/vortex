@@ -1,9 +1,9 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
+import { IExperiment } from "./experiment-schema-types";
 
 import "./index.sass";
-import { IExperiment } from "../mobile-app/hooks/use-experiments";
 
 const experiment: IExperiment = {
   uuid: "test",

@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { ExperimentPicker } from "./experiment-picker";
 import { Experiment } from "../../shared/components/experiment";
-import { IExperiment } from "../hooks/use-experiments";
+import { IExperiment } from "../../shared/experiment-schema-types";
 
 import css from "./app.module.scss";
 
