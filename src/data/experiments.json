@@ -1,0 +1,117 @@
+[
+  {
+    "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
+    "name": "Schoolyard Investigation",
+    "initials": "SI",
+    "schema": {
+      "sections": [
+        {
+          "title": "Label",
+          "formFields": ["studySite", "label", "groupMembers"]
+        },
+        {
+          "title": "Measure",
+          "formFields": ["experimentData"]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": ["studySite", "label"],
+        "properties": {
+          "studySite": {
+            "title": "Study Site",
+            "type": "string",
+            "default": "site1",
+            "enum": [
+              "site1",
+              "site2"
+            ],
+            "enumNames": [
+              "Site @1",
+              "Site @2"
+            ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "experimentData": {
+            "title": "Experiment Data",
+            "type": "object",
+            "properties": {
+              "temperature": {
+                "title": "Temperature",
+                "type": "array",
+                "items": {
+                  "type": ["null", "number"]
+                }
+              },
+              "light": {
+                "title": "Light",
+                "type": "array",
+                "items": {
+                  "type": ["null", "number"]
+                }
+              },
+              "humidity": {
+                "title": "Humidity",
+                "type": "array",
+                "items": {
+                  "type": ["null", "number"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  {
+    "uuid": "d27df06a-0997-4c53-8afd-d5dcc627d44f",
+    "name": "Stream Study",
+    "initials": "SS",
+    "schema": {
+      "sections": [
+        {
+          "title": "Label",
+          "formFields": ["label", "groupMembers"]
+        },
+        {
+          "title": "Measure",
+          "formFields": ["experimentData"]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": ["label"],
+        "properties": {
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "experimentData": {
+            "title": "Experiment Data",
+            "type": "object",
+            "properties": {
+              "temperature": {
+                "title": "Temperature",
+                "type": "array",
+                "items": {
+                  "type": ["null", "number"]
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+]
