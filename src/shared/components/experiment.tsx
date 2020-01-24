@@ -9,6 +9,8 @@ const DEFAULT_BOOTSTRAP_CSS = "../shared/themes/bootstrap-flatly.css";
 
 interface IProps {
   experiment: IExperiment;
+  data?: IExperimentData;
+  onDataChange?: (newData: IExperimentData) => void;
 }
 
 const addCSS = (href: string, asFirst = false) => {
@@ -33,11 +35,11 @@ const removeCSS = (href: string) => {
   }
 };
 
-export const Experiment: React.FC<IProps> = ({ experiment }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange }) => {
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
-  const [experimentData, setExperimentData] = useState<IExperimentData>({});
+  const [currentData, setCurrentData] = useState<IExperimentData>(data || {});
 
   useEffect(() => {
     // Append bootstrap css before our custom styles.
@@ -48,6 +50,13 @@ export const Experiment: React.FC<IProps> = ({ experiment }) => {
       schema.theme?.themeCSS?.forEach(link => removeCSS(link));
     }
   }, []);
+
+  const onExperimentDataChange = (newData: IExperimentData) => {
+    setCurrentData(newData);
+    if (onDataChange) {
+      onDataChange(newData);
+    }
+  };
 
   return (
     <div className={css.experiment}>
@@ -63,8 +72,8 @@ export const Experiment: React.FC<IProps> = ({ experiment }) => {
           section={section}
           dataSchema={schema.dataSchema}
           formUiSchema={schema.formUiSchema}
-          formData={experimentData}
-          onDataChange={setExperimentData}
+          formData={currentData}
+          onDataChange={onExperimentDataChange}
         />
       </div>
     </div>
