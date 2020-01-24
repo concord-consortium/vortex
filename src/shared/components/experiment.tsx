@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useState } from "react";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
-import { ISection, IExperimentData, IExperiment } from "../experiment-schema-types";
+import { ISection, IExperimentData, IExperiment } from "../experiment-types";
 import css from "./experiment.module.scss";
 
 const DEFAULT_BOOTSTRAP_CSS = "../shared/themes/bootstrap-flatly.css";

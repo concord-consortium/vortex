@@ -1,6 +1,6 @@
 import React from "react";
 import { useExperiments } from "../hooks/use-experiments";
-import { IExperiment } from "../../shared/experiment-schema-types";
+import { IExperiment } from "../../shared/experiment-types";
 
 interface IProps {
   setExperiment: (experiment: IExperiment) => void;

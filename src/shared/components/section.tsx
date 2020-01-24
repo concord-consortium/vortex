@@ -1,5 +1,5 @@
 import React from "react";
-import { IDataSchema, IExperimentData, IFormUiSchema, ISection } from "../experiment-schema-types";
+import { IDataSchema, IExperimentData, IFormUiSchema, ISection } from "../experiment-types";
 import Form, { ISubmitEvent } from "react-jsonschema-form";
 import css from "./section.module.scss";
 

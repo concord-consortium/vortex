@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
-import { IExperiment } from "./experiment-schema-types";
+import { IExperiment } from "./experiment-types";
 
 import "./index.sass";
 

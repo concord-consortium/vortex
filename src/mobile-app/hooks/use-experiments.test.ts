@@ -1,6 +1,6 @@
 import { Experiments, useExperiments, IExperimentStorage, defaultStorage } from "./use-experiments";
 import { testHook, testAsyncHook } from "../../shared/test/test-hook";
-import { IExperimentSchema } from "../../shared/experiment-schema-types";
+import { IExperimentSchema } from "../../shared/experiment-types";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
 
 describe("use-experiments hook", () => {

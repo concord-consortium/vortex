@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { runningTests } from "../../shared/test/running-tests";
-import { IExperiment } from "../../shared/experiment-schema-types";
+import { IExperiment } from "../../shared/experiment-types";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
 const updateUrl = "https://models-resources.concord.org/vortex/data/experiments.json";
 const localStorageKey = "experiments";
