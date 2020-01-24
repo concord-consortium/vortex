@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import { Text } from "../../shared/components/text";
 
 import "./app.sass";
