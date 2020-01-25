@@ -1,6 +1,6 @@
 import React from "react";
 import { IDataSchema, IExperimentData, IFormUiSchema, ISection } from "../experiment-types";
-import Form, { ISubmitEvent } from "react-jsonschema-form";
+import Form, { IChangeEvent } from "react-jsonschema-form";
 import css from "./section.module.scss";
 
 interface IProps {
@@ -23,7 +23,10 @@ export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, f
     }
   }
 
-  const onSubmit = (event: ISubmitEvent<IExperimentData>) => onDataChange && onDataChange(event.formData);
+  const onChange = (event: IChangeEvent<IExperimentData>) => {
+    // Immediately save the data.
+    onDataChange && onDataChange(event.formData);
+  };
 
   return (
     <div className={css.section}>
@@ -37,8 +40,12 @@ export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, f
           schema={formSchema}
           uiSchema={formUiSchema}
           formData={formData}
-          onSubmit={onSubmit}
-        />
+          onChange={onChange}
+        >
+          {/* Children are used to render custom action buttons. We don't want any, */}
+          {/* as form is saving and validating data live. */}
+          <span />
+        </Form>
       }
     </div>
   );
