@@ -1,14 +1,17 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
-import { IExperiment } from "./experiment-types";
+import { IExperiment, EXPERIMENT_VERSION_1 } from "./experiment-types";
 
 import "./index.sass";
 
 const experiment: IExperiment = {
-  uuid: "test",
-  name: "Experiment #1",
-  initials: "E1",
+  version: EXPERIMENT_VERSION_1,
+  metadata: {
+    uuid: "test",
+    name: "Experiment #1",
+    initials: "E1",
+  },
   schema: {
     sections: [
       {

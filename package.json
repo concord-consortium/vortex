@@ -6,7 +6,7 @@
   "jest": {
     "testURL": "https://vortex.unexisting.url.com",
     "setupFilesAfterEnv": [
-      "<rootDir>src/setupTests.js"
+      "<rootDir>src/setupTests.ts"
     ],
     "transform": {
       "^.+\\.tsx?$": "ts-jest"
@@ -70,6 +70,7 @@
     "@types/react": "^16.9.19",
     "@types/react-dom": "^16.9.5",
     "@types/react-jsonschema-form": "^1.6.8",
+    "@types/semver": "^6.2.0",
     "@types/uuid": "^3.4.6",
     "autoprefixer": "^9.7.4",
     "babel-core": "^6.26.3",
@@ -108,6 +109,7 @@
   "dependencies": {
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
-    "react-jsonschema-form": "^1.8.1"
+    "react-jsonschema-form": "^1.8.1",
+    "semver": "^7.1.1"
   }
 }
