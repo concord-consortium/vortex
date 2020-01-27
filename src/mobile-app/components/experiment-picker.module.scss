@@ -8,6 +8,7 @@
   height: $headerHeight;
   display: flex;
   flex-direction: row;
+  align-items: center;
   flex-wrap: nowrap;
   border-bottom: 2px solid #000;
 }
@@ -15,7 +16,7 @@
 .headerIcon {
   width: $headerIconSize;
   height: $headerIconSize;
-  margin: $headerIconMargin 0 0 $headerIconMargin;
+  margin: 0 0 0 $headerIconMargin;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -25,7 +26,7 @@
 }
 
 .headerTitle {
-  margin: $headerIconMargin $headerIconMargin 0 $headerIconMargin;
+  margin: 0 $headerIconMargin 0 $headerIconMargin;
   font-size: 18px;
   font-weight: bold;
   color: #646464;

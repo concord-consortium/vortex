@@ -3,6 +3,8 @@ import Label from "material-icons-svg/components/baseline/Label";
 import SettingsInputAntenna from "material-icons-svg/components/baseline/SettingsInputAntenna";
 import Assignment from "material-icons-svg/components/baseline/Assignment";
 import People from "material-icons-svg/components/baseline/People";
+import PhotoCamera from "material-icons-svg/components/baseline/PhotoCamera";
+import Comment from "material-icons-svg/components/baseline/Comment";
 
 // Use material icon names as a key, so it's easier to define these icons in form UI schema:
 // https://material.io/resources/icons/?style=baseline
@@ -10,7 +12,9 @@ const Icons: {[key: string]: any} = {
   label: Label,
   settings_input_antenna: SettingsInputAntenna,
   assignment: Assignment,
-  people: People
+  people: People,
+  photo_camera: PhotoCamera,
+  comment: Comment
 };
 
 interface IProps {

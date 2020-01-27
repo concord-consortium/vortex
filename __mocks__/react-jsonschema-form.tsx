@@ -9,3 +9,7 @@ export default class Form extends React.Component<any, any> {
     return null;
   }
 }
+
+export function withTheme(theme: any) {
+  return Form;
+}
