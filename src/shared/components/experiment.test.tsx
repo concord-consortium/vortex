@@ -2,16 +2,19 @@ import React from "react";
 import { Experiment } from "./experiment";
 import { mount } from "enzyme";
 import Form from "react-jsonschema-form";
-import { IExperiment } from "../experiment-types";
+import { IExperiment, EXPERIMENT_VERSION_1 } from "../experiment-types";
 import { act } from "react-dom/test-utils";
 
 jest.mock("react-jsonschema-form");
 
 describe("Experiment component", () => {
   const experiment = {
-    uuid: "123",
-    name: "test",
-    initials: "tt",
+    version: EXPERIMENT_VERSION_1,
+    metadata: {
+      uuid: "123",
+      name: "test",
+      initials: "tt",
+    },
     schema: {
       sections: [{
         title: "Foo section",

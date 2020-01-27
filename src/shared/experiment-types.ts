@@ -34,12 +34,20 @@ export interface IExperimentSchema {
   theme?: ITheme;
 }
 
-export interface IExperiment {
-  uuid: string;
-  name: string;
-  initials: string;
+export const EXPERIMENT_VERSION_1 = "1.0.0"
+export const MAX_SUPPORTED_EXPERIMENT_VERSION = EXPERIMENT_VERSION_1
+
+export interface IExperimentV1 {
+  version: "1.0.0";
+  metadata: {
+    uuid: string;
+    name: string;
+    initials: string;
+  };
   schema: IExperimentSchema;
 }
+
+export type IExperiment = IExperimentV1
 
 // The only assumptions that can be made about experiment data is that it's an object.
 export type IExperimentData = object;

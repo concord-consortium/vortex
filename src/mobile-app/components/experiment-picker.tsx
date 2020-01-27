@@ -7,20 +7,22 @@ interface IProps {
 }
 
 export const ExperimentPicker: React.FC<IProps> = ({setExperiment}) => {
-  const experiments = useExperiments();
+  const {experiments, upgradeApp} = useExperiments();
 
   return (
     <div>
       <h1>Experiments</h1>
       <ul>
         {experiments.map(experiment => {
+          const {uuid, name, initials} = experiment.metadata;
           return (
-            <li key={experiment.uuid} onClick={setExperiment.bind(null, experiment)}>
-              {experiment.name} ({experiment.initials})
+            <li key={uuid} onClick={setExperiment.bind(null, experiment)}>
+              {name} ({initials})
             </li>
           );
         })}
       </ul>
+      {upgradeApp ? <div>Please upgrade this app to the latest version</div> : undefined}
     </div>
   );
 };
