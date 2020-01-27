@@ -36,7 +36,7 @@ const removeCSS = (href: string) => {
 };
 
 export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange }) => {
-  const { schema } = experiment;
+  const { metadata: {initials}, schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
   const [currentData, setCurrentData] = useState<IExperimentData>(data || {});
