@@ -1,0 +1,10 @@
+// These styles customize bootstrap flatly theme, used mostly to style our forms provided by React JSON Schema Form lib.
+@import "variables";
+
+.form-control {
+  height: 60px;
+  border-radius: 5px;
+  border: solid 2px #646464;
+  color: $fontColor;
+  font-size: $fontSize;
+}

@@ -1,4 +1,15 @@
+@import url("https://fonts.googleapis.com/css?family=Londrina+Solid&display=swap");
+@import "variables";
+
 .experiment {
+  font-family: "Londrina Solid", cursive, Arial, sans-serif;
+  font-size: $fontSize;
+  color: $fontColor;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: 0.5px;
 }
 
 .sectionButtons {

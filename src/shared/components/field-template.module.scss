@@ -1,0 +1,27 @@
+.iconAndField {
+  display: flex;
+  justify-content: space-between;
+
+  .icon {
+    width: 40px;
+    align-self: center;
+  }
+
+  .field {
+    flex: 1;
+  }
+
+  .required {
+    font-size: 16px;
+    color: #afafaf;
+    font-weight: 300;
+    line-height: 1.13;
+    letter-spacing: 0.44px;
+    padding-top: 5px;
+    padding-left: 20px;
+
+    &.withIcon {
+      padding-left: 60px;
+    }
+  }
+}
