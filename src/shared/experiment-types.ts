@@ -1,3 +1,5 @@
+import { UiSchema } from "react-jsonschema-form";
+
 export interface IDataSchema {
   // Experiment data should have "object" type.
   type: "object";
@@ -6,9 +8,11 @@ export interface IDataSchema {
   required?: string[];
 }
 
-export interface IFormUiSchema {
-  // At this point there are no assumptions about form schema. Keep this type instead of using "any" in case
-  // we would like to specify allowed formUiSchema better.
+export interface IFormUiSchema extends UiSchema {
+  // Please see the docs: https://react-jsonschema-form.readthedocs.io/en/latest/form-customization/#the-uischema-object
+  // There's a custom extension of this format that lets you provide "ui:icon". Check Icon component to see list of
+  // all available icons or to add a new one.
+  "ui:icon"?: "string";
 }
 
 export interface ISection {

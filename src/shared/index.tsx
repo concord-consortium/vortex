@@ -30,13 +30,12 @@ const experiment: IExperiment = {
         studySite: {
           title: "Study Site",
           type: "string",
-          default: "site1",
           enum: [
             "site1",
             "site2"
           ],
           enumNames: [
-            "Site @1",
+            "Site @1: Conservation Practice in Place",
             "Site @2"
           ]
         },
@@ -75,6 +74,20 @@ const experiment: IExperiment = {
             }
           }
         }
+      }
+    },
+    formUiSchema: {
+      studySite: {
+        "ui:icon": "assignment",
+        "ui:placeholder": "Study Site"
+      },
+      label: {
+        "ui:icon": "label",
+        "ui:placeholder": "My Experiment 1"
+      },
+      groupMembers: {
+        "ui:icon": "people",
+        "ui:placeholder": "Group Team Members"
       }
     }
   }

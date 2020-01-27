@@ -1,7 +1,11 @@
 import React from "react";
 import { IDataSchema, IExperimentData, IFormUiSchema, ISection } from "../experiment-types";
 import Form, { IChangeEvent } from "react-jsonschema-form";
+import { FieldTemplate } from "./field-template";
+
 import css from "./section.module.scss";
+// This file provide custom forms look.
+import "./bootstrap-form-theme.scss";
 
 interface IProps {
   section: ISection;
@@ -41,6 +45,10 @@ export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, f
           uiSchema={formUiSchema}
           formData={formData}
           onChange={onChange}
+          FieldTemplate={FieldTemplate}
+          // Note that `hideLabels` is a custom context that is handled by `FieldTemplate`. We might need to make this
+          // option dynamic and e.g. hide them in mobile app but show in LARA.
+          formContext={{ hideLabels: true }}
         >
           {/* Children are used to render custom action buttons. We don't want any, */}
           {/* as form is saving and validating data live. */}
