@@ -1,0 +1,35 @@
+@import "../../shared/components/variables.scss";
+
+.item {
+  width: 94px;
+  margin-right: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.icon {
+  width: $headerIconSize;
+  height: $headerIconSize;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background-color: #afafaf;
+  font-size: 32px;
+  font-weight: bold;  color: #fff;
+
+  &:hover {
+    background-color: #00e90e;
+  }
+}
+
+.title {
+  font-size: 16px;
+  font-weight: bold;
+  color: #646464;
+  text-align: center;
+}
+

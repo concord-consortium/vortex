@@ -11,6 +11,7 @@ interface IProps {
   experiment: IExperiment;
   data?: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
+  setExperiment?: (experiment: IExperiment) => void;
 }
 
 const addCSS = (href: string, asFirst = false) => {
@@ -35,8 +36,8 @@ const removeCSS = (href: string) => {
   }
 };
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange }) => {
-  const { schema } = experiment;
+export const Experiment: React.FC<IProps> = ({ experiment, setExperiment, data, onDataChange }) => {
+  const { metadata: {initials}, schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
   const [currentData, setCurrentData] = useState<IExperimentData>(data || {});
@@ -60,21 +61,28 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange })
 
   return (
     <div className={css.experiment}>
-      <div className={css.sectionButtons}>
-        {
-          sections.map(s =>
-            <SectionButton key={s.title} title={s.title} onClick={setSection.bind(null, s)}/>
-          )
-        }
+      <div className={css.header}>
+        <div className={css.headerBackIcon} onClick={setExperiment?.bind(null, undefined)}>←</div>
+        <div className={css.headerInitialsIcon}>{initials}</div>
+        <div className={css.headerTitle}>TBD</div>
       </div>
-      <div className={css.sectionContainer}>
-        <Section
-          section={section}
-          dataSchema={schema.dataSchema}
-          formUiSchema={schema.formUiSchema}
-          formData={currentData}
-          onDataChange={onExperimentDataChange}
-        />
+      <div className={css.workspace}>
+        <div className={css.sectionButtons}>
+          {
+            sections.map(s =>
+              <SectionButton key={s.title} title={s.title} onClick={setSection.bind(null, s)}/>
+            )
+          }
+        </div>
+        <div className={css.sectionContainer}>
+          <Section
+            section={section}
+            dataSchema={schema.dataSchema}
+            formUiSchema={schema.formUiSchema}
+            formData={currentData}
+            onDataChange={onExperimentDataChange}
+          />
+        </div>
       </div>
     </div>
   );
