@@ -6,6 +6,7 @@ import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { LocalDataStorage } from "../../shared/utils/local-data-storage";
 import { RunPicker } from "./run-picker";
 import { IRun } from "./types";
+import { useExperiments } from "../hooks/use-experiments";
 
 import css from "./app.module.scss";
 
@@ -13,6 +14,7 @@ const runsStorage = new LocalDataStorage<IRun>("runs-");
 const availableRunKeysStorage = new LocalDataStorage<string[]>("available-runs");
 
 export const AppComponent: React.FC = () => {
+  const { experiments, upgradeApp } = useExperiments();
   const [runKey, setRunKey] = useState<string | undefined>();
   const [availableRunKeys, setAvailableRuns] = useState<string[]>(availableRunKeysStorage.load() || []);
 
@@ -72,7 +74,7 @@ export const AppComponent: React.FC = () => {
         />
         :
         <>
-          <ExperimentPicker setExperiment={setupNewExperiment}/>
+          <ExperimentPicker experiments={experiments} setExperiment={setupNewExperiment}/>
           {
             availableRuns.length > 0 &&
             <>
@@ -82,6 +84,7 @@ export const AppComponent: React.FC = () => {
           }
         </>
       }
+      {upgradeApp ? <div>Please upgrade this app to the latest version</div> : undefined}
     </div>
   );
 };
