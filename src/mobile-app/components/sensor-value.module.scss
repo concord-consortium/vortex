@@ -1,0 +1,43 @@
+.sensorValue {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+  text-align: center;
+}
+
+.connected {
+  border-left: 1px solid #777;
+}
+
+.disconnected {
+  border-left: 1px solid #777;
+}
+
+.sensorInnerValue {
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-items: center;
+  width: 100%;
+}
+
+.connectedValue,
+.disconnectedValue {
+  font-size: 25px;
+  letter-spacing: 0.69px;
+}
+
+.connectedValue {
+  color: #ffffff;
+}
+
+.disconnectedValue {
+  color: #ff0000;
+}
+
+.label {
+  font-size: 15px;
+  color: #646464;
+  letter-spacing: 0.42px;
+}

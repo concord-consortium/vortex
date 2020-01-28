@@ -14,6 +14,7 @@ module.exports = (env, argv) => {
     entry: {
       'lara-app': './src/lara-app/index.tsx',
       'mobile-app': './src/mobile-app/index.tsx',
+      'sensor-demo': './src/sensor-demo/index.tsx',
       'shared': './src/shared/index.tsx'
     },
     mode: 'development',
@@ -103,6 +104,11 @@ module.exports = (env, argv) => {
         chunks: ['mobile-app'],
         filename: 'mobile-app/index.html',
         template: 'src/mobile-app/index.html'
+      }),
+      new HtmlWebpackPlugin({
+        chunks: ['sensor-demo'],
+        filename: 'sensor-demo/index.html',
+        template: 'src/sensor-demo/index.html'
       }),
       new HtmlWebpackPlugin({
         chunks: ['shared'],
