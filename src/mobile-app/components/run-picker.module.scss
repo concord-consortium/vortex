@@ -1,0 +1,30 @@
+@import "../../shared/components/variables.scss";
+
+.runPicker {
+  padding: 20px;
+
+  .header {
+    font-size: 18px;
+    font-weight: bold;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: normal;
+    color: $fontColor;
+    margin-top: 10px;
+    margin-bottom: 10px;
+  }
+}
+
+.run {
+  padding: 10px;
+  margin-bottom: 10px;
+  background-color: $fontColor;
+  color: #fff;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+
+  &:hover {
+    cursor: pointer;
+  }
+}

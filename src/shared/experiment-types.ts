@@ -46,5 +46,8 @@ export interface IExperimentV1 {
 
 export type IExperiment = IExperimentV1
 
-// The only assumptions that can be made about experiment data is that it's an object.
-export type IExperimentData = object;
+export interface IExperimentData {
+  // This will be injected by ExperimentWrapper automatically on initial load.
+  timestamp: number;
+  // Other properties are unknown, they're specified by Experiment dataSchema.
+}
