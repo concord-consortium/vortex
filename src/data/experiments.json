@@ -10,11 +10,23 @@
       "sections": [
         {
           "title": "Label",
+          "icon": "assignment",
           "formFields": ["studySite", "label", "groupMembers"]
         },
         {
           "title": "Measure",
+          "icon": "settings_input_antenna",
           "formFields": ["experimentData"]
+        },
+        {
+          "title": "Photo",
+          "icon": "photo_camera",
+          "formFields": []
+        },
+        {
+          "title": "Note",
+          "icon": "comment",
+          "formFields": ["note"]
         }
       ],
       "dataSchema": {
@@ -24,13 +36,12 @@
           "studySite": {
             "title": "Study Site",
             "type": "string",
-            "default": "site1",
             "enum": [
               "site1",
               "site2"
             ],
             "enumNames": [
-              "Site @1",
+              "Site @1: Conservation Practice in Place",
               "Site @2"
             ]
           },
@@ -68,6 +79,32 @@
                 }
               }
             }
+          },
+          "note": {
+            "title": "Notes",
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "label": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Experiment 1"
+        },
+        "groupMembers": {
+          "ui:icon": "people",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
           }
         }
       }
@@ -84,10 +121,12 @@
       "sections": [
         {
           "title": "Label",
+          "icon": "assignment",
           "formFields": ["label", "groupMembers"]
         },
         {
           "title": "Measure",
+          "icon": "settings_input_antenna",
           "formFields": ["experimentData"]
         }
       ],

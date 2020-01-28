@@ -1,97 +1,12 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
-import { IExperiment, EXPERIMENT_VERSION_1 } from "./experiment-types";
+import { IExperiment } from "./experiment-types";
+import ExperimentJSONs from "../data/experiments.json";
 
 import "./index.sass";
 
-const experiment: IExperiment = {
-  version: EXPERIMENT_VERSION_1,
-  metadata: {
-    uuid: "test",
-    name: "Experiment #1",
-    initials: "E1",
-  },
-  schema: {
-    sections: [
-      {
-        title: "Label",
-        formFields: ["studySite", "label", "groupMembers"]
-      },
-      {
-        title: "Measure",
-        formFields: ["experimentData"]
-      }
-    ],
-    dataSchema: {
-      type: "object",
-      required: ["studySite", "label"],
-      properties: {
-        studySite: {
-          title: "Study Site",
-          type: "string",
-          enum: [
-            "site1",
-            "site2"
-          ],
-          enumNames: [
-            "Site @1: Conservation Practice in Place",
-            "Site @2"
-          ]
-        },
-        label: {
-          title: "Label",
-          type: "string",
-        },
-        groupMembers: {
-          title: "Group Members",
-          type: "string"
-        },
-        experimentData: {
-          title: "Experiment Data",
-          type: "object",
-          properties: {
-            temperature: {
-              title: "Temperature",
-              type: "array",
-              items: {
-                type: ["null", "number"]
-              }
-            },
-            light: {
-              title: "Light",
-              type: "array",
-              items: {
-                type: ["null", "number"]
-              }
-            },
-            humidity: {
-              title: "Humidity",
-              type: "array",
-              items: {
-                type: ["null", "number"]
-              }
-            }
-          }
-        }
-      }
-    },
-    formUiSchema: {
-      studySite: {
-        "ui:icon": "assignment",
-        "ui:placeholder": "Study Site"
-      },
-      label: {
-        "ui:icon": "label",
-        "ui:placeholder": "My Experiment 1"
-      },
-      groupMembers: {
-        "ui:icon": "people",
-        "ui:placeholder": "Group Team Members"
-      }
-    }
-  }
-};
+const experiment = ExperimentJSONs[0] as IExperiment;
 ReactDOM.render(
   <>
     <Experiment
@@ -99,7 +14,7 @@ ReactDOM.render(
     />
     <h4>Experiment Schema JSON</h4>
     <pre>
-      { JSON.stringify(experiment, null, 2)}
+      {JSON.stringify(experiment, null, 2)}
     </pre>
   </>,
   document.getElementById("experiment-1")

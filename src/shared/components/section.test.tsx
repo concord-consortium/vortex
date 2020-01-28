@@ -20,6 +20,7 @@ describe("Section component", () => {
   } as IDataSchema;
   const section = {
     title: "Foo section",
+    icon: "test",
     formFields: ["foo"]
   };
 

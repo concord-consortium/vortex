@@ -20,13 +20,14 @@
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background-color: #afafaf;
+  background-color: $fontColor;
   color: #fff;
   font-size: 28px;
   font-weight: bold;
 
   &:hover {
     background-color: #00e90e;
+    cursor: pointer;
   }
 }
 
@@ -56,5 +57,4 @@
   right: 0;
   left: 0;
   overflow: auto;
-  padding: 20px;
 }

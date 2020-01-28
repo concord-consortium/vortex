@@ -17,16 +17,10 @@ export interface IFormUiSchema extends UiSchema {
 
 export interface ISection {
   title: string;
+  icon: string;
   // formFields array should be a subset of dataSchema.properties.
   // Section will render a form with these fields.
   formFields?: string[];
-}
-
-export interface ITheme {
-  // Bootstrap theme is necessary for React JSONSchema Form.
-  bootstrapCSS?: string;
-  // Optional list of theme CSS files.
-  themeCSS?: string[];
 }
 
 export interface IExperimentSchema {
@@ -35,7 +29,6 @@ export interface IExperimentSchema {
   // React JSONSchema Form uiSchema, see: https://react-jsonschema-form.readthedocs.io/en/latest/form-customization/#the-uischema-object
   formUiSchema?: IFormUiSchema;
   sections: ISection[];
-  theme?: ITheme;
 }
 
 export const EXPERIMENT_VERSION_1 = "1.0.0"

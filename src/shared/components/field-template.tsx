@@ -4,7 +4,7 @@ import { Icon } from "./icon";
 import css from "./field-template.module.scss";
 
 export const FieldTemplate: React.FC<FieldTemplateProps> = props => {
-  const { id, classNames, label, help, required, description, children, uiSchema, formContext } = props;
+  const { id, classNames, label, help, required, description, children, displayLabel, uiSchema, formContext } = props;
   const icon = uiSchema["ui:icon"];
   return (
     <div className={classNames}>
@@ -21,9 +21,9 @@ export const FieldTemplate: React.FC<FieldTemplateProps> = props => {
         </div>
       </div>
       {
-        // Check first if required is defined at all, as otherwise we'll render "Optional" for the root group.
-        required !== undefined &&
-        <div className={css.required + (icon ? ` ${css.withIcon}` : "")}>{required ? "Required" : "Optional"}</div>
+        // `displayLabel` is false for array items. In this case we also don't want to show this label.
+        required && displayLabel &&
+        <div className={css.required + (icon ? ` ${css.withIcon}` : "")}>Required</div>
       }
       {/* This fields will require some styling probably. Render them so they're visible */}
       {/* if someone is testing these features. They can be provided via uiSchema. */}
