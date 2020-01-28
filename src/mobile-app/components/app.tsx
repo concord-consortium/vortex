@@ -1,20 +1,86 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { ExperimentPicker } from "./experiment-picker";
 import { ExperimentWrapper } from "./experiment-wrapper";
-import { IExperiment } from "../../shared/experiment-types";
+import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { LocalDataStorage } from "../../shared/utils/local-data-storage";
+import { RunPicker } from "./run-picker";
+import { IRun } from "./types";
 
 import css from "./app.module.scss";
 
-export const AppComponent: React.FC<{}> = () => {
+const runsStorage = new LocalDataStorage<IRun>("runs-");
+const availableRunKeysStorage = new LocalDataStorage<string[]>("available-runs");
 
-  const [experiment, setExperiment] = useState<IExperiment|undefined>();
+export const AppComponent: React.FC = () => {
+  const [runKey, setRunKey] = useState<string | undefined>();
+  const [availableRunKeys, setAvailableRuns] = useState<string[]>(availableRunKeysStorage.load() || []);
+
+  useEffect(() => {
+    availableRunKeysStorage.save(availableRunKeys);
+  }, [availableRunKeys]);
+
+  useEffect(() => {
+    availableRunKeysStorage.save(availableRunKeys);
+  }, [availableRunKeys]);
+
+  const setupNewExperiment = (newExperiment: IExperiment) => {
+    const newRunKey = Date.now().toString(); // easy version of UUID
+    setRunKey(newRunKey);
+    setAvailableRuns(availableRunKeys.concat(newRunKey));
+    runsStorage.save({
+      key: newRunKey,
+      experiment: newExperiment,
+      data: { timestamp: Date.now() }
+    }, newRunKey);
+  };
+
+  const onDataChange = (newData: IExperimentData) => {
+    if (runKey) {
+      const run = runsStorage.load(runKey);
+      if (run) {
+        run.data = newData;
+        runsStorage.save(run, runKey);
+      }
+    }
+  };
+
+  const onBackBtnClick = () => {
+    setRunKey(undefined);
+  };
+
+  const resetLocalData = () => {
+    setAvailableRuns([]);
+  };
+
+  let runData = null;
+  let availableRuns: IRun[] = [];
+  if (runKey) {
+    runData = runsStorage.load(runKey);
+  } else {
+    availableRuns = availableRunKeys.map(key => runsStorage.load(key) as IRun).filter(run => run !== undefined);
+  }
 
   return (
     <div className={css.app}>
-      {experiment
-        ? <ExperimentWrapper experiment={experiment} setExperiment={setExperiment} />
-        : <ExperimentPicker setExperiment={setExperiment} />
+      {runData ?
+        <ExperimentWrapper
+          experiment={runData.experiment}
+          data={runData.data}
+          onDataChange={onDataChange}
+          onBackBtnClick={onBackBtnClick}
+        />
+        :
+        <>
+          <ExperimentPicker setExperiment={setupNewExperiment}/>
+          {
+            availableRuns.length > 0 &&
+            <>
+              <RunPicker runs={availableRuns} setRunKey={setRunKey}/>
+              <button onClick={resetLocalData} style={{ margin: 20 }}>Reset Local Data</button>
+            </>
+          }
+        </>
       }
     </div>
   );
