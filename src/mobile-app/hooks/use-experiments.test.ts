@@ -1,4 +1,4 @@
-import { Experiments, useExperiments, IExperimentStorage, defaultStorage } from "./use-experiments";
+import { Experiments, useExperiments, defaultStorage } from "./use-experiments";
 import { testHook, testAsyncHook } from "../../shared/test/test-hook";
 import { IExperimentSchema, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
 import semver from "semver";
@@ -47,7 +47,8 @@ describe("use-experiments hook", () => {
     const fetchMock = jest.fn().mockRejectedValue(new Error("test fetch failure"));
     (window as any).fetch = fetchMock;
 
-    const mockedStorage: IExperimentStorage = {
+    const mockedStorage = {
+      localStorageKeyPrefix: "",
       load: () => savedExperiments,
       save: () => undefined,
     };
@@ -85,7 +86,8 @@ describe("use-experiments hook", () => {
     (window as any).fetch = fetchMock;
 
     const mockedStorageSave = jest.fn();
-    const mockedStorage: IExperimentStorage = {
+    const mockedStorage = {
+      localStorageKeyPrefix: "",
       load: () => savedExperiments,
       save: mockedStorageSave
     };
@@ -133,7 +135,8 @@ describe("use-experiments hook", () => {
     (window as any).fetch = fetchMock;
 
     const mockedStorageSave = jest.fn();
-    const mockedStorage: IExperimentStorage = {
+    const mockedStorage = {
+      localStorageKeyPrefix: "",
       load: () => savedExperiments,
       save: mockedStorageSave
     };

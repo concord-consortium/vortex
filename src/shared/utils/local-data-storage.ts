@@ -1,5 +1,5 @@
 export class LocalDataStorage<DataType> {
-  private localStorageKeyPrefix: string;
+  public localStorageKeyPrefix: string = "";
 
   constructor(localStorageKeyPrefix: string) {
     this.localStorageKeyPrefix = localStorageKeyPrefix;

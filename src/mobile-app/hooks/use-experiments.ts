@@ -1,10 +1,10 @@
 import semver from "semver";
 import { useState, useEffect } from "react";
-import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
+import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION } from "../../shared/experiment-types";
 import { logError } from "../../shared/utils/log";
+import { LocalDataStorage } from "../../shared/utils/local-data-storage";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
 const updateUrl = "https://models-resources.concord.org/vortex/data/experiments.json";
-const localStorageKey = "experiments";
 
 export type Experiments = IExperiment[];
 
@@ -13,31 +13,7 @@ export interface IUseExperimentsResult {
   upgradeApp: boolean;
 }
 
-export interface IExperimentStorage {
-  load: () => Experiments | undefined;
-  save: (experiments: Experiments) => void;
-}
-
-export class ExperimentStorage implements IExperimentStorage {
-
-  public load() {
-    let savedExperiments: Experiments | undefined;
-    const stringifiedExperiments = window.localStorage.getItem(localStorageKey);
-    if (stringifiedExperiments) {
-      try {
-        savedExperiments = JSON.parse(stringifiedExperiments);
-      // tslint:disable-next-line:no-empty
-      } catch (e) {}
-    }
-    return savedExperiments;
-  }
-
-  public save(experiments: Experiments) {
-    window.localStorage.setItem(localStorageKey, JSON.stringify(experiments));
-  }
-}
-
-export const defaultStorage = new ExperimentStorage();
+export const defaultStorage = new LocalDataStorage<Experiments>("experiments");
 
 export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments) => {
   let save = false;
@@ -75,7 +51,7 @@ export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments
   }
 }
 
-export const useExperiments = (optionalStorage?: IExperimentStorage) => {
+export const useExperiments = (optionalStorage?: LocalDataStorage<Experiments>) => {
 
   // get the previously downloaded experiments (if any)
   const storage = optionalStorage || defaultStorage;
