@@ -1,4 +1,4 @@
-import { Sensor, ISensorOptions, ISensorValues } from "./sensor";
+import { Sensor, ISensorOptions, ISensorValues, IPollOptions } from "./sensor";
 
 type MockValueDirection = "up" | "down";
 interface IStartingSensorValues extends Required<ISensorValues> {
@@ -64,29 +64,37 @@ export class MockSensor extends Sensor {
     }
   }
 
-  public connect() {
-    this.setConnected({connected: true, deviceName: this.mockedDeviceName});
+  public connect(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.setConnected({connected: true, deviceName: this.mockedDeviceName});
+      resolve();
+    });
   }
 
-  public disconnect() {
-    this.setConnected({connected: false});
+  public disconnect(): Promise<void> {
+    return new Promise<void>((resolve) => {
+      this.setConnected({connected: false});
+      resolve();
+    });
   }
 
-  protected getValues(): ISensorValues {
-    const values: ISensorValues = {};
-    if (this.capabilities.humidity) {
-      values.humidity = this.mockValues.humidity;
-      this.setNextRandomMockValue({measurement: "humidity", increment: 0.1});
-    }
-    if (this.capabilities.illuminance) {
-      values.illuminance = this.mockValues.illuminance;
-      this.setNextRandomMockValue({measurement: "illuminance", increment: 100});
-    }
-    if (this.capabilities.temperature) {
-      values.temperature = this.mockValues.temperature;
-      this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
-    }
-    return values;
+  protected pollValues(options: IPollOptions): Promise<ISensorValues> {
+    return new Promise<ISensorValues>((resolve) => {
+      const values: ISensorValues = {};
+      if (this.capabilities.humidity) {
+        values.humidity = this.mockValues.humidity;
+        this.setNextRandomMockValue({measurement: "humidity", increment: 0.1});
+      }
+      if (this.capabilities.illuminance) {
+        values.illuminance = this.mockValues.illuminance;
+        this.setNextRandomMockValue({measurement: "illuminance", increment: 100});
+      }
+      if (this.capabilities.temperature) {
+        values.temperature = this.mockValues.temperature;
+        this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
+      }
+      resolve(values);
+    })
   }
 
   private minMax(measurement: Measurement) {

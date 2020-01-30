@@ -5,6 +5,8 @@ export interface ISensorCapabilities {
   temperature?: boolean;
   humidity?: boolean;
 }
+export type SensorCapabilityKey = keyof ISensorCapabilities;
+export const AllCapabilityKeys: SensorCapabilityKey[] = ["illuminance", "temperature", "humidity"]
 
 export interface ISensorValues {
   illuminance?: number;
@@ -26,6 +28,7 @@ export const AllCapabilities: ISensorCapabilities = {
 export enum SensorEvent {
   Connection = "connection",
   Values = "values",
+  Error = "error",
 }
 
 export interface ISensorConnectionEventData {
@@ -37,6 +40,21 @@ export interface ISensorValuesEventData {
   values: ISensorValues;
 }
 
+export interface ISensorErrorData {
+  deviceName: string;
+  error: any;
+}
+
+export interface ISetConnectedOptions {
+  connected: boolean;
+  deviceName?: string
+}
+
+export interface IPollOptions {
+  firstPoll?: boolean;
+  lastPoll?: boolean;
+}
+
 export class Sensor extends EventEmitter<SensorEvent> {
   protected _deviceName: string | undefined;
   private _connected: boolean;
@@ -44,6 +62,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
   private _capabilities: ISensorCapabilities;
   private pollTimeout: number;
   private pollInterval: number;
+  private error: any;
 
   constructor(options: ISensorOptions) {
     super();
@@ -51,6 +70,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     this._connected = false;
     this._values = {};
     this.pollInterval = options.pollInterval || 1000;
+    this.error = undefined;
   }
 
   public get capabilities() {
@@ -69,65 +89,83 @@ export class Sensor extends EventEmitter<SensorEvent> {
     return this._deviceName || "Unknown Device";
   }
 
-  public connect() {
-    throw new Error("connect() method not overridden!");
+  public connect(): Promise<void> {
+    return Promise.reject("connect() method not overridden!");
   }
 
-  public disconnect() {
-    throw new Error("disconnect() method not overridden!");
+  public disconnect(): Promise<void> {
+    return Promise.reject("disconnect() method not overridden!");
   }
 
-  protected getValues(): ISensorValues {
-    throw new Error("getValues() method not overridden!");
+  public setError(error: any) {
+    // only set the first error to help in debugging or allow unset
+    if (!this.error || !error) {
+      this.error = error;
+      const errorData: ISensorErrorData = {
+        deviceName: this.deviceName,
+        error
+      };
+      this.emit(SensorEvent.Error, errorData);
+    }
+  }
+
+  protected pollValues(options: IPollOptions): Promise<ISensorValues> {
+    return Promise.reject("pollValues() method not overridden!");
   }
 
   // can't use private setter as it must agree with public getter
-  protected setConnected(options: {connected: boolean, deviceName?: string}) {
+  protected setConnected(options: ISetConnectedOptions) {
     const {connected, deviceName} = options;
+    const wasConnected = this._connected;
     this._connected = connected;
     const connectionEventData: ISensorConnectionEventData = {
       connected,
       deviceName: deviceName || this.deviceName
     };
 
-    this.stopPolling();
-    this.emit(SensorEvent.Connection, connectionEventData);
+    clearTimeout(this.pollTimeout);
     if (connected) {
       this._deviceName = deviceName;
-      this.startPolling();
+      this.poll({firstPoll: true});
     } else {
+      if (wasConnected) {
+        this.poll({lastPoll: true});
+      }
       this._deviceName = undefined;
     }
+
+    this.emit(SensorEvent.Connection, connectionEventData);
   }
 
-  private sendData() {
-    this._values = this.getValues();
-    const valuesEventData: ISensorValuesEventData = {
-      deviceName: this.deviceName,
-      values: this._values
+  private poll(options: IPollOptions) {
+    const createTimeout = () => {
+      this.pollTimeout = window.setTimeout(() => {
+        this.sendData(options).then(() => this.poll({firstPoll: false}));
+      }, this.pollInterval);
+    };
+
+    if (options.firstPoll) {
+      // immediately send the data and then queue another poll
+      this.sendData(options).then(createTimeout);
+    } else if (options.lastPoll) {
+      // immediately send the data and then stop
+      this.sendData(options);
+    } else {
+      // queue another poll if not first or last poll
+      createTimeout();
     }
-    this.emit(SensorEvent.Values, valuesEventData);
   }
 
-  private poll(options: {sendImmediately: boolean}) {
-    if (options.sendImmediately) {
-      this.sendData();
-    }
-    this.pollTimeout = window.setTimeout(() => {
-      this.sendData();
-      this.continuePolling();
-    }, this.pollInterval);
-  }
-
-  private startPolling() {
-    this.poll({sendImmediately: true});
-  }
-
-  private continuePolling() {
-    this.poll({sendImmediately: false});
-  }
-
-  private stopPolling() {
-    clearTimeout(this.pollTimeout);
+  private sendData(options: IPollOptions) {
+    return this.pollValues(options)
+      .then(values => {
+        this._values = values;
+        const valuesEventData: ISensorValuesEventData = {
+          deviceName: this.deviceName,
+          values: this._values
+        }
+        this.emit(SensorEvent.Values, valuesEventData);
+      })
+      .catch(error => this.setError(error));
   }
 }

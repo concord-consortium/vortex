@@ -2,6 +2,7 @@
     "extends": "./tslint.json",
     "rules": {
       "no-console": true,
-      "no-debugger": true
+      "no-debugger": true,
+      "no-bitwise": false
     }
 }

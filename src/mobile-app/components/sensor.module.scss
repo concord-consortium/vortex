@@ -31,6 +31,11 @@
   color: #ff0000;
 }
 
+.error {
+  background-color: rgba(255, 129, 0, 0.2);
+  color: #f57c00;
+}
+
 @keyframes border-pulsate-connected {
   0%   { border-color: rgba(255, 255, 255, 1); }
   50%  { border-color: rgba(0, 233, 14, 0.2); }
@@ -43,8 +48,15 @@
   100% { border-color: rgba(255, 255, 255, 1); }
 }
 
+@keyframes border-pulsate-error {
+  0%   { border-color: rgba(255, 255, 255, 1); }
+  50%  { border-color: rgba(255, 129, 0, 0.2); }
+  100% { border-color: rgba(255, 255, 255, 1); }
+}
+
 .connectedIcon,
-.disconnectedIcon {
+.disconnectedIcon,
+.errorIcon {
   width: 26px;
   height: 26px;
   border-radius: 21px;
@@ -60,6 +72,11 @@
 .disconnectedIcon {
   background-color: #ff0000;
   animation: border-pulsate-disconnected 2s infinite;
+}
+
+.errorIcon {
+  background-color: #ff8100;
+  animation: border-pulsate-error 2s infinite;
 }
 
 .connectedValues,
