@@ -42,8 +42,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange })
       <div className={css.sectionContainer}>
         <Section
           section={section}
-          dataSchema={schema.dataSchema}
-          formUiSchema={schema.formUiSchema}
+          experiment={experiment}
           formData={currentData}
           onDataChange={onExperimentDataChange}
         />

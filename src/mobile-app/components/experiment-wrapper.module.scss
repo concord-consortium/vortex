@@ -1,21 +1,18 @@
 @import "../../shared/components/variables.scss";
 
 .header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
   height: $headerHeight;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   border-bottom: 2px solid #000;
+  align-items: center;
 }
 
 .headerBackIcon {
   width: $headerIconSize;
   height: $headerIconSize;
-  margin: $headerIconMargin 0 0 $headerIconMargin;
+  margin: 0 $headerIconMargin 0 $headerIconMargin;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -31,21 +28,9 @@
   }
 }
 
-.headerInitialsIcon {
-  width: $headerIconSize;
-  height: $headerIconSize;
-  margin: $headerIconMargin 0 0 $headerIconMargin;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-color: #dddddd;
-  color: #646464;
-  font-size: 26px;
-  border-radius: 5px;
-}
 
 .headerTitle {
-  margin: $headerIconMargin $headerIconMargin 0 $headerIconMargin;
+  margin: 0 $headerIconMargin 0 $headerIconMargin;
   font-size: 18px;
   font-weight: bold;
   color: #afafaf;

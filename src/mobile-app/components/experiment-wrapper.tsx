@@ -1,6 +1,7 @@
 import React from "react";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { Experiment } from "../../shared/components/experiment";
+import { Initials } from "../../shared/components/initials";
 
 import css from "./experiment-wrapper.module.scss";
 
@@ -19,7 +20,7 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, data, onDataCh
     <div>
       <div className={css.header}>
         <div className={css.headerBackIcon} onClick={onBackBtnClick}>⇦</div>
-        <div className={css.headerInitialsIcon}>{initials}</div>
+        <Initials text={initials}/>
         <div className={css.headerTitle}>TBD</div>
       </div>
       <div className={css.workspace}>

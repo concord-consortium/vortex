@@ -1,0 +1,13 @@
+@import "../../shared/components/variables.scss";
+
+.initialsIcon {
+  width: $headerIconSize;
+  height: $headerIconSize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #dddddd;
+  color: #646464;
+  font-size: 26px;
+  border-radius: 5px;
+}
