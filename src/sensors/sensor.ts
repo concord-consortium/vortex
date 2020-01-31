@@ -33,15 +33,15 @@ export enum SensorEvent {
 
 export interface ISensorConnectionEventData {
   connected: boolean;
-  deviceName: string;
+  deviceName?: string;
 }
 export interface ISensorValuesEventData {
-  deviceName: string;
+  deviceName?: string;
   values: ISensorValues;
 }
 
 export interface ISensorErrorData {
-  deviceName: string;
+  deviceName?: string;
   error: any;
 }
 
@@ -86,7 +86,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
   }
 
   public get deviceName() {
-    return this._deviceName || "Unknown Device";
+    return this._deviceName || (this._connected ? "Unknown Device" : undefined);
   }
 
   public connect(): Promise<void> {

@@ -65,36 +65,30 @@ export class MockSensor extends Sensor {
   }
 
   public connect(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      this.setConnected({connected: true, deviceName: this.mockedDeviceName});
-      resolve();
-    });
+    this.setConnected({connected: true, deviceName: this.mockedDeviceName});
+    return Promise.resolve();
   }
 
   public disconnect(): Promise<void> {
-    return new Promise<void>((resolve) => {
-      this.setConnected({connected: false});
-      resolve();
-    });
+    this.setConnected({connected: false});
+    return Promise.resolve();
   }
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
-    return new Promise<ISensorValues>((resolve) => {
-      const values: ISensorValues = {};
-      if (this.capabilities.humidity) {
-        values.humidity = this.mockValues.humidity;
-        this.setNextRandomMockValue({measurement: "humidity", increment: 0.1});
-      }
-      if (this.capabilities.illuminance) {
-        values.illuminance = this.mockValues.illuminance;
-        this.setNextRandomMockValue({measurement: "illuminance", increment: 100});
-      }
-      if (this.capabilities.temperature) {
-        values.temperature = this.mockValues.temperature;
-        this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
-      }
-      resolve(values);
-    })
+    const values: ISensorValues = {};
+    if (this.capabilities.humidity) {
+      values.humidity = this.mockValues.humidity;
+      this.setNextRandomMockValue({measurement: "humidity", increment: 0.1});
+    }
+    if (this.capabilities.illuminance) {
+      values.illuminance = this.mockValues.illuminance;
+      this.setNextRandomMockValue({measurement: "illuminance", increment: 100});
+    }
+    if (this.capabilities.temperature) {
+      values.temperature = this.mockValues.temperature;
+      this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
+    }
+    return Promise.resolve(values);
   }
 
   private minMax(measurement: Measurement) {
