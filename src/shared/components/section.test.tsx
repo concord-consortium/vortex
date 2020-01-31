@@ -26,7 +26,7 @@ describe("Section component", () => {
 
   it("immediately notifies parent when form is updated by the user", () => {
     const onDataChange = jest.fn();
-    const wrapper = mount(<Section dataSchema={dataSchema} section={section} formData={{}} onDataChange={onDataChange} />);
+    const wrapper = mount(<Section dataSchema={dataSchema} section={section} formData={{timestamp: Date.now()}} onDataChange={onDataChange} />);
     const form = wrapper.find(Form).instance();
     expect(form).toBeDefined();
     const newData = { foo: "test" };

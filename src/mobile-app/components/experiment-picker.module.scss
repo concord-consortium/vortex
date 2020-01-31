@@ -1,10 +1,6 @@
 @import "../../shared/components/variables.scss";
 
 .header {
-  position: absolute;
-  top: 0;
-  right: 0;
-  left: 0;
   height: $headerHeight;
   display: flex;
   flex-direction: row;
@@ -33,10 +29,7 @@
 }
 
 .workspace {
-  position: absolute;
   top: $headerHeight;
-  right: 0;
-  left: 0;
   overflow: auto;
   padding: 20px;
 }

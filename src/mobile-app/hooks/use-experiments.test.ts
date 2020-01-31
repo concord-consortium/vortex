@@ -1,5 +1,5 @@
 import { Experiments, useExperiments, IExperimentStorage, defaultStorage } from "./use-experiments";
-import { testHook, testAsyncHook } from "../../shared/test/test-hook";
+import { renderHook } from "@testing-library/react-hooks";
 import { IExperimentSchema, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
 import semver from "semver";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
@@ -38,9 +38,9 @@ describe("use-experiments hook", () => {
     const fetchMock = jest.fn().mockRejectedValue(new Error("test fetch failure"));
     (window as any).fetch = fetchMock;
 
-    const result = testHook(() => useExperiments(defaultStorage));
+    const { result } = renderHook(() => useExperiments(defaultStorage));
     expect(fetchMock).toHaveBeenCalled();
-    expect(result).toEqual({experiments: builtInExperiments, upgradeApp: false});
+    expect(result.current).toEqual({experiments: builtInExperiments, upgradeApp: false});
   });
 
   it("returns previously saved experiments when no experiments are downloaded", () => {
@@ -52,9 +52,9 @@ describe("use-experiments hook", () => {
       save: () => undefined,
     };
 
-    const result = testHook(() => useExperiments(mockedStorage));
+    const { result } = renderHook(() => useExperiments(mockedStorage));
     expect(fetchMock).toHaveBeenCalled();
-    expect(result).toEqual({experiments: savedExperiments, upgradeApp: false});
+    expect(result.current).toEqual({experiments: savedExperiments, upgradeApp: false});
   });
 
   it("returns previously saved experiments and saves downloaded experiments", async () => {
@@ -90,18 +90,19 @@ describe("use-experiments hook", () => {
       save: mockedStorageSave
     };
 
-    // need to use async test here otherwise the setExperiments call won't be done within
-    // the act() call in the hook test and will show a warning
-    const result = await testAsyncHook(() => useExperiments(mockedStorage));
-    expect(fetchMock).toHaveBeenCalled();
+    const { result, waitForValueToChange } = renderHook(() => useExperiments(mockedStorage));
 
     // it will return the saved experiments immediately
-    expect(result).toEqual({experiments: savedExperiments, upgradeApp: false});
+    expect(result.current).toEqual({experiments: savedExperiments, upgradeApp: false});
+
+    await waitForValueToChange(() => result.current.experiments);
+
+    expect(fetchMock).toHaveBeenCalled();
+
+    expect(result.current).toEqual({experiments: downloadedExperiments, upgradeApp: false});
 
     // but will have saved the downloaded experiments in the fetch handler
     expect(mockedStorageSave).toHaveBeenCalledWith(downloadedExperiments);
-
-    // LATER: figure out how to test setUseExperimentsResult() inside useEffect
   });
 
   it("does not save downloaded data if the experiments have a higher version", async () => {
@@ -138,14 +139,15 @@ describe("use-experiments hook", () => {
       save: mockedStorageSave
     };
 
-    // need to use async test here otherwise the setExperiments call won't be done within
-    // the act() call in the hook test and will show a warning
-    const result = await testAsyncHook(() => useExperiments(mockedStorage));
+    const { result, waitForNextUpdate } = renderHook(() => useExperiments(mockedStorage));
+
+    await waitForNextUpdate();
+
     expect(fetchMock).toHaveBeenCalled();
+
+    expect(result.current).toEqual({experiments: savedExperiments, upgradeApp: true});
 
     // will have NOT saved the downloaded experiments in the fetch handler (all are > current version)
     expect(mockedStorageSave).not.toHaveBeenCalled();
-
-    // LATER: figure out how to test setUseExperimentsResult() inside useEffect
   });
 });
