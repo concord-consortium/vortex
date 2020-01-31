@@ -7,6 +7,7 @@
       "initials": "SI"
     },
     "schema": {
+      "titleField": "label",
       "sections": [
         {
           "title": "Label",

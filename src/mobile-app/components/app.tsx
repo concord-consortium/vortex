@@ -1,48 +1,35 @@
 import React from "react";
-import { useState } from "react";
 import { ExperimentPicker } from "./experiment-picker";
 import { ExperimentWrapper } from "./experiment-wrapper";
-import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { RunPicker } from "./run-picker";
-import { useRuns, IRun } from "../hooks/use-runs";
+import { useRuns } from "../hooks/use-runs";
 
 import css from "./app.module.scss";
 
 export const AppComponent: React.FC = () => {
-  const { runs, addNewRun, saveRunData, resetRuns } = useRuns();
-  const [ run, setRun ] = useState<IRun | null>(null);
-
-  const startExperiment = (experiment: IExperiment) => {
-    const newRun = addNewRun(experiment);
-    setRun(newRun);
-  };
+  const { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun } = useRuns();
 
   const exitExperiment = () => {
-    setRun(null);
-  };
-
-  const handleDataChange = (data: IExperimentData) => {
-    if (run) {
-      saveRunData(run.key, data);
-    }
+    setActiveRun(null);
   };
 
   return (
     <div className={css.app}>
-      {run ?
+      {activeRun ?
         <ExperimentWrapper
-          experiment={run.experiment}
-          data={run.data}
-          onDataChange={handleDataChange}
+          experiment={activeRun.experiment}
+          experimentIdx={activeRun.experimentIdx}
+          data={activeRun.data}
+          onDataChange={saveActiveRunData}
           onBackBtnClick={exitExperiment}
         />
         :
         <>
-          <ExperimentPicker setExperiment={startExperiment}/>
+          <ExperimentPicker setExperiment={startNewRun}/>
           {
             runs.length > 0 &&
             <>
-              <RunPicker runs={runs} onRunSelect={setRun}/>
+              <RunPicker runs={runs} onRunSelect={setActiveRun}/>
               <button onClick={resetRuns} style={{ margin: 20 }}>Reset Local Data</button>
             </>
           }
