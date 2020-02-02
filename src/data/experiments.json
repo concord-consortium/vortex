@@ -56,28 +56,26 @@
             "type": "string"
           },
           "experimentData": {
-            "title": "Experiment Data",
-            "type": "object",
-            "properties": {
-              "temperature": {
-                "title": "Temperature",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
-                }
-              },
-              "light": {
-                "title": "Light",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
-                }
-              },
-              "humidity": {
-                "title": "Humidity",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["location"],
+              "properties": {
+                "location": {
+                  "title": "Location",
+                  "type": "string"
+                },
+                "temperature": {
+                  "title": "Temperature",
+                  "type": "number"
+                },
+                "light": {
+                  "title": "Light",
+                  "type": "number"
+                },
+                "humidity": {
+                  "title": "Humidity",
+                  "type": "number"
                 }
               }
             }
@@ -108,6 +106,9 @@
           "items": {
             "ui:widget": "textarea"
           }
+        },
+        "experimentData": {
+          "ui:field": "dataTable"
         }
       }
     }

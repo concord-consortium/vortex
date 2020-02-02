@@ -6,11 +6,17 @@ import ExperimentJSONs from "../data/experiments.json";
 
 import "./index.sass";
 
+const mobileAppConfig = {
+  hideLabels: true,
+  useSensors: true
+};
+
 const experiment = ExperimentJSONs[0] as IExperiment;
 ReactDOM.render(
   <>
     <Experiment
       experiment={experiment}
+      config={mobileAppConfig}
     />
     <h4>Experiment Schema JSON</h4>
     <pre>

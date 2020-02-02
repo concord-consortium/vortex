@@ -67,3 +67,8 @@ export interface ISectionComponentProps {
 }
 
 export type SectionComponent = React.FC<ISectionComponentProps>;
+
+export interface IExperimentConfig {
+  hideLabels: boolean;
+  useSensors: boolean;
+}

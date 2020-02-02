@@ -2,16 +2,17 @@ import React from "react";
 import { useState } from "react";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
-import { ISection, IExperimentData, IExperiment } from "../experiment-types";
+import { ISection, IExperimentData, IExperiment, IExperimentConfig } from "../experiment-types";
 import css from "./experiment.module.scss";
 
 interface IProps {
   experiment: IExperiment;
   data?: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
+  config: IExperimentConfig;
 }
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config }) => {
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
@@ -43,6 +44,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange })
         <Section
           section={section}
           experiment={experiment}
+          experimentConfig={config}
           formData={currentData}
           onDataChange={onExperimentDataChange}
         />

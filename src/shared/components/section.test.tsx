@@ -2,7 +2,7 @@ import React from "react";
 import { Section } from "./section";
 import { mount } from "enzyme";
 import Form from "react-jsonschema-form";
-import { IDataSchema, IExperiment } from "../experiment-types";
+import { IDataSchema, IExperiment, IExperimentConfig } from "../experiment-types";
 
 jest.mock("react-jsonschema-form");
 
@@ -30,7 +30,7 @@ describe("Section component", () => {
 
   it("immediately notifies parent when form is updated by the user", () => {
     const onDataChange = jest.fn();
-    const wrapper = mount(<Section experiment={experiment} section={section} formData={{timestamp: Date.now()}} onDataChange={onDataChange} />);
+    const wrapper = mount(<Section experiment={experiment} experimentConfig={{} as IExperimentConfig} section={section} formData={{timestamp: Date.now()}} onDataChange={onDataChange} />);
     const form = wrapper.find(Form).instance();
     expect(form).toBeDefined();
     const newData = { foo: "test" };
