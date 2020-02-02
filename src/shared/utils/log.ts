@@ -21,7 +21,8 @@ const loggers = {
   [LogLevel.Debug]: console.debug,
 }
 
-let _logLevel: LogLevel = LogLevel.Error;
+const savedLogLevel = parseInt(window.localStorage?.getItem("logLevel") || "", 10);
+let _logLevel: LogLevel = !isNaN(savedLogLevel) ? savedLogLevel : LogLevel.Error;
 
 export const logLevel = () => _logLevel;
 export const setLogLevel = (newLogLevel: LogLevel) => _logLevel = newLogLevel;

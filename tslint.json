@@ -11,6 +11,7 @@
     "max-classes-per-file": false,
     "no-console": false,
     "no-debugger": false,
+    "no-bitwise": false,
     "no-empty-interface": false,
     "no-unused-expression": [true, "allow-fast-null-checks"],
     "no-var-requires": false,
