@@ -1,0 +1,25 @@
+@import "variables";
+
+.metadata {
+  .main {
+    display: flex;
+    align-items: center;
+  }
+
+  .text {
+    font-size: 20px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.56px;
+    color: #00c30b;
+    margin-left: 10px;
+  }
+
+  hr {
+    margin-top: 25px;
+    margin-bottom: 20px;
+    border: solid 0.5px $fontColor;
+  }
+}

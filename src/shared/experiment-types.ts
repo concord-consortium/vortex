@@ -15,12 +15,16 @@ export interface IFormUiSchema extends UiSchema {
   "ui:icon"?: "string";
 }
 
+// For now there's only supported section component - "metadata". In the future, this list might grow.
+export type SectionComponentName = "metadata";
+
 export interface ISection {
   title: string;
   icon: string;
   // formFields array should be a subset of dataSchema.properties.
   // Section will render a form with these fields.
   formFields?: string[];
+  components?: SectionComponentName[];
 }
 
 export interface IExperimentSchema {
@@ -28,11 +32,14 @@ export interface IExperimentSchema {
   dataSchema: IDataSchema;
   // React JSONSchema Form uiSchema, see: https://react-jsonschema-form.readthedocs.io/en/latest/form-customization/#the-uischema-object
   formUiSchema?: IFormUiSchema;
+  // Sections list. Sections specify form fields to render and section components.
   sections: ISection[];
+  // Form data property name that will be echoed to the top of the app experiment screen as a title.
+  titleField?: string;
 }
 
-export const EXPERIMENT_VERSION_1 = "1.0.0"
-export const MAX_SUPPORTED_EXPERIMENT_VERSION = EXPERIMENT_VERSION_1
+export const EXPERIMENT_VERSION_1 = "1.0.0";
+export const MAX_SUPPORTED_EXPERIMENT_VERSION = EXPERIMENT_VERSION_1;
 
 export interface IExperimentV1 {
   version: "1.0.0";
@@ -50,4 +57,13 @@ export interface IExperimentData {
   // This will be injected by ExperimentWrapper automatically on initial load.
   timestamp: number;
   // Other properties are unknown, they're specified by Experiment dataSchema.
+  [name: string]: any;
 }
+
+// Custom components listed by sections should accept these properties.
+export interface ISectionComponentProps {
+  experiment: IExperiment;
+  data: IExperimentData;
+}
+
+export type SectionComponent = React.FC<ISectionComponentProps>;

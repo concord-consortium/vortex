@@ -7,11 +7,13 @@
       "initials": "SI"
     },
     "schema": {
+      "titleField": "label",
       "sections": [
         {
           "title": "Label",
           "icon": "assignment",
-          "formFields": ["studySite", "label", "groupMembers"]
+          "formFields": ["studySite", "label", "groupMembers"],
+          "components": ["metadata"]
         },
         {
           "title": "Measure",

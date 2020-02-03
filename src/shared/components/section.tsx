@@ -1,20 +1,32 @@
 import React from "react";
-import { IDataSchema, IExperimentData, IFormUiSchema, ISection } from "../experiment-types";
+import {
+  IDataSchema,
+  IExperiment,
+  IExperimentData,
+  ISection,
+  SectionComponentName,
+  SectionComponent
+} from "../experiment-types";
 import { IChangeEvent } from "react-jsonschema-form";
 import { Form } from "./form";
+import { Metadata } from "./metadata";
 import css from "./section.module.scss";
 
 interface IProps {
   section: ISection;
-  dataSchema: IDataSchema;
-  formUiSchema?: IFormUiSchema;
+  experiment: IExperiment;
   formData: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
 }
 
-export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, formData, onDataChange }) => {
+const SectionComponent: {[name in SectionComponentName]: SectionComponent} = {
+  metadata: Metadata
+};
+
+export const Section: React.FC<IProps> = ({ section, experiment, formData, onDataChange }) => {
   let formSchema: IDataSchema | null = null;
   if (section.formFields && section.formFields.length > 0) {
+    const dataSchema = experiment.schema.dataSchema;
     // First, copy data schema without any properties.
     formSchema = Object.assign({}, dataSchema, {properties: {}});
     // Then, copy only listed properties.
@@ -32,6 +44,12 @@ export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, f
   return (
     <div className={css.section}>
       {
+        (section.components || []).map(name => {
+          const Component = SectionComponent[name];
+          return <Component key={name} experiment={experiment} data={formData}/>;
+        })
+      }
+      {
         // Why is there a key? We want to make sure that Form element is fully recreated each time section
         // is changed. We don't really want to reuse the same component instance which has its own internal state,
         // e.g. error list. So, without using key prop, user could see error list from the other section form.
@@ -39,7 +57,7 @@ export const Section: React.FC<IProps> = ({ section, dataSchema, formUiSchema, f
         <Form
           key={section.title}
           schema={formSchema}
-          uiSchema={formUiSchema}
+          uiSchema={experiment.schema.formUiSchema}
           formData={formData}
           onChange={onChange}
         >
