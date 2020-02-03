@@ -2,7 +2,7 @@ import React from "react";
 import { useState } from "react";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
-import { ISection, IExperimentData, IExperiment, IExperimentConfig } from "../experiment-types";
+import { ISection, IExperimentData, IExperiment, IExperimentConfig, initNewFormData } from "../experiment-types";
 import css from "./experiment.module.scss";
 
 interface IProps {
@@ -16,7 +16,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[0]);
-  const [currentData, setCurrentData] = useState<IExperimentData>(data || { timestamp: Date.now() });
+  const [currentData, setCurrentData] = useState<IExperimentData>(data || initNewFormData(experiment));
 
   const onExperimentDataChange = (newData: IExperimentData) => {
     setCurrentData(newData);

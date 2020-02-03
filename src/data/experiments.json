@@ -63,18 +63,19 @@
               "properties": {
                 "location": {
                   "title": "Location",
-                  "type": "string"
+                  "type": "string",
+                  "readOnly": true
                 },
                 "temperature": {
-                  "title": "Temperature",
+                  "title": "Temperature (°C)",
                   "type": "number"
                 },
-                "light": {
-                  "title": "Light",
+                "illuminance": {
+                  "title": "Illuminance (lux)",
                   "type": "number"
                 },
                 "humidity": {
-                  "title": "Humidity",
+                  "title": "Humidity (%)",
                   "type": "number"
                 }
               }
@@ -108,9 +109,21 @@
           }
         },
         "experimentData": {
-          "ui:field": "dataTable"
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": ["temperature", "humidity", "illuminance"]
+          }
         }
       }
+    },
+    "data": {
+      "experimentData": [
+        {"location": "Corner 1"},
+        {"location": "Corner 2"},
+        {"location": "Corner 3"},
+        {"location": "Corner 4"},
+        {"location": "Center"}
+      ]
     }
   },
   {

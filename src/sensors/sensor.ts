@@ -6,7 +6,7 @@ export interface ISensorCapabilities {
   humidity?: boolean;
 }
 export type SensorCapabilityKey = keyof ISensorCapabilities;
-export const AllCapabilityKeys: SensorCapabilityKey[] = ["illuminance", "temperature", "humidity"]
+export const AllCapabilityKeys: SensorCapabilityKey[] = ["illuminance", "temperature", "humidity"];
 
 export interface ISensorValues {
   illuminance?: number;

@@ -5,6 +5,7 @@ import Assignment from "material-icons-svg/components/baseline/Assignment";
 import People from "material-icons-svg/components/baseline/People";
 import PhotoCamera from "material-icons-svg/components/baseline/PhotoCamera";
 import Comment from "material-icons-svg/components/baseline/Comment";
+import Refresh from "material-icons-svg/components/baseline/Refresh";
 
 // Use material icon names as a key, so it's easier to define these icons in form UI schema:
 // https://material.io/resources/icons/?style=baseline
@@ -14,7 +15,8 @@ const Icons: {[key: string]: any} = {
   assignment: Assignment,
   people: People,
   photo_camera: PhotoCamera,
-  comment: Comment
+  comment: Comment,
+  refresh: Refresh
 };
 
 interface IProps {
