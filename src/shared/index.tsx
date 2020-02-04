@@ -184,7 +184,7 @@ ReactDOM.render(
     />
     <h4>Experiment Schema JSON</h4>
     <pre>
-      {JSON.stringify(experiment2, null, 2)}
+      {JSON.stringify(experiment3, null, 2)}
     </pre>
   </>,
   document.getElementById("experiment-3")
