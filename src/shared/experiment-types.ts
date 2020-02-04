@@ -1,6 +1,7 @@
 import { UiSchema } from "react-jsonschema-form";
+import { JSONSchema6 } from "json-schema";
 
-export interface IDataSchema {
+export interface IDataSchema extends JSONSchema6 {
   // Experiment data should have "object" type.
   type: "object";
   // Every property listed in `properties` list will be eventually rendered in one of the experiment sections.
@@ -8,11 +9,23 @@ export interface IDataSchema {
   required?: string[];
 }
 
+// Currently there's only one custom form field.
+export type CustomFieldName = "dataTable";
+
 export interface IFormUiSchema extends UiSchema {
   // Please see the docs: https://react-jsonschema-form.readthedocs.io/en/latest/form-customization/#the-uischema-object
-  // There's a custom extension of this format that lets you provide "ui:icon". Check Icon component to see list of
-  // all available icons or to add a new one.
+  // There's a custom extension of this format that lets you provide "ui:icon" to every field.
+  // Check Icon component to see list of all available icons or to add a new one.
   "ui:icon"?: "string";
+  "ui:field"?: CustomFieldName;
+  // Custom fields might add their field-specific options to "ui:options" object. For clarity, they should specify
+  // them under "ui:<fieldName>Options" key.
+  "ui:dataTableOptions"?: {
+    // List of properties that should be connected to sensor output.
+    sensorFields?: string[];
+    // Reference to other form field that should be used as a table title.
+    titleField?: string;
+  };
 }
 
 // For now there's only supported section component - "metadata". In the future, this list might grow.
@@ -49,16 +62,20 @@ export interface IExperimentV1 {
     initials: string;
   };
   schema: IExperimentSchema;
+  data?: IExperimentData;
 }
 
 export type IExperiment = IExperimentV1
 
 export interface IExperimentData {
   // This will be injected by ExperimentWrapper automatically on initial load.
-  timestamp: number;
+  timestamp?: number;
   // Other properties are unknown, they're specified by Experiment dataSchema.
   [name: string]: any;
 }
+
+// New data should be based on initial data provided in the experiment schema + timestamp.
+export const initNewFormData = (experiment: IExperiment) => Object.assign({}, experiment.data, { timestamp: Date.now() });
 
 // Custom components listed by sections should accept these properties.
 export interface ISectionComponentProps {
@@ -67,3 +84,8 @@ export interface ISectionComponentProps {
 }
 
 export type SectionComponent = React.FC<ISectionComponentProps>;
+
+export interface IExperimentConfig {
+  hideLabels: boolean;
+  useSensors: boolean;
+}

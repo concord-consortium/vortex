@@ -1,6 +1,8 @@
 @import "variables";
 
 .metadata {
+  padding: $inputPadding;
+
   .main {
     display: flex;
     align-items: center;
@@ -19,7 +21,7 @@
 
   hr {
     margin-top: 25px;
-    margin-bottom: 20px;
+    margin-bottom: 0;
     border: solid 0.5px $fontColor;
   }
 }

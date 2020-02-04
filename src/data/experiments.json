@@ -39,8 +39,8 @@
             "title": "Study Site",
             "type": "string",
             "enum": [
-              "site1",
-              "site2"
+              "Site @1: Conservation Practice in Place",
+              "Site @2"
             ],
             "enumNames": [
               "Site @1: Conservation Practice in Place",
@@ -56,28 +56,27 @@
             "type": "string"
           },
           "experimentData": {
-            "title": "Experiment Data",
-            "type": "object",
-            "properties": {
-              "temperature": {
-                "title": "Temperature",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
-                }
-              },
-              "light": {
-                "title": "Light",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
-                }
-              },
-              "humidity": {
-                "title": "Humidity",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": ["location"],
+              "properties": {
+                "location": {
+                  "title": "Location",
+                  "type": "string",
+                  "readOnly": true
+                },
+                "temperature": {
+                  "title": "Temperature (°C)",
+                  "type": "number"
+                },
+                "illuminance": {
+                  "title": "Illuminance (lux)",
+                  "type": "number"
+                },
+                "humidity": {
+                  "title": "Humidity (%)",
+                  "type": "number"
                 }
               }
             }
@@ -108,8 +107,24 @@
           "items": {
             "ui:widget": "textarea"
           }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": ["temperature", "humidity", "illuminance"],
+            "titleField": "studySite"
+          }
         }
       }
+    },
+    "data": {
+      "experimentData": [
+        {"location": "Corner 1"},
+        {"location": "Corner 2"},
+        {"location": "Corner 3"},
+        {"location": "Corner 4"},
+        {"location": "Average", "temperature":  "<AVG>", "humidity": "<AVG>", "illuminance": "<AVG>"}
+      ]
     }
   },
   {

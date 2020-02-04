@@ -17,3 +17,16 @@
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.25);
   }
 }
+
+// Hide array and object labels. They are impossible to hide using dataSchema or uiSchema unfortunately.
+// At this point it doesn't seem they'll be useful. Note that regular fields (string, number, etc.) will still
+// support labels.
+.field-array, .field-object {
+  & > label {
+    display: none;
+  }
+}
+
+.field:first-child {
+  margin-top: 10px;
+}

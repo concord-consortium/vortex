@@ -5,10 +5,10 @@ import {
   IExperimentData,
   ISection,
   SectionComponentName,
-  SectionComponent
+  SectionComponent, IExperimentConfig
 } from "../experiment-types";
 import { IChangeEvent } from "react-jsonschema-form";
-import { Form } from "./form";
+import { Form, IVortexFormContext } from "./form";
 import { Metadata } from "./metadata";
 import css from "./section.module.scss";
 
@@ -17,13 +17,14 @@ interface IProps {
   experiment: IExperiment;
   formData: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
+  experimentConfig: IExperimentConfig;
 }
 
 const SectionComponent: {[name in SectionComponentName]: SectionComponent} = {
   metadata: Metadata
 };
 
-export const Section: React.FC<IProps> = ({ section, experiment, formData, onDataChange }) => {
+export const Section: React.FC<IProps> = ({ section, experiment, formData, onDataChange, experimentConfig }) => {
   let formSchema: IDataSchema | null = null;
   if (section.formFields && section.formFields.length > 0) {
     const dataSchema = experiment.schema.dataSchema;
@@ -60,6 +61,12 @@ export const Section: React.FC<IProps> = ({ section, experiment, formData, onDat
           uiSchema={experiment.schema.formUiSchema}
           formData={formData}
           onChange={onChange}
+          formContext={{
+            experiment,
+            experimentConfig,
+            // Pass the whole form data again, so custom field can access other field values.
+            formData
+          } as IVortexFormContext}
         >
           {/* Children are used to render custom action buttons. We don't want any, */}
           {/* as form is saving and validating data live. */}

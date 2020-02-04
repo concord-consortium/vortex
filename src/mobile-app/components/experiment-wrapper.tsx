@@ -1,5 +1,5 @@
 import React from "react";
-import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { IExperiment, IExperimentConfig, IExperimentData } from "../../shared/experiment-types";
 import { Experiment } from "../../shared/components/experiment";
 import { Initials } from "../../shared/components/initials";
 
@@ -12,6 +12,13 @@ interface IProps {
   onDataChange: (data: IExperimentData) => void;
   onBackBtnClick: () => void;
 }
+
+// App specific config. Mobile app shouldn't show labels and it should use sensors.
+// LARA app will have different config.
+const experimentConfig: IExperimentConfig = {
+  hideLabels: true,
+  useSensors: true
+};
 
 export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick }) => {
   const { metadata } = experiment;
@@ -31,7 +38,7 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
         </div>
       </div>
       <div className={css.workspace}>
-        <Experiment experiment={experiment} data={data} onDataChange={onDataChange}/>
+        <Experiment experiment={experiment} config={experimentConfig} data={data} onDataChange={onDataChange} />
       </div>
     </div>
   );

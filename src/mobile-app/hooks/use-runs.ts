@@ -1,4 +1,4 @@
-import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { IExperiment, IExperimentData, initNewFormData } from "../../shared/experiment-types";
 import { useLocalStorage } from "./use-local-storage";
 import { useState } from "react";
 
@@ -33,7 +33,7 @@ export const useRuns = (): IUseRunsResult => {
     const newRun = {
       key: timestamp.toString(),
       experimentIdx,
-      data: { timestamp },
+      data: initNewFormData(experiment),
       experiment
     };
     // Update list of available runs.

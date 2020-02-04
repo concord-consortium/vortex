@@ -1,0 +1,98 @@
+$headerCol: #efefef;
+$tdCol: #fff;
+
+.dataTable {
+  .title {
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    padding: 10px;
+  }
+
+  .table {
+    width: 100%;
+    font-size: 14px;
+    font-weight: normal;
+    font-stretch: normal;
+    font-style: normal;
+    line-height: normal;
+    letter-spacing: 0.39px;
+    text-align: center;
+    table-layout: fixed;
+
+    td, th {
+      height: 42px;
+      border-style: solid;
+      border-width: 2px;
+    }
+    th, .readOnly {
+      background-color: $headerCol;
+      border-color: $tdCol;
+      text-align: center;
+    }
+    .active > .readOnly {
+      background-color: rgba(0, 233, 14, 0.2);
+    }
+    th:last-child {
+      border-right-color: $headerCol;
+    }
+    tr:last-child .readOnly {
+      border-bottom-color: $headerCol;
+    }
+    td {
+      border-color: $headerCol;
+    }
+    input {
+      border: none;
+      width: 100%;
+      height: 100%;
+      font-size: 22px;
+      font-weight: normal;
+      font-stretch: normal;
+      font-style: normal;
+      line-height: normal;
+      letter-spacing: 0.61px;
+      text-align: center;
+      color: #00c30b;
+      &:disabled {
+        opacity: 0.5;
+      }
+    }
+
+    .recordSensorReading {
+      height: 28px;
+      border-radius: 14px;
+      background-color: #d9d9d9;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 5px;
+      &.active {
+        background-color: #00e90e;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+
+    .refreshSensorReadingColumn {
+      width: 42px;
+    }
+
+    .refreshSensorReading {
+      height: 30px;
+      width: 30px;
+      border-radius: 15px;
+      background-color: #d9d9d9;
+      color: #fff;
+      margin: 0 auto;
+      &.active {
+        background-color: #00e90e;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+    }
+  }
+}
