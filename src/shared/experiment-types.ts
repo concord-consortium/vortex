@@ -23,6 +23,8 @@ export interface IFormUiSchema extends UiSchema {
   "ui:dataTableOptions"?: {
     // List of properties that should be connected to sensor output.
     sensorFields?: string[];
+    // Reference to other form field that should be used as a table title.
+    titleField?: string;
   };
 }
 

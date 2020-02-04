@@ -142,6 +142,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
   }
   const sensor = formContext.experimentConfig.useSensors ? getSensor(sensorFields) : null;
   const sensorOutput = useSensor(sensor);
+  const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
+  const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
   // Sensor buttons should be rendered only when sensor is available and some properties are connected to sensor.
   const renderSensorButtons = sensor && sensorFields.length > 0;
@@ -243,6 +245,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   return (
     <div className={css.dataTable}>
       {sensor && <SensorComponent sensor={sensor}/>}
+      <div className={css.title}>{title}</div>
       <table className={css.table}>
         <tbody>
         <tr>

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
-import { IExperiment, IExperimentV1 } from "./experiment-types";
+import { IExperiment } from "./experiment-types";
 import ExperimentJSONs from "../data/experiments.json";
 
 import "./index.sass";
@@ -38,13 +38,17 @@ const experiment2 = {
       {
         "title": "Measure",
         "icon": "settings_input_antenna",
-        "formFields": ["experimentData"]
+        "formFields": ["tableTitle", "experimentData"]
       }
     ],
     "dataSchema": {
       "type": "object",
       "required": ["studySite", "label"],
       "properties": {
+        "tableTitle": {
+          "title": "Title",
+          "type": "string"
+        },
         "experimentData": {
           "type": "array",
           "items": {
@@ -74,10 +78,14 @@ const experiment2 = {
       }
     },
     "formUiSchema": {
+      "tableTitle": {
+        "ui:placeholder": "Title"
+      },
       "experimentData": {
         "ui:field": "dataTable",
         "ui:dataTableOptions": {
-          "sensorFields": ["temperature", "illuminance"]
+          "sensorFields": ["temperature", "illuminance"],
+          "titleField": "tableTitle"
         }
       }
     }

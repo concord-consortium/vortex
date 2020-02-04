@@ -2,6 +2,13 @@ $headerCol: #efefef;
 $tdCol: #fff;
 
 .dataTable {
+  .title {
+    font-size: 18px;
+    font-weight: normal;
+    letter-spacing: 0.5px;
+    padding: 10px;
+  }
+
   .table {
     width: 100%;
     font-size: 14px;

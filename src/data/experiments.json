@@ -39,8 +39,8 @@
             "title": "Study Site",
             "type": "string",
             "enum": [
-              "site1",
-              "site2"
+              "Site @1: Conservation Practice in Place",
+              "Site @2"
             ],
             "enumNames": [
               "Site @1: Conservation Practice in Place",
@@ -111,7 +111,8 @@
         "experimentData": {
           "ui:field": "dataTable",
           "ui:dataTableOptions": {
-            "sensorFields": ["temperature", "humidity", "illuminance"]
+            "sensorFields": ["temperature", "humidity", "illuminance"],
+            "titleField": "studySite"
           }
         }
       }
