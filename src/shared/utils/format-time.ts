@@ -8,4 +8,4 @@ const dateOptions: Intl.DateTimeFormatOptions = {
   hour12: true
 };
 
-export const formatTime = (timestamp: number) => new Date(timestamp).toLocaleString("en-US", dateOptions);
+export const formatTime = (timestamp: number | undefined) => timestamp ? new Date(timestamp).toLocaleString("en-US", dateOptions) : "";
