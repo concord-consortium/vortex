@@ -9,8 +9,15 @@ export interface IUseSensorResult {
   error: any | undefined;
 }
 
-export const useSensor = (sensor: Sensor) => {
-
+export const useSensor = (sensor: Sensor | null) => {
+  if (!sensor) {
+    return {
+      connected: false,
+      deviceName: undefined,
+      values: {},
+      error: undefined
+    };
+  }
   const {connected, deviceName, values} = sensor;
   const [useSensorResult, setUseSensorResult] = useState<IUseSensorResult>({connected, deviceName, values, error: undefined});
 

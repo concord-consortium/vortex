@@ -67,7 +67,7 @@ export type IExperiment = IExperimentV1
 
 export interface IExperimentData {
   // This will be injected by ExperimentWrapper automatically on initial load.
-  timestamp: number;
+  timestamp?: number;
   // Other properties are unknown, they're specified by Experiment dataSchema.
   [name: string]: any;
 }

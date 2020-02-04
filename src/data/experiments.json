@@ -122,7 +122,7 @@
         {"location": "Corner 2"},
         {"location": "Corner 3"},
         {"location": "Corner 4"},
-        {"location": "Center"}
+        {"location": "Average", "temperature":  "<AVG>", "humidity": "<AVG>", "illuminance": "<AVG>"}
       ]
     }
   },

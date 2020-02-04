@@ -47,6 +47,9 @@ $tdCol: #fff;
       letter-spacing: 0.61px;
       text-align: center;
       color: #00c30b;
+      &:disabled {
+        opacity: 0.5;
+      }
     }
 
     .recordSensorReading {
