@@ -107,9 +107,9 @@ export const AppComponent = () => {
     );
   };
 
-  if (inIframe) {
-    useEffect(() => {
-      // create iframephone and wait for initInteractive
+  useEffect(() => {
+    if (inIframe) {
+        // create iframephone and wait for initInteractive
       phone = iframePhone.getIFrameEndpoint();
       phone.addListener("initInteractive", (data: InitInteractiveData) => {
         setConnectedToLara(true);
@@ -167,8 +167,8 @@ export const AppComponent = () => {
           authoredState: true
         }
       });
-    }, []);
-  }
+    }
+  }, []);
 
   return (
     <div className={css.app}>
