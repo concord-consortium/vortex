@@ -48,8 +48,8 @@ const config: {[key: string]: ISensorConfig} = {
 
 interface IDataCharacteristics {
   illuminance: BluetoothRemoteGATTCharacteristic | undefined;
-  temperature: BluetoothRemoteGATTCharacteristic | undefined
-  humidity: BluetoothRemoteGATTCharacteristic | undefined
+  temperature: BluetoothRemoteGATTCharacteristic | undefined;
+  humidity: BluetoothRemoteGATTCharacteristic | undefined;
 }
 
 export class SensorTag2Device extends Device {
@@ -57,7 +57,7 @@ export class SensorTag2Device extends Device {
     illuminance: undefined,
     temperature: undefined,
     humidity: undefined,
-  }
+  };
 
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
@@ -69,7 +69,7 @@ export class SensorTag2Device extends Device {
         humidity: true,
       },
       requestedCapabilities
-    })
+    });
   }
 
   public get optionalServiceUUIDs() {
@@ -85,7 +85,7 @@ export class SensorTag2Device extends Device {
       const promises: Promise<BluetoothRemoteGATTCharacteristic>[] = [];
       this.forEachRequestedCapability(capability => {
         const promise = this.setupSensor(bluetoothServer, config[capability])
-          .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic)
+          .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic);
         promises.push(promise);
       });
       // tested this to fix android chrome error, but it didn't work
@@ -102,10 +102,10 @@ export class SensorTag2Device extends Device {
         const dataCharacteristic = this.dataCharacteristics[capability];
         if (dataCharacteristic) {
           const promise = dataCharacteristic.readValue()
-            .then(dataView => values[capability] = config[capability].convert(dataView))
+            .then(dataView => values[capability] = config[capability].convert(dataView));
           promises.push(promise);
         } else {
-          promises.push(Promise.reject(`No data characteristic for ${capability}`))
+          promises.push(Promise.reject(`No data characteristic for ${capability}`));
         }
       });
       // tested this to fix android chrome error, but it didn't work

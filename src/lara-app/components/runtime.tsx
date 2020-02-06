@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
-import * as firebase from "firebase/app"
-import "firebase/firestore"
+import * as firebase from "firebase/app";
+import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
 import { Uploader } from "../../mobile-app/components/uploader";
 import { FirebaseJWT } from "./app";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 
-const QRCode = require("qrcode-svg")
+const QRCode = require("qrcode-svg");
 
 import css from "./runtime.module.scss";
 
@@ -20,8 +20,8 @@ interface Props {
 export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : Props) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
-  const [qrCode, setQRCode] = useState("")
-  const [manualEntry, setManualEntry] = useState(false)
+  const [qrCode, setQRCode] = useState("");
+  const [manualEntry, setManualEntry] = useState(false);
 
   useEffect(() => {
     firebase
@@ -34,24 +34,24 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : P
         setExperimentData(snapshot.docs[0]?.data?.().data as IExperimentData | undefined);
 
         // generate QR code
-        const runData = Base64.encode(JSON.stringify(firebaseJWT.claims))
-        const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`
+        const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
+        const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
         setQRCode(new QRCode({
           content: url,
           width: 400,
           height: 400,
         }).svg());
       }, (err) => {
-        setError(err)
+        setError(err);
       });
   }, []);
 
-  const handleManualEntry = () => setManualEntry(true)
-  const handleUploadAgain = () => setExperimentData(undefined)
+  const handleManualEntry = () => setManualEntry(true);
+  const handleUploadAgain = () => setExperimentData(undefined);
 
   const renderNoData = () => {
     if (!queriedFirestore) {
-      return <div>Looking for existing experiment data...</div>
+      return <div>Looking for existing experiment data...</div>;
     }
     if (!qrCode) {
       return <div>Generating QR code...</div>;
@@ -65,8 +65,8 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : P
         </div>
         <div><button onClick={handleManualEntry}>(manually enter data)</button></div>
       </>
-    )
-  }
+    );
+  };
 
   const renderData = (data?: IExperimentData) => {
     return (
@@ -75,11 +75,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : P
         <div><button onClick={handleUploadAgain}>(upload again)</button></div>
       </div>
     );
-  }
+  };
 
   return (
     <div className={css.runtime}>
       {experimentData || manualEntry ? renderData(experimentData) : renderNoData()}
     </div>
-  )
+  );
 };

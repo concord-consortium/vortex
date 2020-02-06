@@ -23,7 +23,7 @@ export const AllCapabilities: ISensorCapabilities = {
   illuminance: true,
   temperature: true,
   humidity: true,
-}
+};
 
 export enum SensorEvent {
   Connection = "connection",
@@ -47,7 +47,7 @@ export interface ISensorErrorData {
 
 export interface ISetConnectedOptions {
   connected: boolean;
-  deviceName?: string
+  deviceName?: string;
 }
 
 export interface IPollOptions {
@@ -163,7 +163,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
         const valuesEventData: ISensorValuesEventData = {
           deviceName: this.deviceName,
           values: this._values
-        }
+        };
         this.emit(SensorEvent.Values, valuesEventData);
       })
       .catch(error => this.setError(error));

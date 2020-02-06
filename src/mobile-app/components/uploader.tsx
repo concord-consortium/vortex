@@ -1,10 +1,10 @@
-import * as React from "react"
-import { useState } from "react"
-import { Scanner } from "./scanner"
+import * as React from "react";
+import { useState } from "react";
+import { Scanner } from "./scanner";
 
-import css from "./uploader.module.scss"
-import { RunInfoComponent } from "./run-info"
-import { IRun } from "../hooks/use-runs"
+import css from "./uploader.module.scss";
+import { RunInfoComponent } from "./run-info";
+import { IRun } from "../hooks/use-runs";
 
 export enum UploadState {
   Scanning,
@@ -19,13 +19,13 @@ interface Props {
 }
 
 export const Uploader = (props: Props) => {
-  const [uploadState, setUploadState] = useState<UploadState>(UploadState.Scanning)
+  const [uploadState, setUploadState] = useState<UploadState>(UploadState.Scanning);
   const [uploadError, setUploadError] = useState();
 
   const changeState = (newState: UploadState, err?: any) => {
-    setUploadState(newState)
-    setUploadError(err)
-  }
+    setUploadState(newState);
+    setUploadError(err);
+  };
 
   const handleOnScanned = (url: string) => {
     changeState(UploadState.Uploading);
@@ -37,28 +37,28 @@ export const Uploader = (props: Props) => {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(props.run)
-    }
+    };
     fetch(url, fetchOptions)
       .then((resp) => {
         if (resp.status === 200) {
-          changeState(UploadState.Uploaded)
+          changeState(UploadState.Uploaded);
         } else {
-          resp.text().then((text) => changeState(UploadState.UploadFailed, text))
+          resp.text().then((text) => changeState(UploadState.UploadFailed, text));
         }
       })
       .catch((err) => {
-        changeState(UploadState.UploadFailed, err)
-      })
-  }
+        changeState(UploadState.UploadFailed, err);
+      });
+  };
 
   const contents = () => {
     const handleClick = (callback: () => void) => (e: React.MouseEvent<HTMLButtonElement>) => {
       e.preventDefault();
       e.stopPropagation();
       callback();
-    }
-    const handleScanning = handleClick(() => changeState(UploadState.Scanning))
-    const button = (label: string) => <button onClick={handleScanning} style={{marginTop: 10}}>{label}</button>
+    };
+    const handleScanning = handleClick(() => changeState(UploadState.Scanning));
+    const button = (label: string) => <button onClick={handleScanning} style={{marginTop: 10}}>{label}</button>;
 
     switch (uploadState) {
       case UploadState.Scanning:
@@ -74,12 +74,12 @@ export const Uploader = (props: Props) => {
             <div>{uploadError ? uploadError.toString() : "No error info available!"}</div>
             {button("Try again...")}
           </>
-        )
+        );
 
       case UploadState.Uploaded:
         return <div>Your experiment has been uploaded</div>;
     }
-  }
+  };
 
   return (
     <div className={css.uploader}>
@@ -99,5 +99,5 @@ export const Uploader = (props: Props) => {
         </div>
       </div>
     </div>
-  )
-}
+  );
+};

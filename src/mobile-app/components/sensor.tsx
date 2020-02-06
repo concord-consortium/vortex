@@ -22,12 +22,12 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
     handler()
       .then(() => sensor.setError(undefined))
       .catch(err => sensor.setError(err))
-      .finally(() => setConnecting(false))
-  }
+      .finally(() => setConnecting(false));
+  };
   const handleClick = (clickHandler: () => void) => (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     clickHandler();
-  }
+  };
   const handleMenuItem = (menuItemHandler: () => void) => handleClick(() => {
     setShowMenu(false);
     menuItemHandler();
@@ -78,7 +78,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         Connected: {deviceName}
       </div>
     );
-  }
+  };
 
   const renderMenu = () => {
     return (
@@ -93,8 +93,8 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         {onSetMode ? <MenuItemComponent onClick={handleManualModeMenuItem}>Manual Entry</MenuItemComponent> : undefined}
 
       </MenuComponent>
-    )
-  }
+    );
+  };
 
   const renderValues = () => {
     const fragments: JSX.Element[] = [];
@@ -137,7 +137,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         {fragments}
       </div>
     );
-  }
+  };
   const connectionClassName = `${css.connection} ${error ? css.error : (connected ? css.connected : css.disconnected)}`;
   return (
     <div className={css.sensor}>

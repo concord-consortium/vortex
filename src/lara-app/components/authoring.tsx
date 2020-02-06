@@ -16,7 +16,7 @@ export interface AuthoredState {
 }
 
 export const AuthoringComponent = (props : Props) => {
-  const [experimentId, setExperimentId] = useState<string|undefined>(props.experiment?.metadata.uuid)
+  const [experimentId, setExperimentId] = useState<string|undefined>(props.experiment?.metadata.uuid);
 
   const handleSelectExperiment = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setExperimentId(e.target.value);
@@ -24,7 +24,7 @@ export const AuthoringComponent = (props : Props) => {
       version: "1.0",
       experimentId: e.target.value
     } as AuthoredState);
-  }
+  };
 
   return (
     <div className={css.authoring}>
@@ -34,11 +34,11 @@ export const AuthoringComponent = (props : Props) => {
           <option key="none" value="">Please select...</option>
           {experiments.map(experiment => {
             const {uuid, name} = experiment.metadata;
-            return <option key={uuid} value={uuid}>{name}</option>
+            return <option key={uuid} value={uuid}>{name}</option>;
           })}
         </>
       </select>
       <div className={css.note}>Once you select an experiment please click the "Save authored state" button above to save your choice.</div>
     </div>
-  )
+  );
 };

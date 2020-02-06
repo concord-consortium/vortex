@@ -5,6 +5,6 @@ export function serializePromises<T>(promises: Promise<T>[], sleep: number = 0) 
       currentPromise
         .then(currentResult => new Promise<T>(resolve => setTimeout(() => resolve(currentResult), sleep))
         .then(_currentResult => [ ...chainResults, _currentResult ])
-    ))
+    ));
   }, Promise.resolve([]));
-};
+}

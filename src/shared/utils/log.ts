@@ -5,7 +5,7 @@ export enum LogLevel {
   Info = 3,
   Verbose = 4,
   Debug = 5
-};
+}
 
 const loggers = {
   [LogLevel.None]: null,
@@ -19,7 +19,7 @@ const loggers = {
   [LogLevel.Verbose]: console.log,
   // tslint:disable-next-line:no-console
   [LogLevel.Debug]: console.debug,
-}
+};
 
 const savedLogLevel = parseInt(window.localStorage?.getItem("logLevel") || "", 10);
 let _logLevel: LogLevel = !isNaN(savedLogLevel) ? savedLogLevel : LogLevel.Error;
@@ -32,7 +32,7 @@ export const log = (level: LogLevel, ...args: any) => {
   if ((level <= _logLevel) && logger) {
     logger.apply(null, args);
   }
-}
+};
 
 export const logError = (...args: any) => log(LogLevel.Error, args);
 export const logWarn = (...args: any) => log(LogLevel.Warn, args);

@@ -13,7 +13,7 @@ export class MultiSensorDevice extends Device {
         humidity: true,
       },
       requestedCapabilities
-    })
+    });
   }
 
   /* TDB */

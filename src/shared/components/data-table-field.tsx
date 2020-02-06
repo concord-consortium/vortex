@@ -238,7 +238,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       }
       return <td key={name} className={readOnly ? css.readOnly : ""}>
         {readOnly ? value : <input type="text" value={value} disabled={isFunction} onChange={handleInputChange.bind(null, rowIdx, name)}/>}
-      </td>
+      </td>;
     });
   };
 

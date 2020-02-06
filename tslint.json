@@ -19,6 +19,7 @@
     "one-line": false,
     "ordered-imports": false,
     "trailing-comma": false,
-    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case", "allow-leading-underscore"]
+    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case", "allow-leading-underscore"],
+    "semicolon": [true, "always"]
   }
 }

@@ -1,12 +1,12 @@
 import React from "react";
-import { useState, useRef, useEffect } from "react"
-import { Base64 } from "js-base64"
-import * as firebase from "firebase/app"
+import { useState, useRef, useEffect } from "react";
+import { Base64 } from "js-base64";
+import * as firebase from "firebase/app";
 import * as jwt from "jsonwebtoken";
-import "firebase/firestore"
-import "firebase/auth"
+import "firebase/firestore";
+import "firebase/auth";
 
-const iframePhone = require("iframe-phone")
+const iframePhone = require("iframe-phone");
 
 import { AuthoringComponent, AuthoredState } from "./authoring";
 import { RuntimeComponent } from "./runtime";
@@ -41,50 +41,50 @@ export interface FirebaseJWT {
     user_id: string;          // "https://app.rigse.docker/users/9",
     class_hash: string;       // "31f6344410d9e5874e085df0afa048604ee0131912112c7a",
     offering_id: number       // 13
-  }
+  };
 }
 
-let inIframe = false
+let inIframe = false;
 try {
-  inIframe = window.top !== window.self
+  inIframe = window.top !== window.self;
 } catch (e) {
-  inIframe = true
+  inIframe = true;
 }
 
 let phone: any;
 
 export const AppComponent = () => {
-  const [connectedToLara, setConnectedToLara] = useState(false)
-  const [initInteractiveData, setInitInteractiveData] = useState<InitInteractiveData | undefined>(undefined)
-  const [error, setError] = useState<any>()
+  const [connectedToLara, setConnectedToLara] = useState(false);
+  const [initInteractiveData, setInitInteractiveData] = useState<InitInteractiveData | undefined>(undefined);
+  const [error, setError] = useState<any>();
   const [experiment, setExperiment] = useState<IExperiment|undefined>();
   const [firebaseJWT, setFirebaseJWT] = useState<FirebaseJWT|undefined>();
 
   const renderInIframe = () => {
     if (error) {
-      return <div className={css.error}>{error.toString()}</div>
+      return <div className={css.error}>{error.toString()}</div>;
     }
 
     if (!connectedToLara || !initInteractiveData) {
-      return <div>Waiting to connect to LARA ...</div>
+      return <div>Waiting to connect to LARA ...</div>;
     }
 
     if (initInteractiveData.mode === "authoring") {
-      return <AuthoringComponent experiment={experiment} phone={phone} />
+      return <AuthoringComponent experiment={experiment} phone={phone} />;
     }
 
     if (!initInteractiveData.interactiveStateUrl) {
-      setError("No preview available ...")
-      return
+      setError("No preview available ...");
+      return;
     }
 
     if (!experiment) {
-      setError("No experiment set yet.  Please select an experiment in the authoring form.")
-      return
+      setError("No experiment set yet.  Please select an experiment in the authoring form.");
+      return;
     }
 
     if (!firebaseJWT) {
-      return <div>Waiting to connect to Firebase ...</div>
+      return <div>Waiting to connect to Firebase ...</div>;
     }
 
     return (
@@ -95,7 +95,7 @@ export const AppComponent = () => {
         setError={setError}
       />
     );
-  }
+  };
 
   const renderOutsideIframe = () => {
     return (
@@ -104,19 +104,19 @@ export const AppComponent = () => {
           This application must be run within LARA.
         </div>
       </>
-    )
-  }
+    );
+  };
 
   if (inIframe) {
     useEffect(() => {
       // create iframephone and wait for initInteractive
-      phone = iframePhone.getIFrameEndpoint()
+      phone = iframePhone.getIFrameEndpoint();
       phone.addListener("initInteractive", (data: InitInteractiveData) => {
-        setConnectedToLara(true)
+        setConnectedToLara(true);
 
         if (data.authoredState && (data.authoredState.version === "1.0")) {
           const { experimentId } = data.authoredState;
-          setExperiment(experiments.find(_experiment => _experiment.metadata.uuid === experimentId))
+          setExperiment(experiments.find(_experiment => _experiment.metadata.uuid === experimentId));
         }
 
         setInitInteractiveData(data);
@@ -147,7 +147,7 @@ export const AppComponent = () => {
               });
             }
 
-            const auth = firebase.auth()
+            const auth = firebase.auth();
             auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
               .then(() => auth.signOut())
               .then(() => auth.signInWithCustomToken(token))
@@ -156,7 +156,7 @@ export const AppComponent = () => {
           });
           phone.post("getFirebaseJWT", {firebase_app: "vortex"});
         }
-      })
+      });
 
       phone.initialize();
 
@@ -167,12 +167,12 @@ export const AppComponent = () => {
           authoredState: true
         }
       });
-    }, [])
+    }, []);
   }
 
   return (
     <div className={css.app}>
       {inIframe ? renderInIframe() : renderOutsideIframe() }
     </div>
-  )
+  );
 };

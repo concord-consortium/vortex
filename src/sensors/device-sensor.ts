@@ -66,15 +66,15 @@ export class DeviceSensor extends Sensor {
             this.setConnected({
               connected: true,
               deviceName: this.bluetoothDevice?.name || "Unnamed Device"
-            })
+            });
             resolve();
           })
           .catch((err) => {
             this.setConnected({connected: false});
             reject(err);
-          })
-      })
-    })
+          });
+      });
+    });
   }
 
   public disconnect(): Promise<void> {
@@ -124,7 +124,7 @@ export class DeviceSensor extends Sensor {
   }
 
   private getServiceUUIDs() {
-    return this.devices.map(device => device.serviceUUID)
+    return this.devices.map(device => device.serviceUUID);
   }
 
   private getOptionalServiceUUIDs() {

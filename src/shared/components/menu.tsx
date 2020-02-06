@@ -13,7 +13,7 @@ export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, children})
       {children}
     </div>
   );
-}
+};
 
 export const MenuComponent: React.FC<{}> = (props) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -28,8 +28,8 @@ export const MenuComponent: React.FC<{}> = (props) => {
       <div className={css.menu}>
         {props.children}
       </div>
-    )
-  }
+    );
+  };
 
   return (
     <div className={css.menuIcon} onClick={handleMenuIcon}>
