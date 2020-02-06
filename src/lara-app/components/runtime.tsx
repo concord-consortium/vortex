@@ -2,9 +2,8 @@ import React, { useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
-import { Uploader } from "../../mobile-app/components/uploader";
-import { FirebaseJWT } from "./app";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { FirebaseJWT } from "../hooks/interactive-api";
 
 const QRCode = require("qrcode-svg");
 
