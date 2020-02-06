@@ -88,6 +88,8 @@ export class SensorTag2Device extends Device {
           .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic)
         promises.push(promise);
       });
+      // tested this to fix android chrome error, but it didn't work
+      // return serializePromises(promises).then(() => resolve()).catch(reject);
       return Promise.all(promises).then(() => resolve()).catch(reject);
     });
   }
@@ -106,6 +108,8 @@ export class SensorTag2Device extends Device {
           promises.push(Promise.reject(`No data characteristic for ${capability}`))
         }
       });
+      // tested this to fix android chrome error, but it didn't work
+      // return serializePromises(promises).then(() => resolve(values)).catch(reject);
       return Promise.all(promises).then(() => resolve(values)).catch(reject);
     });
   }
@@ -121,6 +125,8 @@ export class SensorTag2Device extends Device {
         .getPrimaryService(sensorConfig.service)
         .then(service => service.getCharacteristic(sensorConfig.characteristic).then(characteristic => ({service, characteristic})))
         .then(({service, characteristic}) => characteristic.writeValue(new Uint8Array([0x01])).then(() => service))
+        // tested this to fix android chrome error, but it didn't work
+        // .then(service => delayPromise(100, service))
         .then(service => service.getCharacteristic(sensorConfig.data))
         .then(resolve)
         .catch(reject);
