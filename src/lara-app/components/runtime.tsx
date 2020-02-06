@@ -3,20 +3,20 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
-import { FirebaseJWT } from "../hooks/interactive-api";
+import { IFirebaseJWT } from "../hooks/interactive-api";
 
 const QRCode = require("qrcode-svg");
 
 import css from "./runtime.module.scss";
 
-interface Props {
+interface IProps {
   experiment: IExperiment;
   runKey: string;
-  firebaseJWT: FirebaseJWT;
+  firebaseJWT: IFirebaseJWT;
   setError: (error: any) => void;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : Props) => {
+export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");

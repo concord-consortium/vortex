@@ -5,15 +5,15 @@ import * as jwt from "jsonwebtoken";
 import { IExperiment } from "../../shared/experiment-types";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
 import { inIframe } from "../utils/in-iframe";
-import { AuthoredState } from "../components/authoring";
+import { IAuthoredState } from "../components/authoring";
 
 const iframePhone = require("iframe-phone");
 const experiments = require("../../data/experiments.json") as Experiments;
 
 // NOTE: this is only a partial description of the returned data, containing only the fields we are interested in
-export interface InitInteractiveData {
+export interface IInitInteractiveData {
   mode: "authoring" | "runtime";
-  authoredState: AuthoredState | null;
+  authoredState: IAuthoredState | null;
   classInfoUrl: string;
   interactiveStateUrl: string;
   interactive: {
@@ -27,7 +27,7 @@ export interface InitInteractiveData {
 }
 
 // NOTE: this is only a partial description of the returned data, containing only the fields we are interested in
-export interface FirebaseJWT {
+export interface IFirebaseJWT {
   claims: {
     platform_id: string;      // "https://app.rigse.docker",
     platform_user_id: number; // 9,
@@ -41,9 +41,9 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   const { setError } = options;
   const [phone, setPhone] = useState<any>();
   const [connectedToLara, setConnectedToLara] = useState(false);
-  const [initInteractiveData, setInitInteractiveData] = useState<InitInteractiveData | undefined>(undefined);
+  const [initInteractiveData, setInitInteractiveData] = useState<IInitInteractiveData | undefined>(undefined);
   const [experiment, setExperiment] = useState<IExperiment|undefined>();
-  const [firebaseJWT, setFirebaseJWT] = useState<FirebaseJWT|undefined>();
+  const [firebaseJWT, setFirebaseJWT] = useState<IFirebaseJWT|undefined>();
 
   useEffect(() => {
     if (inIframe()) {
@@ -51,7 +51,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
       const _phone = iframePhone.getIFrameEndpoint();
       setPhone(_phone);
 
-      _phone.addListener("initInteractive", (data: InitInteractiveData) => {
+      _phone.addListener("initInteractive", (data: IInitInteractiveData) => {
         setConnectedToLara(true);
 
         if (data.authoredState && (data.authoredState.version === "1.0")) {
@@ -91,7 +91,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
             auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
               .then(() => auth.signOut())
               .then(() => auth.signInWithCustomToken(token))
-              .then(() => setFirebaseJWT(jwt.decode(token) as FirebaseJWT))
+              .then(() => setFirebaseJWT(jwt.decode(token) as IFirebaseJWT))
               .catch((err) => setError(err));
           });
           _phone.post("getFirebaseJWT", {firebase_app: "vortex"});

@@ -3,7 +3,7 @@
   "rules": {
     "arrow-parens": false,
     "curly": [true, "ignore-same-line"],
-    "interface-name" : false,
+    "interface-name" : true,
     "jsx-alignment": false,
     "jsx-curly-spacing": false,
     "jsx-no-multiline-js": false,

@@ -6,9 +6,10 @@ import { SensorTag2Device } from "./devices/sensor-tag-2";
 import { logInfo } from "../shared/utils/log";
 
 declare global {
-	interface Navigator {
-		bluetooth: Bluetooth;
-	}
+  // tslint:disable-next-line:interface-name
+  interface Navigator {
+    bluetooth: Bluetooth;
+  }
 }
 
 export class DeviceSensor extends Sensor {

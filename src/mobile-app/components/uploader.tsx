@@ -13,12 +13,12 @@ export enum UploadState {
   Uploaded
 }
 
-interface Props {
+interface IProps {
   run: IRun;
   onClose: () => void;
 }
 
-export const Uploader = (props: Props) => {
+export const Uploader = (props: IProps) => {
   const [uploadState, setUploadState] = useState<UploadState>(UploadState.Scanning);
   const [uploadError, setUploadError] = useState();
 

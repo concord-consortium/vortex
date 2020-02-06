@@ -11,11 +11,11 @@ enum UploadState {
   Uploaded
 }
 
-interface Props {
+interface IProps {
   onScanned: (data: string) => void;
 }
 
-export const Scanner = (props: Props) => {
+export const Scanner = (props: IProps) => {
   const [scanning, setScanning] = useState(false);
 
   const canvasRef = useRef<HTMLCanvasElement>(null);

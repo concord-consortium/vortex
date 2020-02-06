@@ -12,6 +12,7 @@ type BluetoothServiceUUID = number | string;
 type BluetoothCharacteristicUUID = number | string;
 type BluetoothDescriptorUUID = number | string;
 
+// tslint:disable-next-line:interface-name
 interface BluetoothRequestDeviceFilter {
 	services?: BluetoothServiceUUID[];
 	name?: string;
@@ -28,6 +29,7 @@ type RequestDeviceOptions = {
 	optionalServices?: BluetoothServiceUUID[];
 };
 
+// tslint:disable-next-line:interface-name
 interface BluetoothRemoteGATTDescriptor {
 	readonly characteristic: BluetoothRemoteGATTCharacteristic;
 	readonly uuid: string;
@@ -36,6 +38,7 @@ interface BluetoothRemoteGATTDescriptor {
 	writeValue(value: BufferSource): Promise<void>;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothCharacteristicProperties {
 	readonly broadcast: boolean;
 	readonly read: boolean;
@@ -48,10 +51,12 @@ interface BluetoothCharacteristicProperties {
 	readonly writableAuxiliaries: boolean;
 }
 
+// tslint:disable-next-line:interface-name
 interface CharacteristicEventHandlers {
 	oncharacteristicvaluechanged: (this: this, ev: Event) => any;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothRemoteGATTCharacteristic extends EventTarget, CharacteristicEventHandlers {
 	readonly service?: BluetoothRemoteGATTService;
 	readonly uuid: string;
@@ -67,12 +72,14 @@ interface BluetoothRemoteGATTCharacteristic extends EventTarget, CharacteristicE
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;
 }
 
+// tslint:disable-next-line:interface-name
 interface ServiceEventHandlers {
 	onserviceadded: (this: this, ev: Event) => any;
 	onservicechanged: (this: this, ev: Event) => any;
 	onserviceremoved: (this: this, ev: Event) => any;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothRemoteGATTService extends EventTarget, CharacteristicEventHandlers, ServiceEventHandlers {
 	readonly device: BluetoothDevice;
 	readonly uuid: string;
@@ -85,6 +92,7 @@ interface BluetoothRemoteGATTService extends EventTarget, CharacteristicEventHan
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothRemoteGATTServer {
 	readonly device: BluetoothDevice;
 	readonly connected: boolean;
@@ -94,11 +102,13 @@ interface BluetoothRemoteGATTServer {
 	getPrimaryServices(service?: BluetoothServiceUUID): Promise<BluetoothRemoteGATTService[]>;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothDeviceEventHandlers {
 	onadvertisementreceived: (this: this, ev: Event) => any;
 	ongattserverdisconnected: (this: this, ev: Event) => any;
 }
 
+// tslint:disable-next-line:interface-name
 interface BluetoothDevice extends EventTarget, BluetoothDeviceEventHandlers, CharacteristicEventHandlers, ServiceEventHandlers {
 	readonly id: string;
 	readonly name?: string;
@@ -111,6 +121,7 @@ interface BluetoothDevice extends EventTarget, BluetoothDeviceEventHandlers, Cha
 	addEventListener(type: string, listener: EventListenerOrEventListenerObject, useCapture?: boolean): void;
 }
 
+// tslint:disable-next-line:interface-name
 interface Bluetooth extends EventTarget, BluetoothDeviceEventHandlers, CharacteristicEventHandlers, ServiceEventHandlers {
 	getAvailability(): Promise<boolean>;
 	onavailabilitychanged: (this: this, ev: Event) => any;
