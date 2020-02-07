@@ -65,7 +65,7 @@ export interface IExperimentV1 {
   data?: IExperimentData;
 }
 
-export type IExperiment = IExperimentV1
+export type IExperiment = IExperimentV1;
 
 export interface IExperimentData {
   // This will be injected by ExperimentWrapper automatically on initial load.

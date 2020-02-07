@@ -1,0 +1,41 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+		// default to shutting out all access
+    match /{document=**} {
+      allow read, create, update, delete: if false;
+    }
+
+		// setup access to runs
+    match /runs/{run}/{document=**} {
+    	function isAuthed() {
+    		return request.auth != null && request.auth.uid != null && request.auth.token != null && request.auth.token.user_id != null && request.auth.token.user_type != null && request.auth.token.class_hash != null;
+    	}
+      function isTeacher() {
+      	return request.auth.token.user_type == 'teacher';
+      }
+      function claimMatchesRun(claim) {
+      	// TODO: fix rule below to assert claims
+      	return true;
+      	// return exists(/databases/$(database)/documents/runs/$(run)) &&
+        //       get(/databases/$(database)/documents/runs/$(run)).data[claim] == request.auth.token[claim]
+      }
+      function isOwner() {
+        return isAuthed() && claimMatchesRun("user_id");
+      }
+      function isTeacherOfClass() {
+      	return isAuthed() && isTeacher() && claimMatchesRun("class_hash");
+      }
+
+      // only allow students or teachers to read their own docs and sub-collections
+    	allow read: if isOwner() || isTeacherOfClass();
+
+      // allow any authed user to create docs
+      allow create: if isAuthed();
+
+      // only allow students or teachers to update their own docs and sub-collections
+      allow update: if isOwner() || isTeacherOfClass();
+  	}
+  }
+}

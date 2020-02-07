@@ -4,6 +4,7 @@ import { Sensor } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
 
 import css from "./sensor.module.scss";
+import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 
 interface IProps {
   sensor: Sensor;
@@ -21,12 +22,12 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
     handler()
       .then(() => sensor.setError(undefined))
       .catch(err => sensor.setError(err))
-      .finally(() => setConnecting(false))
-  }
+      .finally(() => setConnecting(false));
+  };
   const handleClick = (clickHandler: () => void) => (e: React.MouseEvent<HTMLDivElement>) => {
     e.stopPropagation();
     clickHandler();
-  }
+  };
   const handleMenuItem = (menuItemHandler: () => void) => handleClick(() => {
     setShowMenu(false);
     menuItemHandler();
@@ -36,12 +37,12 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
 
   const handleMenuIcon = handleClick(() => setShowMenu(!showMenu));
 
-  const handleConnectMenuItem = handleMenuItem(() => handleConnectPromise(true, () => sensor.connect()));
-  const handleDisconnectMenuItem = handleMenuItem(() => handleConnectPromise(false, () => sensor.disconnect()));
-  const handleResetAllMenuItem = handleMenuItem(() => onResetAll?.());
-  const handleSensorModeMenuItem = handleMenuItem(() => onSetMode?.("sensor"));
-  const handleManualModeMenuItem = handleMenuItem(() => onSetMode?.("manual"));
-  const handleShowPlotsMenuItem = handleMenuItem(() => /* TBD */ undefined);
+  const handleConnectMenuItem = () => handleConnectPromise(true, () => sensor.connect());
+  const handleDisconnectMenuItem = () => handleConnectPromise(false, () => sensor.disconnect());
+  const handleResetAllMenuItem = () => onResetAll?.();
+  const handleSensorModeMenuItem = () => onSetMode?.("sensor");
+  const handleManualModeMenuItem = () => onSetMode?.("manual");
+  const handleShowPlotsMenuItem = () => /* TBD */ undefined;
 
   const renderError = () => {
     return (
@@ -77,31 +78,23 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         Connected: {deviceName}
       </div>
     );
-  }
-
-  const renderMenuIcon = () => {
-    return (
-      <div className={css.menuIcon} onClick={handleMenuIcon}>
-        ...
-        {showMenu ? renderMenu() : undefined}
-      </div>
-    );
-  }
+  };
 
   const renderMenu = () => {
     return (
-      <div className={css.menu}>
-        {onResetAll ? <div className={css.menuItem} onClick={handleResetAllMenuItem}>Reset All</div> : undefined}
+      <MenuComponent>
+        {onResetAll ? <MenuItemComponent onClick={handleResetAllMenuItem}>Reset All</MenuItemComponent> : undefined}
         {connected
-          ? <div className={css.menuItem} onClick={handleDisconnectMenuItem}>Disconnect</div>
-          : <div className={css.menuItem} onClick={handleConnectMenuItem}>Connect</div>
+          ? <MenuItemComponent onClick={handleDisconnectMenuItem}>Disconnect</MenuItemComponent>
+          : <MenuItemComponent onClick={handleConnectMenuItem}>Connect</MenuItemComponent>
         }
-        <div className={css.menuItem} onClick={handleShowPlotsMenuItem}>Show Plots (TDB)</div>
-        {onSetMode ? <div className={css.menuItem} onClick={handleSensorModeMenuItem}>Sensor Mode</div> : undefined}
-        {onSetMode ? <div className={css.menuItem} onClick={handleManualModeMenuItem}>Manual Entry</div> : undefined}
-      </div>
-    )
-  }
+        <MenuItemComponent onClick={handleShowPlotsMenuItem}>Show Plots (TDB)</MenuItemComponent>
+        {onSetMode ? <MenuItemComponent onClick={handleSensorModeMenuItem}>Sensor Mode</MenuItemComponent> : undefined}
+        {onSetMode ? <MenuItemComponent onClick={handleManualModeMenuItem}>Manual Entry</MenuItemComponent> : undefined}
+
+      </MenuComponent>
+    );
+  };
 
   const renderValues = () => {
     const fragments: JSX.Element[] = [];
@@ -144,13 +137,13 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         {fragments}
       </div>
     );
-  }
+  };
   const connectionClassName = `${css.connection} ${error ? css.error : (connected ? css.connected : css.disconnected)}`;
   return (
     <div className={css.sensor}>
       <div className={connectionClassName} onClick={connecting || connected ? undefined : handleConnect}>
         {error ? renderError() : (connected ? renderConnected() : (connecting ? renderConnecting() : renderDisconnected()))}
-        {renderMenuIcon()}
+        {renderMenu()}
       </div>
       {renderValues()}
     </div>

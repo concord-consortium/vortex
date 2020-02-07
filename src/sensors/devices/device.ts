@@ -4,7 +4,7 @@ export interface IDeviceOptions {
   name: string;
   serviceUUID: number;
   capabilities: ISensorCapabilities;
-  requestedCapabilities: ISensorCapabilities
+  requestedCapabilities: ISensorCapabilities;
 }
 
 export class Device {
@@ -36,7 +36,7 @@ export class Device {
     let matches = true;
     this.forEachRequestedCapability((capability) => {
       matches = matches && !!this.capabilities[capability];
-    })
+    });
     return matches;
   }
 
@@ -51,7 +51,7 @@ export class Device {
 
   public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {
     // required to be overridden in subclasses
-    throw new Error("matchesBluetoothDevice() not overridden")
+    throw new Error("matchesBluetoothDevice() not overridden");
   }
 
   public setupRead(bluetoothServer: BluetoothRemoteGATTServer) {

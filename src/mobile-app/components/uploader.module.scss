@@ -1,0 +1,46 @@
+@import "../../shared/components/variables.scss";
+
+$dialogMargin: 10px;
+
+.uploader {
+
+}
+
+.background {
+  background-color: #000;
+  opacity: 0.5;
+  position: absolute;
+  top: $headerHeight;
+  right: 0;
+  bottom: 0;
+  left: 0;
+}
+
+.dialog {
+  position: absolute;
+  top: $headerHeight + $dialogMargin;
+  right: $dialogMargin;
+  left: $dialogMargin;
+  border: solid 2px #646464;
+  background-color: #fff;
+}
+
+.header {
+  border-bottom: solid 2px #646464;
+  background-color: rgba(0, 233, 14, 0.25);
+  text-align: center;
+  padding: 5px 10px;
+  font-size: 16px;
+}
+
+.floatRight {
+  float: right;
+}
+
+.contents {
+  padding: 10px;
+}
+
+.scanner {
+  padding: 20px;
+}

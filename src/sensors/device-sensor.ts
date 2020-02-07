@@ -6,9 +6,10 @@ import { SensorTag2Device } from "./devices/sensor-tag-2";
 import { logInfo } from "../shared/utils/log";
 
 declare global {
-	interface Navigator {
-		bluetooth: Bluetooth;
-	}
+  // tslint:disable-next-line:interface-name
+  interface Navigator {
+    bluetooth: Bluetooth;
+  }
 }
 
 export class DeviceSensor extends Sensor {
@@ -66,15 +67,15 @@ export class DeviceSensor extends Sensor {
             this.setConnected({
               connected: true,
               deviceName: this.bluetoothDevice?.name || "Unnamed Device"
-            })
+            });
             resolve();
           })
           .catch((err) => {
             this.setConnected({connected: false});
             reject(err);
-          })
-      })
-    })
+          });
+      });
+    });
   }
 
   public disconnect(): Promise<void> {
@@ -124,7 +125,7 @@ export class DeviceSensor extends Sensor {
   }
 
   private getServiceUUIDs() {
-    return this.devices.map(device => device.serviceUUID)
+    return this.devices.map(device => device.serviceUUID);
   }
 
   private getOptionalServiceUUIDs() {

@@ -35,6 +35,7 @@
     box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
     display: flex;
     flex-direction: row;
+    justify-content: flex-start;
 
     &:hover {
       cursor: pointer;
@@ -42,10 +43,15 @@
 
     .text {
       margin-left: 10px;
+      flex-grow: 2;
     }
 
     .date {
       font-weight: 300;
     }
+  }
+
+  button {
+    color: #000;
   }
 }

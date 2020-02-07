@@ -99,7 +99,7 @@ export class MockSensor extends Sensor {
 
   private randomInRange(measurement: Measurement) {
     const {min, max} = this.minMax(measurement);
-    return min + ((max - min) * Math.random())
+    return min + ((max - min) * Math.random());
   }
 
   private randomDirection(options: {pivot: number, currentDirection?: MockValueDirection}) {

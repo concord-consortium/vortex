@@ -20,7 +20,7 @@ export const SensorValue: React.FC<IProps> = (props) => {
       <div className={valueClassName}>
         {renderedValue} {unit}
       </div>
-    )
+    );
   };
 
   const className = `${css.sensorValue} ${connected ? css.connected : css.disconnected}`;

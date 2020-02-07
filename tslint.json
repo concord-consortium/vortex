@@ -3,7 +3,7 @@
   "rules": {
     "arrow-parens": false,
     "curly": [true, "ignore-same-line"],
-    "interface-name" : false,
+    "interface-name" : true,
     "jsx-alignment": false,
     "jsx-curly-spacing": false,
     "jsx-no-multiline-js": false,
@@ -19,6 +19,7 @@
     "one-line": false,
     "ordered-imports": false,
     "trailing-comma": false,
-    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case", "allow-leading-underscore"]
+    "variable-name": [true, "ban-keywords", "check-format", "allow-pascal-case", "allow-leading-underscore"],
+    "semicolon": [true, "always"]
   }
 }

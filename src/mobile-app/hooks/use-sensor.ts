@@ -58,7 +58,7 @@ export const useSensor = (sensor: Sensor | null) => {
       sensor.off(SensorEvent.Values, onValues);
       sensor.off(SensorEvent.Error, onError);
       sensor.disconnect();
-    }
+    };
   }, [] /* run on component mount/unmount */ );
 
   return useSensorResult;

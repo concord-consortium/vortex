@@ -72,8 +72,8 @@ export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments
     save,
     upgradeRequired,
     filteredExperiments
-  }
-}
+  };
+};
 
 export const useExperiments = (optionalStorage?: IExperimentStorage) => {
 
@@ -97,7 +97,7 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
         setUseExperimentsResult({
           experiments: save ? filteredExperiments : useExperimentsResult.experiments,
           upgradeApp: upgradeRequired
-        })
+        });
       })
       .catch(err => {
         logError("Unable to load remote experiments:", err);

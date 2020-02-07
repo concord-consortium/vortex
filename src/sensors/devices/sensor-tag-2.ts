@@ -48,8 +48,8 @@ const config: {[key: string]: ISensorConfig} = {
 
 interface IDataCharacteristics {
   illuminance: BluetoothRemoteGATTCharacteristic | undefined;
-  temperature: BluetoothRemoteGATTCharacteristic | undefined
-  humidity: BluetoothRemoteGATTCharacteristic | undefined
+  temperature: BluetoothRemoteGATTCharacteristic | undefined;
+  humidity: BluetoothRemoteGATTCharacteristic | undefined;
 }
 
 export class SensorTag2Device extends Device {
@@ -57,7 +57,7 @@ export class SensorTag2Device extends Device {
     illuminance: undefined,
     temperature: undefined,
     humidity: undefined,
-  }
+  };
 
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
@@ -69,7 +69,7 @@ export class SensorTag2Device extends Device {
         humidity: true,
       },
       requestedCapabilities
-    })
+    });
   }
 
   public get optionalServiceUUIDs() {
@@ -85,9 +85,11 @@ export class SensorTag2Device extends Device {
       const promises: Promise<BluetoothRemoteGATTCharacteristic>[] = [];
       this.forEachRequestedCapability(capability => {
         const promise = this.setupSensor(bluetoothServer, config[capability])
-          .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic)
+          .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic);
         promises.push(promise);
       });
+      // tested this to fix android chrome error, but it didn't work
+      // return serializePromises(promises).then(() => resolve()).catch(reject);
       return Promise.all(promises).then(() => resolve()).catch(reject);
     });
   }
@@ -100,12 +102,14 @@ export class SensorTag2Device extends Device {
         const dataCharacteristic = this.dataCharacteristics[capability];
         if (dataCharacteristic) {
           const promise = dataCharacteristic.readValue()
-            .then(dataView => values[capability] = config[capability].convert(dataView))
+            .then(dataView => values[capability] = config[capability].convert(dataView));
           promises.push(promise);
         } else {
-          promises.push(Promise.reject(`No data characteristic for ${capability}`))
+          promises.push(Promise.reject(`No data characteristic for ${capability}`));
         }
       });
+      // tested this to fix android chrome error, but it didn't work
+      // return serializePromises(promises).then(() => resolve(values)).catch(reject);
       return Promise.all(promises).then(() => resolve(values)).catch(reject);
     });
   }
@@ -121,6 +125,8 @@ export class SensorTag2Device extends Device {
         .getPrimaryService(sensorConfig.service)
         .then(service => service.getCharacteristic(sensorConfig.characteristic).then(characteristic => ({service, characteristic})))
         .then(({service, characteristic}) => characteristic.writeValue(new Uint8Array([0x01])).then(() => service))
+        // tested this to fix android chrome error, but it didn't work
+        // .then(service => delayPromise(100, service))
         .then(service => service.getCharacteristic(sensorConfig.data))
         .then(resolve)
         .catch(reject);
