@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { SensorValue } from "./sensor-value";
 import { Sensor } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
-
-import css from "./sensor.module.scss";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
+import css from "./sensor.module.scss";
 
 interface IProps {
   sensor: Sensor;
@@ -12,9 +11,20 @@ interface IProps {
   onSetMode?: (mode: "sensor" | "manual") => void;
 }
 
+const iconClass = {
+  connected: css.connectedIcon,
+  disconnected: css.disconnectedIcon,
+  error: css.errorIcon
+};
+
+const iconClassHi = {
+  connected: css.connectedIconHi,
+  disconnected: css.disconnectedIconHi,
+  error: css.errorIcon
+};
+
 export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode}) => {
   const {connected, deviceName, values, error} = useSensor(sensor);
-  const [showMenu, setShowMenu] = useState(false);
   const [connecting, setConnecting] = useState(false);
 
   const handleConnectPromise = (isConnecting: boolean, handler: () => Promise<void>) => {
@@ -28,15 +38,8 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
     e.stopPropagation();
     clickHandler();
   };
-  const handleMenuItem = (menuItemHandler: () => void) => handleClick(() => {
-    setShowMenu(false);
-    menuItemHandler();
-  });
 
   const handleConnect = handleClick(() => handleConnectPromise(true, () => sensor.connect()));
-
-  const handleMenuIcon = handleClick(() => setShowMenu(!showMenu));
-
   const handleConnectMenuItem = () => handleConnectPromise(true, () => sensor.connect());
   const handleDisconnectMenuItem = () => handleConnectPromise(false, () => sensor.disconnect());
   const handleResetAllMenuItem = () => onResetAll?.();
@@ -44,41 +47,40 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
   const handleManualModeMenuItem = () => onSetMode?.("manual");
   const handleShowPlotsMenuItem = () => /* TBD */ undefined;
 
-  const renderError = () => {
-    return (
-      <div className={css.connectionLabel}>
-        <div className={css.errorIcon} />
-        {error.toString()}
-      </div>
-    );
-  };
+  const renderIcon = (icon: "connected" | "disconnected" | "error") => (
+    <div className={css.statusIcon}>
+      <div className={iconClass[icon]} />
+      <div className={iconClassHi[icon]} />
+    </div>
+  );
 
-  const renderDisconnected = () => {
-    return (
-      <div className={css.connectionLabel}>
-        <div className={css.disconnectedIcon} />
-        No Sensor Connected
-      </div>
-    );
-  };
+  const renderError = () => (
+    <div className={css.connectionLabel}>
+      {renderIcon("error")}
+      {error.toString()}
+    </div>
+  );
 
-  const renderConnecting = () => {
-    return (
-      <div className={css.connectionLabel}>
-        <div className={css.disconnectedIcon} />
-        Connecting...
-      </div>
-    );
-  };
+  const renderDisconnected = () => (
+    <div className={css.connectionLabel}>
+      {renderIcon("disconnected")}
+      No Sensor Connected
+    </div>
+  );
 
-  const renderConnected = () => {
-    return (
-      <div className={css.connectionLabel}>
-        <div className={css.connectedIcon} />
-        Connected: {deviceName}
-      </div>
-    );
-  };
+  const renderConnecting = () => (
+    <div className={css.connectionLabel}>
+      {renderIcon("connected")}
+      Connecting...
+    </div>
+  );
+
+  const renderConnected = () => (
+    <div className={css.connectionLabel}>
+      {renderIcon("connected")}
+      Connected: {deviceName}
+    </div>
+  );
 
   const renderMenu = () => {
     return (
@@ -91,7 +93,6 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         <MenuItemComponent onClick={handleShowPlotsMenuItem}>Show Plots (TDB)</MenuItemComponent>
         {onSetMode ? <MenuItemComponent onClick={handleSensorModeMenuItem}>Sensor Mode</MenuItemComponent> : undefined}
         {onSetMode ? <MenuItemComponent onClick={handleManualModeMenuItem}>Manual Entry</MenuItemComponent> : undefined}
-
       </MenuComponent>
     );
   };
@@ -138,7 +139,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
       </div>
     );
   };
-  const connectionClassName = `${css.connection} ${error ? css.error : (connected ? css.connected : css.disconnected)}`;
+  const connectionClassName = `${css.connection} ${error ? css.error : ""}`;
   return (
     <div className={css.sensor}>
       <div className={connectionClassName} onClick={connecting || connected ? undefined : handleConnect}>

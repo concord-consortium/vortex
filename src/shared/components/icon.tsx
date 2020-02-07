@@ -1,40 +1,33 @@
 import React from "react";
-import Label from "material-icons-svg/components/baseline/Label";
-import SettingsInputAntenna from "material-icons-svg/components/baseline/SettingsInputAntenna";
-import Assignment from "material-icons-svg/components/baseline/Assignment";
-import People from "material-icons-svg/components/baseline/People";
-import PhotoCamera from "material-icons-svg/components/baseline/PhotoCamera";
-import Comment from "material-icons-svg/components/baseline/Comment";
-import Refresh from "material-icons-svg/components/baseline/Refresh";
+import Label from "../icons/label-24px.svg";
+import SettingsInputAntenna from "../icons/settings_input_antenna-24px.svg";
+import Assignment from "../icons/assignment-24px.svg";
+import Group from "../icons/group_add-24px.svg";
+import Camera from "../icons/camera-24px.svg";
+import NoteAndPhoto from "../icons/note_and_photo-24px.svg";
+import Replay from "../icons/replay-24px.svg";
+import ArrowBack from "../icons/arrow_back-24px.svg";
+import Menu from "../icons/menu-24px.svg";
+import AddCircle from "../icons/add_circle-24px.svg";
 
-// Use material icon names as a key, so it's easier to define these icons in form UI schema:
-// https://material.io/resources/icons/?style=baseline
 const Icons: {[key: string]: any} = {
   label: Label,
   settings_input_antenna: SettingsInputAntenna,
   assignment: Assignment,
-  people: People,
-  photo_camera: PhotoCamera,
-  comment: Comment,
-  refresh: Refresh
+  group: Group,
+  camera: Camera,
+  note_and_photo: NoteAndPhoto,
+  replay: Replay,
+  arrow_back: ArrowBack,
+  menu: Menu,
+  add_circle: AddCircle
 };
 
 interface IProps {
   name: string;
-  fill?: string;
-  size?: "small" | "medium" | "large";
 }
 
-const SIZE: {[key: string]: number} = {
-  medium: 30,
-  large: 40
-};
-
-const DEF_FILL = "#646464";
-const DEF_SIZE = "medium";
-
-export const Icon: React.FC<IProps> = ({ name, fill, size }) => {
+export const Icon: React.FC<IProps> = ({ name }) => {
   const Component = Icons[name];
-  const fontSize = SIZE[size || DEF_SIZE];
-  return <Component fill={fill || DEF_FILL} fontSize={fontSize} />;
+  return <Component />;
 };

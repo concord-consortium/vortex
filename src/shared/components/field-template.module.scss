@@ -7,6 +7,10 @@
   .icon {
     width: 40px;
     align-self: center;
+    svg {
+      fill: $darkGray;
+      transform: scale(1.3);
+    }
   }
 
   .field {

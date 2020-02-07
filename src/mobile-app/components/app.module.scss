@@ -1,3 +1,5 @@
+@import "../../shared/components/variables";
+
 .app {
   position: fixed;
   top: 0;
@@ -5,4 +7,5 @@
   right: 0;
   bottom: 0;
   overflow: auto;
+  font-family: $fontFamily;
 }

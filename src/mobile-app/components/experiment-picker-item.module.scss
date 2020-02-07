@@ -23,7 +23,7 @@
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
 
   &:hover {
-    background-color: #00e90e;
+    background-color: $ccTeal;
     cursor: pointer;
   }
 }
@@ -34,4 +34,3 @@
   color: #646464;
   text-align: center;
 }
-

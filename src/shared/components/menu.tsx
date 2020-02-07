@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-
+import { Icon } from "./icon";
 import css from "./menu.module.scss";
 
 interface IMenuItemProps {
   onClick: () => void;
-  // LATER: add icon
 }
 
 export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, children}) => {
@@ -33,7 +32,7 @@ export const MenuComponent: React.FC<{}> = (props) => {
 
   return (
     <div className={css.menuIcon} onClick={handleMenuIcon}>
-      ...
+      <Icon name="menu"/>
       {showMenu ? renderMenu() : undefined}
     </div>
   );

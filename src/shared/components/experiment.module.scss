@@ -1,21 +1,15 @@
-@import url("https://fonts.googleapis.com/css?family=Londrina+Solid:300,400&display=swap");
 @import "variables";
 
 .experiment {
-  font-family: "Londrina Solid", Roboto, Arial, sans-serif;
+  font-family: $fontFamily;
   font-size: $fontSize;
-  color: $fontColor;
-  font-weight: normal;
-  font-stretch: normal;
-  font-style: normal;
-  line-height: normal;
-  letter-spacing: 0.5px;
+  color: $textBlack;
 }
 
 .sectionButtons {
   display: flex;
   justify-content: space-around;
   align-items: center;
-  height: 90px;
-  background-color: #efefef;
+  height: 78px;
+  background-color: #b7e2ec;
 }

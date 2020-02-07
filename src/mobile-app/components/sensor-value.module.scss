@@ -1,3 +1,8 @@
+@import "../../shared/components/variables";
+
+$sensorRed: #d00000;
+$sensorGreen: #00a80a;
+
 .sensorValue {
   display: flex;
   flex-direction: row;
@@ -8,11 +13,11 @@
 }
 
 .connected {
-  border-left: 1px solid #777;
+  border-left: 2px solid #bfe9c2;
 }
 
 .disconnected {
-  border-left: 1px solid #777;
+  border-left: 2px solid #f3bfbf;
 }
 
 .sensorInnerValue {
@@ -20,6 +25,7 @@
   flex-wrap: nowrap;
   align-items: center;
   width: 100%;
+  font-size: 22px;
 }
 
 .connectedValue,
@@ -29,15 +35,15 @@
 }
 
 .connectedValue {
-  color: #ffffff;
+  color: $sensorGreen;
 }
 
 .disconnectedValue {
-  color: #ff0000;
+  color: $sensorRed;
 }
 
 .label {
-  font-size: 15px;
-  color: #646464;
-  letter-spacing: 0.42px;
+  font-size: 17px;
+  color: $textBlack;
+  margin-top: 5px;
 }

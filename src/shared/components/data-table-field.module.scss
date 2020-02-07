@@ -1,5 +1,6 @@
-$headerCol: #efefef;
-$tdCol: #fff;
+@import "variables";
+
+$headerBorder: #fff;
 
 .dataTable {
   .title {
@@ -11,87 +12,82 @@ $tdCol: #fff;
 
   .table {
     width: 100%;
-    font-size: 14px;
-    font-weight: normal;
-    font-stretch: normal;
-    font-style: normal;
-    line-height: normal;
-    letter-spacing: 0.39px;
     text-align: center;
     table-layout: fixed;
 
     td, th {
-      height: 42px;
+      height: 54px;
       border-style: solid;
       border-width: 2px;
     }
-    th, .readOnly {
-      background-color: $headerCol;
-      border-color: $tdCol;
+    td {
+      font-size: 20px;
+      font-weight: bold;
+      color: $ccOrange;
+      border-color: #efefef;
+      &:last-child {
+        border-right-color: $headerBorder;
+      }
+    }
+    th {
+      font-size: 15px;
+      font-weight: normal;
+      color: $textBlack;
+      background-color: $ccTealLight3;
+      border-color: $headerBorder;
       text-align: center;
     }
-    .active > .readOnly {
-      background-color: rgba(0, 233, 14, 0.2);
+    tr:last-child td {
+      border-bottom-color: $headerBorder;
     }
-    th:last-child {
-      border-right-color: $headerCol;
+    .readOnly {
+      font-size: 15px;
+      font-weight: normal;
+      color: $textBlack;
+      border-color: $headerBorder;
+      background-color: $ccTealLight4;
     }
-    tr:last-child .readOnly {
-      border-bottom-color: $headerCol;
+    .complete > .readOnly {
+      background-color: $ccTealLight3;
     }
-    td {
-      border-color: $headerCol;
+    .grayedOut {
+      th {
+        background-color: $ccGray;
+      }
+      .readOnly {
+        background-color: $ccGray;
+      }
     }
     input {
       border: none;
       width: 100%;
       height: 100%;
-      font-size: 22px;
-      font-weight: normal;
-      font-stretch: normal;
-      font-style: normal;
-      line-height: normal;
-      letter-spacing: 0.61px;
       text-align: center;
-      color: #00c30b;
-      &:disabled {
-        opacity: 0.5;
-      }
     }
-
-    .recordSensorReading {
-      height: 28px;
-      border-radius: 14px;
-      background-color: #d9d9d9;
-      color: #fff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 5px;
-      &.active {
-        background-color: #00e90e;
-        &:hover {
-          cursor: pointer;
-        }
-      }
-    }
-
     .refreshSensorReadingColumn {
-      width: 42px;
+      width: 54px;
     }
-
     .refreshSensorReading {
-      height: 30px;
-      width: 30px;
-      border-radius: 15px;
-      background-color: #d9d9d9;
-      color: #fff;
+      height: 40px;
+      width: 40px;
+      border-radius: 20px;
+      border: 4px solid #fff;
+      background-color: $ccOrangeLight3;
       margin: 0 auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
       &.active {
-        background-color: #00e90e;
+        background-color: $ccOrange;
         &:hover {
           cursor: pointer;
         }
+      }
+      &.refresh {
+        background-color: $ccOrangeLight1;
+      }
+      svg {
+        fill: #fff;
       }
     }
   }

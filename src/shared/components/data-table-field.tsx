@@ -100,7 +100,6 @@ const getSensor = (sensorFields: string[]) => {
   if (useMockSensor) {
     return new MockSensor({
       capabilities,
-      autoConnect: true,
       pollInterval: 500,
       deviceName: "Mocked Sensor"
     });
@@ -130,16 +129,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return <div>{e.message}</div>;
   }
   const fieldDefinition = validatedSchema.items.properties;
-  let fieldKeys = Object.keys(fieldDefinition);
+  const fieldKeys = Object.keys(fieldDefinition);
   // Cast some types to Vortex-specific types so it's easier to work with them in the code below.
   const formContext: IVortexFormContext = props.formContext;
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
-  const nonSensorFields = fieldKeys.filter(name => sensorFields.indexOf(name) === -1);
-  if (sensorFields && nonSensorFields) {
-    // Change order of fields, so non-sensor fields are rendered first.
-    fieldKeys = nonSensorFields.concat(sensorFields);
-  }
   const sensor = formContext.experimentConfig.useSensors ? getSensor(sensorFields) : null;
   const sensorOutput = useSensor(sensor);
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
@@ -181,47 +175,35 @@ export const DataTableField: React.FC<FieldProps> = props => {
     onChange(formData);
   };
 
-  const renderRowWithSensorSupport = (row: { [k: string]: any }, rowIdx: number) => {
-    // Record button should be rendered only on the initial run, when all the values are still undefined.
-    // Once user uses this buttons and some values are saved, render normal table cells.
-    let shouldRenderRecordBtn = true;
+  const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
+    const basicCells = renderBasicCells(fieldKeys, row, rowIdx);
+    if (!renderSensorButtons) {
+      return basicCells;
+    }
+    // Render another column with sensor record button.
+    const anyNonFunctionSensorValues = sensorFields.map(name => row[name]).filter(value => !isFunctionSymbol(value)).length > 0;
+    let sensorFieldsBlank = true;
     sensorFields.forEach((name: string) => {
       if (row[name] !== undefined) {
-        shouldRenderRecordBtn = false;
+        sensorFieldsBlank = false;
       }
     });
-
-    let cells: JSX.Element[] = renderBasicCells(nonSensorFields, row, rowIdx);
-
-    if (shouldRenderRecordBtn) {
-      const sensorConnected = sensorOutput.connected;
-      const recordSensorBtn = <td key="recordBtn" colSpan={sensorFields.length}>
-        <div
-          className={css.recordSensorReading + ` ${sensorConnected ? css.active : ""}`}
-          onClick={sensorConnected ? onSensorRecordClick.bind(null, rowIdx) : null}
-        >
-          Record Sensor Reading
-        </div>
-      </td>;
-      cells = cells.concat(recordSensorBtn);
-    } else {
-      cells = cells.concat(renderBasicCells(sensorFields, row, rowIdx));
-    }
-    // Refresh button is active when record button isn't rendered anymore.
-    const anyNonFunctionSensorValues = sensorFields.map(name => row[name]).filter(value => !isFunctionSymbol(value)).length > 0;
-    const refreshActive = sensorOutput.connected && !shouldRenderRecordBtn;
-    const refreshBtn = <td key="refreshBtn" className={css.refreshSensorReadingColumn}>
+    const active = sensorOutput.connected;
+    const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {
         anyNonFunctionSensorValues &&
         <div
-          className={css.refreshSensorReading + ` ${refreshActive ? css.active : ""}`}
-          onClick={refreshActive ? onSensorRecordClick.bind(null, rowIdx) : null}
+          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : ""}`}
+          onClick={active ? onSensorRecordClick.bind(null, rowIdx) : null}
         >
-          <Icon name="refresh" fill="#fff"/>
+          {
+            // Show refresh/replay icon if some values are already present.
+            !sensorFieldsBlank &&
+            <Icon name="replay" /> }
         </div>
       }
     </td>;
-    return cells.concat(refreshBtn);
+    return [refreshBtnCell].concat(basicCells);
   };
 
   const renderBasicCells = (fieldNames: string[], row: { [k: string]: any }, rowIdx: number) => {
@@ -236,8 +218,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
         }
         isFunction = true;
       }
+      const isSensorField = sensorFields.indexOf(name) !== -1;
       return <td key={name} className={readOnly ? css.readOnly : ""}>
-        {readOnly ? value : <input type="text" value={value} disabled={isFunction} onChange={handleInputChange.bind(null, rowIdx, name)}/>}
+        {readOnly ? value : <input type="text" value={value} disabled={isFunction || isSensorField} onChange={handleInputChange.bind(null, rowIdx, name)}/>}
       </td>;
     });
   };
@@ -247,15 +230,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
       {sensor && <SensorComponent sensor={sensor}/>}
       <div className={css.title}>{title}</div>
       <table className={css.table}>
-        <tbody>
+        <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
-          {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
           {renderSensorButtons && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
+          {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
         </tr>
         {
           formData.map((row: { [k: string]: any }, idx: number) =>
-            <tr key={idx} className={isRowComplete(row, fieldKeys) ? css.active : ""}>
-              {renderSensorButtons ? renderRowWithSensorSupport(row, idx) : renderBasicCells(nonSensorFields, row, idx)}
+            <tr key={idx} className={isRowComplete(row, fieldKeys) ? css.complete : ""}>
+              { renderRow(row, idx) }
             </tr>
           )
         }

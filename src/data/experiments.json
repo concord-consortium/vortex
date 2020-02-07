@@ -22,12 +22,12 @@
         },
         {
           "title": "Photo",
-          "icon": "photo_camera",
+          "icon": "camera",
           "formFields": []
         },
         {
           "title": "Note",
-          "icon": "comment",
+          "icon": "note_and_photo",
           "formFields": ["note"]
         }
       ],
@@ -100,7 +100,7 @@
           "ui:placeholder": "My Experiment 1"
         },
         "groupMembers": {
-          "ui:icon": "people",
+          "ui:icon": "group",
           "ui:placeholder": "Group Team Members"
         },
         "note": {

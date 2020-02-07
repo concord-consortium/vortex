@@ -4,6 +4,7 @@ import { Experiment } from "../../shared/components/experiment";
 import { Initials } from "../../shared/components/initials";
 
 import css from "./experiment-wrapper.module.scss";
+import { Icon } from "../../shared/components/icon";
 
 interface IProps {
   experiment: IExperiment;
@@ -30,8 +31,8 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
   return (
     <div>
       <div className={css.header}>
-        <div className={css.headerBackIcon} onClick={onBackBtnClick}>⇦</div>
-        <Initials text={initials}/>
+        <div className={css.headerBackIcon} onClick={onBackBtnClick}><Icon name="arrow_back"/></div>
+        <Initials text={initials} active={true}/>
         <div className={css.headerTitle}>
           <div>{`${experiment.metadata.name} #${experimentIdx}`}</div>
           <div>{title}</div>

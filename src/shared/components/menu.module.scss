@@ -1,14 +1,19 @@
+@import "variables";
+
 .menuIcon {
-  margin-right: 10px;
-  font-size: 40px;
   position: relative;
+  width: 24px;
+  height: 24px;
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .menu {
   position: absolute;
-  top: 50px;
-  right: 0px;
-  border: 1px solid #000;
+  top: 30px;
+  right: 0;
+  border: 1px solid $darkGray;
   padding: 5px;
   font-size: 18px;
   background-color: #fff;
@@ -17,6 +22,9 @@
 
 .menuItem {
   margin: 10px;
-  color: #000;
+  color: $textBlack;
   white-space: nowrap;
+  &:hover {
+    cursor: pointer;
+  }
 }
