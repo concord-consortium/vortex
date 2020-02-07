@@ -6,8 +6,8 @@ import { IExperiment } from "../../shared/experiment-types";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
 import { inIframe } from "../utils/in-iframe";
 import { IAuthoredState } from "../components/authoring";
+import * as iframePhone from "iframe-phone";
 
-const iframePhone = require("iframe-phone");
 const experiments = require("../../data/experiments.json") as Experiments;
 
 // NOTE: this is only a partial description of the returned data, containing only the fields we are interested in
