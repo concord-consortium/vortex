@@ -7,7 +7,12 @@ export enum LogLevel {
   Debug = 5
 }
 
-const loggers = {
+export interface ILoggers {
+  // tslint:disable-next-line:ban-types
+  [key: number]: null | Function;
+}
+
+let loggers: ILoggers = {
   [LogLevel.None]: null,
   // tslint:disable-next-line:no-console
   [LogLevel.Error]: console.error,
@@ -26,6 +31,11 @@ let _logLevel: LogLevel = !isNaN(savedLogLevel) ? savedLogLevel : LogLevel.Error
 
 export const logLevel = () => _logLevel;
 export const setLogLevel = (newLogLevel: LogLevel) => _logLevel = newLogLevel;
+export const setLoggers = (newLoggers: ILoggers) => {
+  const oldLoggers = loggers;
+  loggers = newLoggers;
+  return oldLoggers;
+};
 
 export const log = (level: LogLevel, ...args: any) => {
   const logger = loggers[level];
