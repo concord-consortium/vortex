@@ -1,0 +1,23 @@
+{
+  "scripts": {
+    "run:browser": "cordova run browser"
+  },
+  "devDependencies": {
+    "cordova": "^9.0.0",
+    "cordova-plugin-whitelist": "^1.3.4"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    },
+    "platforms": [
+      "android",
+      "browser",
+      "ios"
+    ]
+  },
+  "dependencies": {
+    "cordova-browser": "^6.0.0",
+    "cordova-ios": "^5.1.1"
+  }
+}

@@ -4,8 +4,27 @@
 
 ### Building
 
-If you want to build a local version run `npm build`, it will create the files in the `dist` folder.
+#### Web Apps
+
+If you want to build a local version run `npm run build`, it will create the files in the `dist` folder.
 You *do not* need to build to deploy the code, that is automatic.  See more info in the Deployment section below.
+
+#### Cordova Apps
+
+Cordova maintains its own `package.json` in the `cordova-wrapper` folder and Cordova itself is a dev dependency in that folder.
+
+The `cordova-wrapper` folder contains all the needed files to wrap the contents of the compiled output the `cordova-app` folder.
+
+To test `cordova-wrapper` in the browser:
+
+1. Run `npm run build` to create the dist/cordova-app/ content which is not under source control.  You will need to do this whenever
+   you make a change at the app in step 5 copies code when it starts and does not pickup changes to the code.
+2. `cd cordova-wrapper`
+3. `npm i` ONCE to get dependencies
+4. `ln -s ../../dist/cordova-app/ www` ONCE to setup a link to the compiled Javascript app code
+5. `npm run run:browser` to run `cordova run browser` using the cordova dev dependency.
+
+If you make any changes to the `cordova-app` code you run steps 1 and 5 again in order to see the change.
 
 ### Notes
 
