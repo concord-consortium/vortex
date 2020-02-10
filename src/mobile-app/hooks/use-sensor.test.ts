@@ -27,6 +27,13 @@ describe("use-sensor hook", () => {
     });
   });
 
+  it("handles no sensor", async () => {
+    const { result } = renderHook(() => useSensor(null));
+    expect(result.current.connected).toEqual(false);
+    expect(result.current.values).toEqual({});
+    expect(result.current.error).toEqual(undefined);
+  });
+
   it("normal sensors start disconnected and then can connect and disconnect", async () => {
     const { result } = renderHook(() => useSensor(sensor));
     expect(result.current.connected).toEqual(false);
