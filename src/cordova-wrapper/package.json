@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "cordova": "cordova",
     "run:browser": "cordova run browser"
   },
   "devDependencies": {
