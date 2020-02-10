@@ -8,5 +8,5 @@ describe("delayPromise", () => {
     const after = Date.now();
     expect(result).toBe("foo");
     expect(after - before).toBeGreaterThanOrEqual(delay);
-  })
+  });
 });

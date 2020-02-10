@@ -18,8 +18,8 @@ describe("logging", () => {
       [LogLevel.Info]: infoMock,
       [LogLevel.Verbose]: verboseMock,
       [LogLevel.Debug]: debugMock,
-    })
-  })
+    });
+  });
 
   afterEach(() => {
     errorMock.mockClear();
@@ -40,7 +40,7 @@ describe("logging", () => {
     logInfo("baz");
     logVerbose("boom");
     logDebug("bing");
-  }
+  };
 
   it("defaults to LogLevel.None for tests (set in setupTests.ts)", () => {
     expect(logLevel()).toEqual(LogLevel.None);
