@@ -17,5 +17,6 @@ install:
 script:
 - npm run build
 - npm run test:coverage -- --runInBand --forceExit
+- npm run test:cypress
 after_success:
 - ./s3_deploy.sh
