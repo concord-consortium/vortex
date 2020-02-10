@@ -12,8 +12,6 @@ import { IFormUiSchema } from "../experiment-types";
 import { Icon } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
 
-const useMockSensor = getURLParam("mockSensor") || false;
-
 const defPrecision = 2;
 
 // Authors can provide special values in the initial form data. They will be dynamically evaluated.
@@ -95,6 +93,7 @@ const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
 };
 
 const getSensor = (sensorFields: string[]) => {
+  const useMockSensor = getURLParam("mockSensor") || false;
   const capabilities: ISensorCapabilities = {};
   sensorFields.forEach(fieldName => capabilities[fieldName as SensorCapabilityKey] = true);
   if (useMockSensor) {
@@ -120,6 +119,19 @@ const isRowComplete = (row: { [k: string]: any }, fieldKeys: string[]) => {
   return result;
 };
 
+const castToExpectedTypes = (fieldDefinition: {[propName: string]: IDataTableField}, formData: IDataTableData) => {
+  const newData: IDataTableData = [];
+  formData.forEach((row, rowIdx) => {
+    const newRow: IDataTableRow = {};
+    newData.push(newRow);
+    Object.keys(row).forEach(propName => {
+      const rawValue = formData[rowIdx][propName];
+      newRow[propName] = fieldDefinition[propName].type === "number" && !isNaN(Number(rawValue)) ? Number(rawValue) : rawValue;
+    });
+  });
+  return newData;
+};
+
 export const DataTableField: React.FC<FieldProps> = props => {
   const { schema, onChange } = props;
   let validatedSchema = null;
@@ -128,13 +140,17 @@ export const DataTableField: React.FC<FieldProps> = props => {
   } catch (e) {
     return <div>{e.message}</div>;
   }
+  if (props.formData.constructor !== Array) {
+    return <div>Unexpected form data format</div>;
+  }
   const fieldDefinition = validatedSchema.items.properties;
   const fieldKeys = Object.keys(fieldDefinition);
   // Cast some types to Vortex-specific types so it's easier to work with them in the code below.
-  const formContext: IVortexFormContext = props.formContext;
+  const formContext: IVortexFormContext = props.formContext || {};
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
-  const sensor = formContext.experimentConfig.useSensors ? getSensor(sensorFields) : null;
+  // Sensor instance can be provided in form context or it'll be created using sensorFields as capabilities.
+  const sensor = formContext.experimentConfig?.useSensors ? (formContext.sensor || getSensor(sensorFields)) : null;
   const sensorOutput = useSensor(sensor);
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
   const title = titleField && formContext.formData[titleField] || "";
@@ -142,17 +158,16 @@ export const DataTableField: React.FC<FieldProps> = props => {
   // Sensor buttons should be rendered only when sensor is available and some properties are connected to sensor.
   const renderSensorButtons = sensor && sensorFields.length > 0;
 
+  // Notifies parent component that data has changed. Cast values to proper types if possible.
+  const handleOnChange = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
+
   const handleInputChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
     // First update internal state, keep strings here, casting to Numbers here can cause confusing changes of the input.
-    let newData = formData.slice();
+    const newData = formData.slice();
     const rawValue = event.currentTarget.value;
     newData[rowIdx] = Object.assign({}, newData[rowIdx], { [propName]: rawValue });
     setFormData(newData);
-    // Then, notify parent component that data has changed. Try to cast to proper type if possible.
-    newData = formData.slice();
-    const value = fieldDefinition[propName].type === "number" && !isNaN(Number(rawValue)) ? Number(rawValue) : rawValue;
-    newData[rowIdx] = Object.assign({}, newData[rowIdx], { [propName]: value });
-    onChange(newData);
+    handleOnChange(newData);
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
@@ -172,7 +187,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     const newData = formData.slice();
     newData[rowIdx] = Object.assign({}, newData[rowIdx], result);
     setFormData(newData);
-    onChange(formData);
+    handleOnChange(newData);
   };
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
@@ -195,6 +210,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
         <div
           className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : ""}`}
           onClick={active ? onSensorRecordClick.bind(null, rowIdx) : null}
+          data-test="record-sensor"
         >
           {
             // Show refresh/replay icon if some values are already present.

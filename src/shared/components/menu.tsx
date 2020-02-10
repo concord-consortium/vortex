@@ -14,7 +14,7 @@ export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, children})
   );
 };
 
-export const MenuComponent: React.FC<{}> = (props) => {
+export const MenuComponent: React.FC = (props) => {
   const [showMenu, setShowMenu] = useState(false);
 
   const handleMenuIcon = (e: React.MouseEvent<HTMLDivElement>) => {

@@ -13,7 +13,7 @@ export const FieldTemplate: React.FC<FieldTemplateProps> = props => {
   const formContext: IVortexFormContext = props.formContext;
   // Hide label when special option is enabled in form context and there's placeholder provided
   // (otherwise, user would have no chances to identify form field).
-  const hideLabel = formContext.experimentConfig.hideLabels && placeholder;
+  const hideLabel = formContext?.experimentConfig?.hideLabels && placeholder;
   return (
     <div className={classNames + ` ${addPadding ? css.padding : ""}`}>
       { !hideLabel && <label htmlFor={id}>{label}</label> }
@@ -31,7 +31,7 @@ export const FieldTemplate: React.FC<FieldTemplateProps> = props => {
       {
         // `displayLabel` is false for array items. In this case we also don't want to show this label.
         required && displayLabel &&
-        <div className={css.required + (icon ? ` ${css.withIcon}` : "")}>Required</div>
+        <div className={css.required + (icon ? ` ${css.withIcon}` : "")} data-test="required">Required</div>
       }
       {/* This fields will require some styling probably. Render them so they're visible */}
       {/* if someone is testing these features. They can be provided via uiSchema. */}
