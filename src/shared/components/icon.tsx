@@ -29,5 +29,8 @@ interface IProps {
 
 export const Icon: React.FC<IProps> = ({ name }) => {
   const Component = Icons[name];
-  return <Component />;
+  if (Component) {
+    return <Component />;
+  }
+  return null;
 };
