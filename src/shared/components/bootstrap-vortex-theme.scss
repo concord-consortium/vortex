@@ -4,8 +4,8 @@
 .form-control {
   height: 60px;
   border-radius: 5px;
-  border: solid 2px $fontColor;
-  color: $fontColor;
+  border: solid 2px $darkGray;
+  color: $darkGray;
   font-size: $fontSize;
 
   &::placeholder {
@@ -13,7 +13,7 @@
   }
 
   &:focus {
-    border-color: $fontColor;
+    border-color: $darkGray;
     box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075), 0 0 8px rgba(0, 0, 0, 0.25);
   }
 }

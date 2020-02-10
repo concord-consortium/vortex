@@ -10,4 +10,9 @@
   color: #646464;
   font-size: 26px;
   border-radius: 5px;
+
+  &.active {
+    color: #fff;
+    background-color: $ccTeal;
+  }
 }

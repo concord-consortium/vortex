@@ -10,7 +10,7 @@
     font-style: normal;
     line-height: normal;
     letter-spacing: normal;
-    color: $fontColor;
+    color: $darkGray;
     margin-top: 20px;
     margin-bottom: 20px;
   }
@@ -23,7 +23,7 @@
   .run {
     padding: 10px;
     margin-bottom: 10px;
-    background-color: $fontColor;
+    background-color: $darkGray;
     font-size: 18px;
     font-weight: 400;
     font-stretch: normal;
@@ -48,6 +48,10 @@
 
     .date {
       font-weight: 300;
+    }
+
+    svg {
+      fill: #fff;
     }
   }
 

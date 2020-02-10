@@ -21,7 +21,7 @@ export const FieldTemplate: React.FC<FieldTemplateProps> = props => {
         {
           icon &&
           <div className={css.icon}>
-            <Icon name={icon} size="medium" fill="#646464"/>
+            <Icon name={icon} />
           </div>
         }
         <div className={css.field}>

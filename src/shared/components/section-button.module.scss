@@ -7,20 +7,25 @@
   cursor: pointer;
 
   .icon {
-    width: 46px;
-    height: 46px;
-    border-radius: 23px;
-    border: solid 3px $fontColor;
+    width: 40px;
+    height: 40px;
+    border-radius: 20px;
+    border: solid 3px $ccTeal;
     background-color: #ffffff;
     display: flex;
     align-items: center;
     justify-content: center;
+    svg {
+      fill: $ccTeal;
+    }
     &:hover {
-      background-color: #ddd;
+      background-color: $ccTealLight4;
     }
     &.active {
-      border-color: #00e90e;
-      background-color: #7cff84;
+      background-color: $ccTeal;
+      svg {
+        fill: #fff;
+      }
     }
   }
 }

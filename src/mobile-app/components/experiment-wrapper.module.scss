@@ -1,39 +1,29 @@
-@import "../../shared/components/variables.scss";
+@import "../../shared/components/variables";
 
 .header {
   height: $headerHeight;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
-  border-bottom: 2px solid #000;
   align-items: center;
+  background-color: $ccTealDark;
 }
 
 .headerBackIcon {
-  width: $headerIconSize;
-  height: $headerIconSize;
-  margin: 0 $headerIconMargin 0 $headerIconMargin;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 20px;
-  background-color: $fontColor;
-  color: #fff;
-  font-size: 28px;
-  font-weight: bold;
-
+  margin: 5px 15px 0 15px;
+  padding: 0;
   &:hover {
-    background-color: #00e90e;
     cursor: pointer;
+  }
+  svg {
+    fill: #fff;
   }
 }
 
-
 .headerTitle {
-  margin: 0 $headerIconMargin 0 $headerIconMargin;
+  margin: 0 10px 0 10px;
   font-size: 18px;
-  font-weight: bold;
-  color: #afafaf;
+  color: #fff;
 }
 
 .workspace {

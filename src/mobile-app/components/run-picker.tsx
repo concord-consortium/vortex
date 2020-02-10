@@ -1,11 +1,9 @@
 import React from "react";
 import { IRun } from "../hooks/use-runs";
-import { formatTime } from "../../shared/utils/format-time";
 import { Initials } from "../../shared/components/initials";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
-
-import css from "./run-picker.module.scss";
 import { RunInfoComponent } from "./run-info";
+import css from "./run-picker.module.scss";
 
 interface IProps {
   runs: IRun[];
@@ -40,7 +38,9 @@ export const RunPicker: React.FC<IProps> = ({ runs, onRunSelect, onRunUpload, on
             <div className={css.text}>
               <RunInfoComponent run={run} />
             </div>
-            {renderMenu(run)}
+            <div>
+              {renderMenu(run)}
+            </div>
           </div>
         )
       }

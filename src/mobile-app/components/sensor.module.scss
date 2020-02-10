@@ -1,87 +1,71 @@
-@import url("https://fonts.googleapis.com/css?family=Londrina+Solid&display=swap");
-
 .sensor {
-    font-family: "Londrina Solid", cursive, Arial, sans-serif;
-    width: 100%;
+  width: 100%;
 }
 
 .connection {
-  height: 66px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   justify-content: space-between;
+  padding: 5px 10px;
 }
 
 .connectionLabel {
-  font-size: 20px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
 }
 
-.connected {
-  background-color: rgba(0, 233, 14, 0.2);
-  color: #00c30b;
-}
-
-.disconnected {
-  background-color: rgba(255, 0, 0, 0.2);
-  color: #ff0000;
-}
-
 .error {
-  background-color: rgba(255, 129, 0, 0.2);
   color: #f57c00;
 }
 
-@keyframes border-pulsate-connected {
-  0%   { border-color: rgba(255, 255, 255, 1); }
-  50%  { border-color: rgba(0, 233, 14, 0.2); }
-  100% { border-color: rgba(255, 255, 255, 1); }
+@keyframes pulsate {
+  0%   { opacity: 1; }
+  50%  { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-@keyframes border-pulsate-disconnected {
-  0%   { border-color: rgba(255, 255, 255, 1); }
-  50%  { border-color: rgba(255, 0, 0, 0.2); }
-  100% { border-color: rgba(255, 255, 255, 1); }
-}
+.statusIcon {
+  position: relative;
+  width: 24px;
+  height: 24px;
+  margin-right: 10px;
 
-@keyframes border-pulsate-error {
-  0%   { border-color: rgba(255, 255, 255, 1); }
-  50%  { border-color: rgba(255, 129, 0, 0.2); }
-  100% { border-color: rgba(255, 255, 255, 1); }
-}
+  & > div {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+  }
 
-.connectedIcon,
-.disconnectedIcon,
-.errorIcon {
-  width: 26px;
-  height: 26px;
-  border-radius: 21px;
-  margin: 0 16px 0 18px;
-  border: 8px solid #fff;
-}
+  .connectedIcon {
+    background: url("../icons/sensor_connected.svg");
+  }
+  .connectedIconHi {
+    background: url("../icons/sensor_connected-hi.svg");
+    animation: pulsate 2s infinite;
+  }
 
-.connectedIcon {
-  background-color: #00e90e;
-  animation: border-pulsate-connected 2s infinite;
-}
+  .disconnectedIcon {
+    background: url("../icons/sensor_disconnected.svg");
+  }
+  .disconnectedIconHi {
+    background: url("../icons/sensor_disconnected-hi.svg");
+    animation: pulsate 2s infinite;
+  }
 
-.disconnectedIcon {
-  background-color: #ff0000;
-  animation: border-pulsate-disconnected 2s infinite;
-}
-
-.errorIcon {
-  background-color: #ff8100;
-  animation: border-pulsate-error 2s infinite;
+  .errorIcon {
+    background: url("../icons/sensor-default.svg");
+  }
+  .errorIconHi {
+    background: url("../icons/sensor-default.svg");
+  }
 }
 
 .connectedValues,
 .disconnectedValues {
-  height: 66px;
+  height: 72px;
   display: flex;
   flex-direction: row;
   flex-wrap: nowrap;
@@ -94,8 +78,6 @@
 }
 
 .connectedValues {
-  background-color: #48f28f;
 }
 .disconnectedValues {
-  background-color: rgba(100, 100, 100, 0.2);
 }

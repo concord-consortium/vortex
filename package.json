@@ -22,7 +22,8 @@
       "src/utilities/test-utils.ts"
     ],
     "moduleNameMapper": {
-      "\\.(jpg|jpeg|png|gif|eot|otf|webp|svg|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
+      "\\.svg$": "<rootDir>/__mocks__/svgMock.js",
+      "\\.(jpg|jpeg|png|gif|eot|otf|webp|ttf|woff|woff2|mp4|webm|wav|mp3|m4a|aac|oga)$": "<rootDir>/__mocks__/fileMock.js",
       "\\.(css|less|sass|scss)$": "identity-obj-proxy"
     },
     "moduleFileExtensions": [
@@ -66,6 +67,7 @@
   "homepage": "https://github.com/concord-consortium/vortex#readme",
   "devDependencies": {
     "@cypress/webpack-preprocessor": "^4.1.1",
+    "@svgr/webpack": "^5.1.0",
     "@testing-library/react-hooks": "^3.2.1",
     "@types/enzyme": "^3.10.4",
     "@types/enzyme-adapter-react-16": "^1.0.5",
@@ -119,7 +121,6 @@
     "js-base64": "^2.5.1",
     "jsonwebtoken": "^8.5.1",
     "jsqr": "^1.2.0",
-    "material-icons-svg": "^1.0.0",
     "qrcode-svg": "^1.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
