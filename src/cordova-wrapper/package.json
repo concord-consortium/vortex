@@ -1,7 +1,9 @@
 {
   "scripts": {
     "cordova": "cordova",
-    "run:browser": "cordova run browser"
+    "run:browser": "cordova run browser",
+    "run:android": "cordova run android",
+    "run:android:device": "cordova run android --device"
   },
   "devDependencies": {
     "cordova": "^9.0.0",
