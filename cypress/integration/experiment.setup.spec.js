@@ -3,7 +3,7 @@ import ExperimentSetup from "../supports/elements/ExperimentSetup"
 context("Testing Experiment Selection View", () => {
 
     const branch = "master"
-    const url = "https://models-resources.concord.org/vortex/branch/" + branch + "/mobile-app/index.html"
+    const url = "/mobile-app/"
 
     let experimentSetup = new ExperimentSetup();
     let testLabel1 = "WATERS Label Testing 1"
