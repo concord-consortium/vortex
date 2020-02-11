@@ -1,5 +1,11 @@
 {
   "extends": ["tslint:recommended", "tslint-react"],
+  "linterOptions": {
+      "exclude": [
+          "node_modules/**",
+          "src/cordova-wrapper/node_modules/**"
+      ]
+  },
   "rules": {
     "arrow-parens": false,
     "curly": [true, "ignore-same-line"],
