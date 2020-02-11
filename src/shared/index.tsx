@@ -149,7 +149,7 @@ const experiment3 = {
                 "type": "number"
               },
               "temperature": {
-                "title": "Temperature (°C)",
+                "title": "Temperature (C)",
                 "type": "number"
               }
             }
