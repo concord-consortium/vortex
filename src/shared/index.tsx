@@ -65,7 +65,7 @@ const experiment2 = {
                 "type": "string"
               },
               "temperature": {
-                "title": "Temperature (°C)",
+                "title": "Temperature (C)",
                 "type": "number"
               },
               "illuminance": {
