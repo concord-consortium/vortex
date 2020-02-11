@@ -4,9 +4,16 @@
 
 ### Building
 
+### Everything
+
+If you want to build everything run `npm run build`, it will create the files in the `dist` folder.
+
+You *do not* need to build to deploy the code, that is automatic.  See more info in the Deployment section below.
+
 #### Web Apps
 
-If you want to build a local version run `npm run build`, it will create the files in the `dist` folder.
+If you want to build a local version run `npm run build:web`, it will create the files in the `dist` folder.
+
 You *do not* need to build to deploy the code, that is automatic.  See more info in the Deployment section below.
 
 #### Cordova Apps
@@ -15,34 +22,51 @@ Cordova maintains its own `package.json` in the `cordova-wrapper` folder and Cor
 
 The `cordova-wrapper` folder contains all the needed files to wrap the contents of the compiled output the `cordova-app` folder.
 
+#### Initial Setup
+
+To build for the various platforms perform the following steps once:
+
+1. From the project root run `npm i` to install all the project dependencies
+2. From the project root run `npm run build:cordova-app` to create the `dist/cordova-app` folder which is not under source control
+3. `cd src/cordova-wrapper`
+4. `npm i` to get the Cordova dependencies
+5. `ln -s ../../dist/cordova-app/ www` to setup a link to the compiled Javascript app (the next 3 steps will fail if you don't do this)
+6. `npm run cordova -- prepare browser` to download the browser platform
+7. `npm run cordova -- prepare android` to download the Android platform
+8. `npm run cordova -- prepare ios` to download the iOS platform
+9. Setup your Android development environment and a default emulator and device as defined here:
+   https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#installing-the-requirements
+10. Setup your iOS development environment as defined here:
+   https://cordova.apache.org/docs/en/latest/guide/platforms/ios/index.html
+
 #### Browser Testing
 
 To test `cordova-wrapper` in the browser:
 
-1. Run `npm run build` in the project root to create the dist/cordova-app/ content which is not under source control.  You will need to do this whenever
-   you make a change at the app in step 5 copies code when it starts and does not pickup changes to the code.
-2. `cd cordova-wrapper`
-3. `npm i` ONCE to get dependencies
-4. `ln -s ../../dist/cordova-app/ www` ONCE to setup a link to the compiled Javascript app 
-5. `npm run cordova -- prepare browser` ONCE to download the browser platform
-5. `npm run run:browser` to run `cordova run browser` using the cordova dev dependency.
+1. If needed, run `npm run build:cordova-app` in the project root to create the latest build.  You will need to do this whenever
+   you make a change at the app in step 6 copies code when it starts and does not pickup changes to the code.
+2. `cd src/cordova-wrapper`
+3. `npm run run:browser` to run `cordova run browser` using the cordova dev dependency.
 
-If you make any changes to the `cordova-app` code you run `npm run build` in the project root
+If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root
 and `npm run run:browser` in `cordova-wrapper` again in order to see the change.
 
 #### Android Testing
 
 To test `cordova-wrapper` in Android:
 
-1. Setup your Android development environment and a default emulator and device as defined here:
-   https://cordova.apache.org/docs/en/latest/guide/platforms/android/index.html#installing-the-requirements
-2. Run steps 1 to 4 in the browser testing section (building to adding symlink)
-3. `npm run cordova -- prepare android` ONCE to download the android platform
-4. `npm run run:android` to run `cordova run android` using the cordova dev dependency (runs in emulator)
-5. `npm run run:android:device` to run `cordova run android --device` using the cordova dev dependency (runs on connected device)
+1. If needed, run `npm run build:cordova-app` in the project root to create the latest build.  You will need to do this whenever
+   you make a change at the app in step 6 copies code when it starts and does not pickup changes to the code.
+2. `cd src/cordova-wrapper`
+3. `npm run run:android` to run `cordova run android` using the cordova dev dependency (runs in emulator)
+4. `npm run run:android:device` to run `cordova run android --device` using the cordova dev dependency (runs on connected device)
 
-If you make any changes to the `cordova-app` code you run `npm run build` in the project root
+If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root
 and `npm run run:android` in `cordova-wrapper` again in order to see the change.
+
+#### iOS Testing
+
+TBD
 
 ### Notes
 
