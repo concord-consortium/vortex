@@ -105,7 +105,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
         connected={connected}
         value={values.temperature}
         fixedWidth={1}
-        unit="°C"
+        unit="C"
         label="Temperature"
       />;
       fragments.push(fragment);
