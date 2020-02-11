@@ -66,7 +66,37 @@ and `npm run run:android` in `cordova-wrapper` again in order to see the change.
 
 #### iOS Testing
 
-TBD
+To test `cordova-wrapper` on iOS:
+
+1. If needed, run `npm run build:cordova-app` in the project root to create the latest build.  You will need to do this whenever
+   you make a change at the app in step 6 copies code when it starts and does not pickup changes to the code.
+2. Open `src/cordova-wrapper/platforms/ios/HelloWorld.xcworkspace` from XCode
+3. Edit `ios/Vortex/Vortex-Info.plist` in VSCode (easier than in XCode editor
+4. Add the following to allow access to Bluetooth and Camera (insert both key-string pairs near the end of the file before the closing `</dict></plist>`)
+
+```xml
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
+  <key>NSCameraUsageDescription</key>
+  <string>This application needs camera access to capture photographs and to scan barcodes to upload data</string>
+</dict>
+</plist>
+```
+
+5. In Xcode, the left hand side of the page gives you different views on the project. The folder icon gives a tree view.
+   Select the folder icon and select the root Vortex node.
+6. As long as you are logged in with a developer account that has permissions with the Apple developer account, you can go to
+   the `Signing & Capabilities` section in the center of the screen (the text link near the top-center).
+7. Check the box to `Automatically Manage Signing` and select the `Concord Consortium Inc.` team.
+You may need to do this a few times to set both `Debug` and `Release` signing modes, then go back to All for the selection to "work".
+8. If this is the first time a device has been selected, you should be given the option to add the device to the list of approved devices.
+   We have up to 100 devices - once we run out we need to remove old devices to add new.
+9. Select your device from the top bar of the window, and you should be able to click the `Play` button to run with the Xcode debugger attached.
+   Errors and exceptions should show up in the bottom panel while running.
+
+If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root
+and run again in Xcode to see the change.
+
 
 ### Notes
 

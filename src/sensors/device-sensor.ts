@@ -36,13 +36,13 @@ export class DeviceSensor extends Sensor {
       if (!navigator.bluetooth) {
         return reject("Bluetooth not enabled in this environment");
       }
-      return navigator.bluetooth.getAvailability().then((available) => {
-        if (!available) {
-          return reject("Bluetooth not available");
-        }
-        if (this.devices.length === 0) {
-          return reject("No devices found with required capabilities");
-        }
+      // return navigator.bluetooth.getAvailability().then((available) => {
+      //   if (!available) {
+      //     return reject("Bluetooth not available");
+      //   }
+      //   if (this.devices.length === 0) {
+      //     return reject("No devices found with required capabilities");
+      //   }
         const options: RequestDeviceOptions = {
           filters: [{ services: this.getServiceUUIDs() }],
           optionalServices: this.getOptionalServiceUUIDs()
@@ -74,7 +74,7 @@ export class DeviceSensor extends Sensor {
             this.setConnected({connected: false});
             reject(err);
           });
-      });
+      // });
     });
   }
 

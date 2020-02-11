@@ -14,6 +14,9 @@
       "cordova-plugin-whitelist": {},
       "com.virtuoworks.cordova-plugin-canvascamera": {
         "CAMERA_USAGE_DESCRIPTION": "Display video preview"
+      },
+      "cordova-plugin-webbluetooth": {
+        "BLUETOOTH_USAGE_DESCRIPTION": "Scans for peripherals and enables interactions with associated devices"
       }
     },
     "platforms": [
@@ -27,6 +30,8 @@
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-ios": "^5.1.1",
-    "cordova-plugin-compat": "^1.2.0"
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-ble": "^2.0.1",
+    "cordova-plugin-webbluetooth": "0.0.2"
   }
 }
