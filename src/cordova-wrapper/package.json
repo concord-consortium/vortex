@@ -11,7 +11,10 @@
   },
   "cordova": {
     "plugins": {
-      "cordova-plugin-whitelist": {}
+      "cordova-plugin-whitelist": {},
+      "com.virtuoworks.cordova-plugin-canvascamera": {
+        "CAMERA_USAGE_DESCRIPTION": "Display video preview"
+      }
     },
     "platforms": [
       "android",
@@ -20,8 +23,10 @@
     ]
   },
   "dependencies": {
+    "com.virtuoworks.cordova-plugin-canvascamera": "git+https://github.com/VirtuoWorks/CanvasCameraPlugin.git",
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
-    "cordova-ios": "^5.1.1"
+    "cordova-ios": "^5.1.1",
+    "cordova-plugin-compat": "^1.2.0"
   }
 }

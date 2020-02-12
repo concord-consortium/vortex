@@ -65,7 +65,7 @@ export const Uploader = (props: IProps) => {
         return <Scanner onScanned={handleOnScanned} />;
 
       case UploadState.Uploading:
-        return <div>⌛ Uploading experiment ...</div>;
+        return <div>Uploading experiment ...</div>;
 
       case UploadState.UploadFailed:
         return (
