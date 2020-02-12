@@ -7,6 +7,7 @@ describe("delayPromise", () => {
     const result = await delayPromise(delay, "foo");
     const after = Date.now();
     expect(result).toBe("foo");
-    expect(after - before).toBeGreaterThanOrEqual(delay);
+    // don't text exact time but +/- 10%
+    expect(after - before).toBeGreaterThanOrEqual(delay - (delay * 0.1));
   });
 });
