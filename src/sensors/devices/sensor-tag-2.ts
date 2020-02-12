@@ -40,7 +40,7 @@ const config: {[key: string]: ISensorConfig} = {
     data: "f000aa01-0451-4000-b000-000000000000", // ObjectLSB:ObjectMSB:AmbientLSB:AmbientMSB
     characteristic: "f000aa02-0451-4000-b000-000000000000",
     convert: (dataView: DataView) => {
-      const rawTemp = dataView.getUint16(0, true);
+      const rawTemp = dataView.getUint16(2, true);
       return (rawTemp >> 2) * IR_SCALE_LSB;
     }
   }

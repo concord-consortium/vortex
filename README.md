@@ -94,8 +94,8 @@ You may need to do this a few times to set both `Debug` and `Release` signing mo
 9. Select your device from the top bar of the window, and you should be able to click the `Play` button to run with the Xcode debugger attached.
    Errors and exceptions should show up in the bottom panel while running.
 
-If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root
-and run again in Xcode to see the change.
+If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root,
+then run `npm run cordova -- prepare ios` and run again in Xcode to see the change.
 
 
 ### Notes
