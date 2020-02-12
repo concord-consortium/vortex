@@ -14,9 +14,10 @@ interface IProps {
   runKey: string;
   firebaseJWT: IFirebaseJWT;
   setError: (error: any) => void;
+  defaultSectionIndex?: number;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : IProps) => {
+export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
@@ -70,7 +71,12 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError} : I
   const renderData = (data?: IExperimentData) => {
     return (
       <div className={css.runtimeExperiment}>
-        <Experiment experiment={experiment} data={data} config={{hideLabels: false, useSensors: false}} />
+        <Experiment
+          experiment={experiment}
+          data={data}
+          config={{hideLabels: false, useSensors: false}}
+          defaultSectionIndex={defaultSectionIndex}
+        />
         <div><button onClick={handleUploadAgain}>(upload again)</button></div>
       </div>
     );

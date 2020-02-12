@@ -11,7 +11,11 @@ import { useInteractiveApi } from "../hooks/interactive-api";
 
 import css from "./app.module.scss";
 
-export const AppComponent = () => {
+interface IProps {
+  defaultSectionIndex?: number;
+}
+
+export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
   const [error, setError] = useState<any>();
   const {connectedToLara, initInteractiveData, experiment, firebaseJWT, phone} = useInteractiveApi({setError});
 
@@ -48,6 +52,7 @@ export const AppComponent = () => {
         runKey={Base64.encode(initInteractiveData.interactiveStateUrl)}
         firebaseJWT={firebaseJWT}
         setError={setError}
+        defaultSectionIndex={defaultSectionIndex}
       />
     );
   };
