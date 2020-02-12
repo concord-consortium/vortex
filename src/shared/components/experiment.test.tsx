@@ -134,4 +134,41 @@ describe("Experiment component", () => {
       formFields: []
     });
   });
+
+  it("renders optional defaultSectionIndex on initial render", () => {
+    const onDataChange = jest.fn();
+    const experiment = {
+      version: EXPERIMENT_VERSION_1,
+      metadata: {
+        uuid: "123",
+        name: "test",
+        initials: "tt",
+      },
+      schema: {
+        sections: [{
+          title: "Foo section",
+          icon: "icon1",
+          formFields: []
+        }, {
+          title: "Bar section",
+          icon: "icon2",
+          formFields: []
+        }],
+        dataSchema: {
+          type: "object",
+          properties: {
+          }
+        }
+      }
+    } as IExperiment;
+    const wrapper = shallow(<Experiment experiment={experiment} config={defConfig} onDataChange={onDataChange} defaultSectionIndex={1} />);
+    expect(wrapper.find(Section).length).toEqual(1);
+    const section = wrapper.find(Section).get(0);
+    expect(section.props.section).toEqual({
+      title: "Bar section",
+      icon: "icon2",
+      formFields: []
+    });
+  });
+
 });

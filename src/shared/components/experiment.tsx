@@ -10,12 +10,13 @@ interface IProps {
   data?: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
   config: IExperimentConfig;
+  defaultSectionIndex?: number;
 }
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex }) => {
   const { schema } = experiment;
   const { sections } = schema;
-  const [section, setSection] = useState<ISection>(sections[0]);
+  const [section, setSection] = useState<ISection>(sections[defaultSectionIndex || 0]);
   const [currentData, setCurrentData] = useState<IExperimentData>(data || initNewFormData(experiment));
 
   const onExperimentDataChange = (newData: IExperimentData) => {

@@ -6,6 +6,6 @@ import { AppComponent } from "./components/app";
 import "./index.scss";
 
 ReactDOM.render(
-  <AppComponent />,
+  <AppComponent defaultSectionIndex={1} />,
   document.getElementById("app")
 );
