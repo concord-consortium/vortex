@@ -14,6 +14,8 @@ describe("serializePromises", () => {
     const serialize = await serializePromises([Promise.resolve(1), Promise.resolve(2), Promise.resolve(3)], delay);
     const after = Date.now();
     expect(serialize).toEqual([1, 2, 3]);
-    expect(after - before).toBeGreaterThanOrEqual(delay * serialize.length);
+    // don't text exact time but +/- 10%
+    const duration = delay * serialize.length;
+    expect(after - before).toBeGreaterThanOrEqual(duration - (duration * 0.1));
   });
 });
