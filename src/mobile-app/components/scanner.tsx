@@ -48,7 +48,6 @@ export const Scanner = (props: IProps) => {
         drawLine(canvas, code.location.bottomRightCorner, code.location.bottomLeftCorner, color);
         drawLine(canvas, code.location.bottomLeftCorner, code.location.topLeftCorner, color);
         if (isUrl) {
-          debugger;
           onFound?.();
           props.onScanned(code.data);
           foundQRCode = false;
