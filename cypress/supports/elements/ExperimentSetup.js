@@ -1,6 +1,6 @@
 class ExperimentSetup {
     getNewExperimentOption(option) {
-        return cy.get('.experiment-picker-item-module-item-vortex').contains(option).should('exist').and('be.visible')
+        return cy.get('.experiment-picker-item-module-item-vortex').contains(option)
     }
     openNewExperiment(option) {
         return this.getNewExperimentOption(option).click({force:true})
@@ -17,8 +17,16 @@ class ExperimentSetup {
         return this.getSavedExperiments().contains(investigationType + " #" + index)
     }
 
+    getExperimentLabel(text) {
+        return cy.get('.run-info-module-runInfo-vortex').contains(text)
+    }
+
+    getHeaderExperimentLabel(label) {
+        return cy.get('.experiment-wrapper-module-headerTitle-vortex').contains(label)
+    }
+
     getResetDataButton() {
-        return cy.get('button').contains('Reset Local Data')
+        return cy.get('button')
     }
 
     // Label Tab UI selectors needed
