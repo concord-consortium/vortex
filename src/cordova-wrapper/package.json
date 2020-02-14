@@ -30,8 +30,8 @@
     "cordova-android": "^8.1.0",
     "cordova-browser": "^6.0.0",
     "cordova-ios": "^5.1.1",
-    "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-ble": "^2.0.1",
-    "cordova-plugin-webbluetooth": "0.0.2"
+    "cordova-plugin-compat": "^1.2.0",
+    "cordova-plugin-webbluetooth": "git+https://github.com/concord-consortium/cordova-plugin-webbluetooth.git"
   }
 }
