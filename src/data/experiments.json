@@ -67,7 +67,7 @@
                   "readOnly": true
                 },
                 "temperature": {
-                  "title": "Temperature (°C)",
+                  "title": "Temperature (C)",
                   "type": "number"
                 },
                 "illuminance": {

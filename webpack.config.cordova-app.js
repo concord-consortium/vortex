@@ -13,15 +13,11 @@ module.exports = (env, argv) => {
   return {
     context: __dirname, // to automatically find tsconfig.json
     devtool: 'source-map',
-    entry: {
-      'lara-app': './src/lara-app/index.tsx',
-      'mobile-app': './src/mobile-app/index.tsx',
-      'sensor-demo': './src/sensor-demo/index.tsx',
-      'shared': './src/shared/index.tsx'
-    },
+    entry: './src/cordova-app/index.tsx',
     mode: 'development',
     output: {
-      filename: '[name]/assets/index.[hash].js'
+      path: path.resolve(__dirname, 'dist/cordova-app'),
+      filename: 'index.[hash].js'
     },
     performance: { hints: false },
     module: {
@@ -104,39 +100,12 @@ module.exports = (env, argv) => {
     plugins: [
       new ForkTsCheckerWebpackPlugin(),
       new MiniCssExtractPlugin({
-        filename: devMode ? "[name]/assets/index.css" : "[name]/assets/index.[hash].css"
+        filename: devMode ? "index.css" : "index.[hash].css"
       }),
       new HtmlWebpackPlugin({
-        chunks: [],
         filename: 'index.html',
-        template: 'src/index.html'
-      }),
-      new HtmlWebpackPlugin({
-        chunks: ['lara-app'],
-        filename: 'lara-app/index.html',
-        template: 'src/lara-app/index.html'
-      }),
-      new HtmlWebpackPlugin({
-        chunks: ['mobile-app'],
-        filename: 'mobile-app/index.html',
-        template: 'src/mobile-app/index.html'
-      }),
-      new HtmlWebpackPlugin({
-        chunks: ['sensor-demo'],
-        filename: 'sensor-demo/index.html',
-        template: 'src/sensor-demo/index.html'
-      }),
-      new HtmlWebpackPlugin({
-        chunks: ['shared'],
-        filename: 'shared/index.html',
-        template: 'src/shared/index.html'
-      }),
-      new CopyWebpackPlugin([
-        {from: 'src/lara-app/public', to: 'lara-app/'}
-      ]),
-      new CopyWebpackPlugin([
-        {from: 'src/mobile-app/public', to: 'mobile-app/'}
-      ])
+        template: 'src/cordova-app/index.html'
+      })
     ]
   };
 };

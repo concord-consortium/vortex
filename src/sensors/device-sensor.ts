@@ -36,45 +36,37 @@ export class DeviceSensor extends Sensor {
       if (!navigator.bluetooth) {
         return reject("Bluetooth not enabled in this environment");
       }
-      return navigator.bluetooth.getAvailability().then((available) => {
-        if (!available) {
-          return reject("Bluetooth not available");
-        }
-        if (this.devices.length === 0) {
-          return reject("No devices found with required capabilities");
-        }
-        const options: RequestDeviceOptions = {
-          filters: [{ services: this.getServiceUUIDs() }],
-          optionalServices: this.getOptionalServiceUUIDs()
-        };
-        logInfo("Connecting using", options);
-        navigator.bluetooth.requestDevice(options)
-          .then(bluetoothDevice => {
-            bluetoothDevice.addEventListener("gattserverdisconnected", this.handleDisconnected);
-            this.bluetoothDevice = bluetoothDevice;
+      const options: RequestDeviceOptions = {
+        filters: [{ services: this.getServiceUUIDs() }],
+        optionalServices: this.getOptionalServiceUUIDs()
+      };
+      logInfo("Connecting using", options);
+      navigator.bluetooth.requestDevice(options)
+        .then(bluetoothDevice => {
+          bluetoothDevice.addEventListener("gattserverdisconnected", this.handleDisconnected);
+          this.bluetoothDevice = bluetoothDevice;
 
-            this.device = this.devices.find(device => device.matchesBluetoothDevice(bluetoothDevice));
-            if (!this.device) {
-              throw new Error("No matching device found for bluetooth device");
-            }
-            if (!bluetoothDevice.gatt) {
-              throw new Error("No gatt found for device");
-            }
-            return bluetoothDevice.gatt.connect();
-          })
-          .then(server => {
-            this.bluetoothServer = server;
-            this.setConnected({
-              connected: true,
-              deviceName: this.bluetoothDevice?.name || "Unnamed Device"
-            });
-            resolve();
-          })
-          .catch((err) => {
-            this.setConnected({connected: false});
-            reject(err);
+          this.device = this.devices.find(device => device.matchesBluetoothDevice(bluetoothDevice));
+          if (!this.device) {
+            throw new Error("No matching device found for bluetooth device");
+          }
+          if (!bluetoothDevice.gatt) {
+            throw new Error("No gatt found for device");
+          }
+          return bluetoothDevice.gatt.connect();
+        })
+        .then(server => {
+          this.bluetoothServer = server;
+          this.setConnected({
+            connected: true,
+            deviceName: this.bluetoothDevice?.name || "Unnamed Device"
           });
-      });
+          resolve();
+        })
+        .catch((err) => {
+          this.setConnected({connected: false});
+          reject(err);
+        });
     });
   }
 

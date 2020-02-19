@@ -36,10 +36,12 @@
     ]
   },
   "scripts": {
-    "start": "webpack-dev-server --inline --hot --content-base dist/",
-    "start:secure": "webpack-dev-server --https --inline --hot --content-base dist/",
-    "build": "npm-run-all lint:build clean build:webpack",
-    "build:webpack": "webpack --mode production --devtool false",
+    "start": "webpack-dev-server --inline --hot --content-base dist/ --host 0.0.0.0",
+    "start:secure": "webpack-dev-server --https --inline --hot --content-base dist/ --host 0.0.0.0",
+    "build": "npm-run-all lint:build clean build:all",
+    "build:all": "npm-run-all --parallel build:web build:cordova-app",
+    "build:web": "webpack --mode production --devtool false",
+    "build:cordova-app": "webpack --config webpack.config.cordova-app.js --mode production --devtool false",
     "clean": "rimraf dist",
     "lint": "tslint -c tslint.json 'src/**/*.{ts,tsx}'",
     "lint:build": "tslint -c tslint-build.json 'src/**/*.{ts,tsx}'",
