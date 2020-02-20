@@ -16,6 +16,7 @@ export interface IUseRunsResult {
   setActiveRun: (run: IRun | null) => void;
   saveActiveRunData: (data: IExperimentData) => void;
   resetRuns: () => void;
+  saveUploadedRun: (run: IRun) => void;
 }
 
 export const useRuns = (): IUseRunsResult => {
@@ -62,9 +63,25 @@ export const useRuns = (): IUseRunsResult => {
     }
   };
 
+  const saveUploadedRun = (uploadRun: IRun) => {
+    const newUploadRun = Object.assign({}, uploadRun);
+    // Update runs list.
+    // Old school `for` loop as we need index anyway. We could use binary search, as runs array will be always
+    // sorted by keys/timestamps, but not worth the effort for a few runs.
+    let idx = 0;
+    for (; idx < runs.length; idx += 1) {
+      if (runs[idx].key === uploadRun.key) {
+        break;
+      }
+    }
+    const newRuns = runs.slice();
+    newRuns[idx] = newUploadRun;
+    setRuns(newRuns);
+  };
+
   const resetRuns = () => {
     setRuns([]);
   };
 
-  return { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun };
+  return { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun };
 };

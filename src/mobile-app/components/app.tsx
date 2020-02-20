@@ -8,7 +8,7 @@ import { Uploader } from "./uploader";
 import css from "./app.module.scss";
 
 export const AppComponent: React.FC = () => {
-  const { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun } = useRuns();
+  const { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun } = useRuns();
   const [uploadRun, setUploadRun] = useState<IRun|undefined>();
 
   const exitExperiment = () => setActiveRun(null);
@@ -44,7 +44,7 @@ export const AppComponent: React.FC = () => {
         <>
           <ExperimentPicker setExperiment={startNewRun}/>
           {renderRunPicker()}
-          {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} /> : undefined}
+          {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} saveUploadedRun={saveUploadedRun} /> : undefined}
         </>
       }
     </div>
