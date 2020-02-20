@@ -120,6 +120,10 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
+    "@concord-consortium/lara-plugin-api": "^3.1.2",
+    "@concord-consortium/token-service": "file:../token-service",
+    "aws-sdk": "^2.454.0",
+    "client-oauth2": "^4.2.5",
     "eventemitter3": "^4.0.0",
     "firebase": "^7.6.1",
     "iframe-phone": "^1.2.0",
@@ -129,6 +133,7 @@
     "qrcode-svg": "^1.1.0",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
+    "react-json-editor-ajrm": "^2.5.9",
     "react-jsonschema-form": "^1.8.1",
     "semver": "^7.1.1"
   }

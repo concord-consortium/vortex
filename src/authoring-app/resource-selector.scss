@@ -1,0 +1,52 @@
+.resourceSelector {
+  font-size: 16px;
+  padding: 0;
+
+  div {
+    padding: 0;
+  }
+  p {
+    padding: 10px 0;
+  }
+
+  h1 {
+    font-size: 1.5em;
+  }
+  h2 {
+    font-size: 0.6em;
+    color: #aaa;
+  }
+}
+
+.loading {
+  font-style: italic;
+}
+
+.error {
+  color: #f00;
+  font-weight: bold;
+}
+
+.status {
+  font-weight: bold;
+}
+
+.selectedResource {
+  font-weight: bold;
+}
+
+.userSuppliedJWTForm {
+  margin: 10px;
+}
+
+.promptForSelectOrCreateResource {
+  margin: 10px;
+}
+
+.selectResource {
+  margin: 10px;
+}
+
+.createResource {
+  margin: 10px;
+}

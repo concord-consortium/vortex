@@ -17,7 +17,8 @@ module.exports = (env, argv) => {
       'lara-app': './src/lara-app/index.tsx',
       'mobile-app': './src/mobile-app/index.tsx',
       'sensor-demo': './src/sensor-demo/index.tsx',
-      'shared': './src/shared/index.tsx'
+      'shared': './src/shared/index.tsx',
+      'authoring-app': './src/authoring-app/index.tsx'
     },
     mode: 'development',
     output: {
@@ -130,6 +131,11 @@ module.exports = (env, argv) => {
         chunks: ['shared'],
         filename: 'shared/index.html',
         template: 'src/shared/index.html'
+      }),
+      new HtmlWebpackPlugin({
+        chunks: ['authoring-app'],
+        filename: 'authoring-app/index.html',
+        template: 'src/authoring-app/index.html'
       }),
       new CopyWebpackPlugin([
         {from: 'src/lara-app/public', to: 'lara-app/'}

@@ -1,0 +1,120 @@
+
+.authoring {
+
+}
+.status {
+  background-color: black;
+  color: white;
+  font-family: monospace;
+  font-size: 12pt;
+  padding: 0.25em;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  &.error {
+    color: red;
+  }
+}
+
+.twoEditorContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: stretch;
+  >div {
+    margin-right: 1em;
+  }
+}
+
+.resourceListContainer{
+  max-height: 10em;
+  width: 30vw;
+  overflow: auto;
+  background-color: hsl(0,10%,98%);
+  border: 1px solid gray;
+  padding: 0.2em;
+  border-radius: 0.2em;
+}
+
+.jsonEditorContainer {
+  width: 65vw;
+}
+
+.resourceList{
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  .resourceItem:nth-child(1n) {
+    background-color: hsl(0,10%,90%)
+  }
+  .resourceItem:nth-child(2n) {
+    background-color: hsl(0,10%,95%)
+  }
+  .resourceItem:hover {
+    color: white;
+    background-color: hsl(0,10%,75%)
+  }
+  .resourceItem {
+    padding:  0.25em 0.5em;
+    margin: 0.25em;
+    border-radius: 0.25em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    div {
+      padding: 0.1em;
+      margin: 0;
+    }
+    .name {
+      font-weight: bold;
+      &:hover {
+        text-decoration: underline;
+      }
+    };
+    .description {
+      font-style: italic;
+    }
+    .delete:hover {
+      background-color: hsl(0,70%,42%);
+      color: white;
+    }
+    &.selected {
+      background-color: hsl(0,90%,22%);;
+      color: white;
+    }
+  }
+}
+.selectedName {
+  font-size: 14pt;
+  input {
+    font-size: 14pt;
+  }
+  .url {
+    font-size: 10pt;
+    font-family: monospace;
+  }
+}
+.buttons {
+  display: flex;
+  flex-direction: row;
+  background-color: hsl(0,10%,90%);
+  padding: 0.25em;
+  justify-content: space-between;
+  .button {
+    color: white;
+    margin: 0px;
+    border-radius: 0.2em;
+    padding: 0.5em;
+    background-color: hsl(0,10%,75%);
+    box-shadow:  2px 2px 5px  hsl(0,10%,65%);
+    &:hover {
+      background-color: hsl(0,10%,65%);
+    }
+    &.disabled {
+      background-color: hsl(0,10%,85%);
+      box-shadow:  0px 0px 2px  hsl(0,10%,65%);
+    }
+  }
+}

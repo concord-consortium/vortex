@@ -39,6 +39,8 @@ export const AuthoringComponent = (props : IProps) => {
         </>
       </select>
       <div className={css.note}>Once you select an experiment please click the "Save authored state" button above to save your choice.</div>
+      <div className={css.note}>If you would like, you can create a
+      new experiment template, <a target="_blank" href="/authoring-app/">using an external editor.</a></div>
     </div>
   );
 };

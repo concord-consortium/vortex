@@ -107,7 +107,6 @@ dist
 
 .DS_Store
 
-
 # cordova
 src/cordova-wrapper/platforms
 src/cordova-wrapper/plugins
