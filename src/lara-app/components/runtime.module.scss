@@ -1,17 +1,42 @@
 .runtimeExperiment {
-  position: fixed;
+  position: relative;
   top: 0;
   left: 0;
-  right: 0;
   bottom: 0;
+  right: 0;
   background-color: #fff;
   overflow: auto;
 }
 
+.experimentContainer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  transition: 1s;
+  &.left{
+    right: 42%;
+  }
+}
+
+.qrContainer{
+  position: fixed;
+  top: 0;
+  left: 100%;
+  right: -42%;
+  bottom: 0;
+  transition: 1s;
+  &.right{
+    left: 58%;
+    right: 0;
+  }
+}
+
 .header {
-  margin: 10px 0;
+  margin: 10px 10px;
   font-weight: bold;
-  font-size: 2em;
+  font-size: 1.4em;
 }
 
 .qrcode {

@@ -37,7 +37,7 @@
   },
   "scripts": {
     "start": "webpack-dev-server --inline --hot --content-base dist/ --host 0.0.0.0",
-    "start:secure": "webpack-dev-server --https --inline --hot --content-base dist/ --host 0.0.0.0",
+    "start:secure": "webpack-dev-server --https --inline --hot --content-base dist/ --cert ./LocalhostCertificates/localhost.pem --key ./LocalhostCertificates/localhost.key",
     "build": "npm-run-all lint:build clean build:all",
     "build:all": "npm-run-all --parallel build:web build:cordova-app",
     "build:web": "webpack --mode production --devtool false",

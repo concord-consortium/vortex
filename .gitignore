@@ -113,3 +113,4 @@ src/cordova-wrapper/platforms
 src/cordova-wrapper/plugins
 # this is symlink to dist/cordoba-app/
 src/cordova-wrapper/www
+LocalhostCertificates

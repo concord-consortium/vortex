@@ -22,6 +22,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
   const [manualEntry, setManualEntry] = useState(false);
+  const [splitscreen, setSplitscreen] = useState(true);
 
   useEffect(() => {
     firebase
@@ -48,6 +49,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
 
   const handleManualEntry = () => setManualEntry(true);
   const handleUploadAgain = () => setExperimentData(undefined);
+  const toggleSplitscreen = () => setSplitscreen(!splitscreen);
 
   const renderNoData = () => {
     if (!queriedFirestore) {
@@ -70,14 +72,22 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
 
   const renderData = (data?: IExperimentData) => {
     return (
-      <div className={css.runtimeExperiment}>
-        <Experiment
-          experiment={experiment}
-          data={data}
-          config={{hideLabels: false, useSensors: false}}
-          defaultSectionIndex={defaultSectionIndex}
-        />
-        <div><button onClick={handleUploadAgain}>(upload again)</button></div>
+      <div className={`${css.experimentContainer} ${splitscreen ? css.left : ""}`}>
+        <div className={css.runtimeExperiment}>
+          <Experiment
+            experiment={experiment}
+            data={data}
+            config={{hideLabels: false, useSensors: false}}
+            defaultSectionIndex={defaultSectionIndex}
+          />
+          <div><button onClick={handleUploadAgain}>(upload again)</button><button onClick={toggleSplitscreen}>(toggle QR code)</button></div>
+        </div>
+        <div className={`${css.qrContainer} ${splitscreen ? css.right : ""}`}>
+          <div className={css.header}>Scan the code to upload your data</div>
+          <div className={css.qrcode}>
+            <div dangerouslySetInnerHTML={{__html: qrCode}} />
+          </div>
+        </div>
       </div>
     );
   };
