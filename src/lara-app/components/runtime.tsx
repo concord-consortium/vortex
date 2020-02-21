@@ -22,7 +22,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
   const [manualEntry, setManualEntry] = useState(false);
-  const [splitscreen, setSplitscreen] = useState(true);
+  const [displayQr, setDisplayQr] = useState(true);
 
   useEffect(() => {
     firebase
@@ -39,8 +39,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
         const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
         setQRCode(new QRCode({
           content: url,
-          width: 400,
-          height: 400,
+          ecl: "M", // default error correction level = M. Possible options are L, M, Q, H for low-high correction.
+          join: true,
+          container: "svg-viewbox"
         }).svg());
       }, (err) => {
         setError(err);
@@ -48,31 +49,16 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   }, []);
 
   const handleManualEntry = () => setManualEntry(true);
-  const handleUploadAgain = () => setExperimentData(undefined);
-  const toggleSplitscreen = () => setSplitscreen(!splitscreen);
-
-  const renderNoData = () => {
-    if (!queriedFirestore) {
-      return <div>Looking for existing experiment data...</div>;
-    }
-    if (!qrCode) {
-      return <div>Generating QR code...</div>;
-    }
-
-    return (
-      <>
-        <div className={css.header}>Upload Your Data</div>
-        <div className={css.qrcode}>
-          <div dangerouslySetInnerHTML={{__html: qrCode}} />
-        </div>
-        <div><button onClick={handleManualEntry}>(manually enter data)</button></div>
-      </>
-    );
+  const handleUploadAgain = () => {
+    setExperimentData(undefined);
+    setDisplayQr(true);
   };
+  const toggleDisplayQr = () => setDisplayQr(!displayQr);
 
   const renderData = (data?: IExperimentData) => {
+
     return (
-      <div className={`${css.experimentContainer} ${splitscreen ? css.left : ""}`}>
+      <div className={`${css.experimentContainer}`}>
         <div className={css.runtimeExperiment}>
           <Experiment
             experiment={experiment}
@@ -80,21 +66,34 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
             config={{hideLabels: false, useSensors: false}}
             defaultSectionIndex={defaultSectionIndex}
           />
-          <div><button onClick={handleUploadAgain}>(upload again)</button><button onClick={toggleSplitscreen}>(toggle QR code)</button></div>
+          <div><button onClick={handleManualEntry}>Edit</button><button onClick={handleUploadAgain}>Import</button></div>
         </div>
-        <div className={`${css.qrContainer} ${splitscreen ? css.right : ""}`}>
-          <div className={css.header}>Scan the code to upload your data</div>
-          <div className={css.qrcode}>
-            <div dangerouslySetInnerHTML={{__html: qrCode}} />
+        {displayQr &&
+          <div className={css.qrContainer}>
+            <div className={css.displayBox}>
+              <div className={css.header}>Import experiment data from your mobile device</div>
+              <div className={css.instructions}>
+                <ol>
+                  <li>Launch the <b>Concord Data Collector</b> app on your mobile device to view the <b>My Saved Experiments</b> section</li>
+                  <li>Tap the <b>UPLOAD</b> button on your experiment. A camera view will open on your mobile device</li>
+                  <li>Point your camera at the QR code below to begin importing. Once completed, your data will be displayed in this activity.</li>
+                </ol>
+              </div>
+              <div className={css.qrcode}>
+                <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+              </div>
+              <div className={css.uploadResult}>[confirmation / error messaging]</div>
+            <div className={css.footer}><div className={css.closeDialog} onClick={toggleDisplayQr}>Cancel</div></div>
+            </div>
           </div>
-        </div>
+        }
       </div>
     );
   };
 
   return (
     <div className={css.runtime}>
-      {experimentData || manualEntry ? renderData(experimentData) : renderNoData()}
+      {renderData(experimentData)}
     </div>
   );
 };
