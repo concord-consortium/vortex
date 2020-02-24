@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FieldProps } from "react-jsonschema-form";
 import css from "./data-table-field.module.scss";
 import { MockSensor } from "../../sensors/mock-sensor";
@@ -157,6 +157,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
   // Sensor buttons should be rendered only when sensor is available and some properties are connected to sensor.
   const renderSensorButtons = sensor && sensorFields.length > 0;
+
+  // listen for prop changes from uploads
+  useEffect(() => {
+    setFormData(props.formData);
+  }, [props.formData]);
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const handleOnChange = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));

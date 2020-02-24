@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useState } from "react";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
@@ -25,6 +25,13 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
       onDataChange(newData);
     }
   };
+
+  // listen for prop changes from upload
+  useEffect(() => {
+    if (data) {
+      setCurrentData(data);
+    }
+  }, [data]);
 
   return (
     <div className={css.experiment}>
