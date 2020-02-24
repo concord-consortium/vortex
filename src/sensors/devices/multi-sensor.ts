@@ -8,7 +8,8 @@ export class MultiSensorDevice extends BaseSensorTagDevice {
 
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
-      name: "MultiSensor",
+      name: "Multi-Sensor",
+      deviceName: "Multi-Sensor",
       serviceUUID: "f0001110-0451-4000-b000-000000000000",
       capabilities: {
         illuminance: true,

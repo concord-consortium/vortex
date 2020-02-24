@@ -37,10 +37,6 @@ export class BaseSensorTagDevice extends Device {
     return this.mapRequestedCapabilities<string>(capability => this.config[capability].service);
   }
 
-  public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice) {
-    return !!(bluetoothDevice.name && bluetoothDevice.name.indexOf("SensorTag") !== -1);
-  }
-
   public setupRead(bluetoothServer: BluetoothRemoteGATTServer) {
     return new Promise<void>((resolve, reject) => {
       const promises: Promise<BluetoothRemoteGATTCharacteristic>[] = [];

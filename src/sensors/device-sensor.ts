@@ -37,7 +37,7 @@ export class DeviceSensor extends Sensor {
         return reject("Bluetooth not enabled in this environment");
       }
       const options: RequestDeviceOptions = {
-        filters: [{ services: this.getServiceUUIDs() }],
+        filters: this.getFilters(),
         optionalServices: this.getOptionalServiceUUIDs()
       };
       logInfo("Connecting using", options);
@@ -116,8 +116,10 @@ export class DeviceSensor extends Sensor {
     this.setConnected({connected: false});
   }
 
-  private getServiceUUIDs() {
-    return this.devices.map(device => device.serviceUUID);
+  private getFilters() {
+    return this.devices.map(device => {
+      return {services: [device.serviceUUID]};
+    });
   }
 
   private getOptionalServiceUUIDs() {

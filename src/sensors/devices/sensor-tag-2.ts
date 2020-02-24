@@ -9,6 +9,7 @@ export class SensorTag2Device extends BaseSensorTagDevice {
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
       name: "Sensor Tag 2.0",
+      deviceName: "SensorTag",
       serviceUUID: 0xaa80,
       capabilities: {
         illuminance: true,

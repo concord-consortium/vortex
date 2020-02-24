@@ -2,6 +2,7 @@ import { ISensorCapabilities, ISensorValues, SensorCapabilityKey, AllCapabilityK
 
 export interface IDeviceOptions {
   name: string;
+  deviceName: string;
   serviceUUID: number | string;
   capabilities: ISensorCapabilities;
   requestedCapabilities: ISensorCapabilities;
@@ -9,12 +10,14 @@ export interface IDeviceOptions {
 
 export class Device {
   protected _name: string;
+  protected _deviceName: string;
   protected _capabilities: ISensorCapabilities;
   protected _requestedCapabilities: ISensorCapabilities;
   protected _serviceUUID: number | string;
 
   constructor(options: IDeviceOptions) {
     this._name = options.name;
+    this._deviceName = options.deviceName;
     this._capabilities = options.capabilities;
     this._requestedCapabilities = options.capabilities;
     this._serviceUUID = options.serviceUUID;
@@ -44,14 +47,13 @@ export class Device {
     return this._serviceUUID;
   }
 
+  public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {
+    return !!(bluetoothDevice.name && bluetoothDevice.name.indexOf(this._deviceName) !== -1);
+  }
+
   public get optionalServiceUUIDs(): string[] {
     // optionally overridden in subclasses
     return [];
-  }
-
-  public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {
-    // required to be overridden in subclasses
-    throw new Error("matchesBluetoothDevice() not overridden");
   }
 
   public setupRead(bluetoothServer: BluetoothRemoteGATTServer) {
