@@ -2,7 +2,7 @@ import { ISensorCapabilities, ISensorValues, SensorCapabilityKey, AllCapabilityK
 
 export interface IDeviceOptions {
   name: string;
-  serviceUUID: number;
+  serviceUUID: number | string;
   capabilities: ISensorCapabilities;
   requestedCapabilities: ISensorCapabilities;
 }
@@ -11,7 +11,7 @@ export class Device {
   protected _name: string;
   protected _capabilities: ISensorCapabilities;
   protected _requestedCapabilities: ISensorCapabilities;
-  protected _serviceUUID: number;
+  protected _serviceUUID: number | string;
 
   constructor(options: IDeviceOptions) {
     this._name = options.name;

@@ -2,7 +2,7 @@ import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnect
 
 import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-2";
-// import { MultiSensorDevice } from "./devices/multi-sensor";
+import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
 
 declare global {
@@ -22,7 +22,7 @@ export class DeviceSensor extends Sensor {
     super(options);
     this.devices = [
       new SensorTag2Device(options.capabilities),
-      // new MultiSensorDevice(options.capabilities)
+      new MultiSensorDevice(options.capabilities)
     ].filter(device => device.matchesCapabilities());
   }
 
