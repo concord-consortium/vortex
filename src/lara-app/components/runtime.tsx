@@ -33,7 +33,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       .onSnapshot(snapshot => {
         setQueriedFirestore(true);
         setExperimentData(snapshot.docs[0]?.data?.().data as IExperimentData | undefined);
-
+        setDisplayQr(experimentData === undefined);
         // generate QR code
         const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
         const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
@@ -55,20 +55,26 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   };
   const toggleDisplayQr = () => setDisplayQr(!displayQr);
 
-  const renderData = (data?: IExperimentData) => {
+  const renderData = () => {
+    if (!queriedFirestore) {
+      return <div>Looking for existing experiment data...</div>;
+    }
+    if (!qrCode) {
+      return <div>Generating QR code...</div>;
+    }
 
     return (
       <div className={`${css.experimentContainer}`}>
         <div className={css.runtimeExperiment}>
           <Experiment
             experiment={experiment}
-            data={data}
+            data={experimentData}
             config={{hideLabels: false, useSensors: false}}
             defaultSectionIndex={defaultSectionIndex}
           />
           <div><button onClick={handleManualEntry}>Edit</button><button onClick={handleUploadAgain}>Import</button></div>
         </div>
-        {displayQr &&
+        {(displayQr && experimentData === undefined) &&
           <div className={css.qrContainer}>
             <div className={css.displayBox}>
               <div className={css.header}>Import experiment data from your mobile device</div>
@@ -93,7 +99,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
 
   return (
     <div className={css.runtime}>
-      {renderData(experimentData)}
+      {renderData()}
     </div>
   );
 };
