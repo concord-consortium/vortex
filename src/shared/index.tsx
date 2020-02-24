@@ -96,7 +96,11 @@ const experiment2 = {
       {"location": "Corner 2"},
       {"location": "Corner 3"},
       {"location": "Corner 4"},
-      {"location": "Average", "temperature":  "<AVG>", "illuminance": "<AVG>"}
+      {"location": "Average", "temperature":  "<AVG>", "illuminance": "<AVG>"},
+      {"location": "Sum", "temperature":  "<SUM>", "illuminance": "<SUM>"},
+      {"location": "Variance", "temperature":  "<VAR>", "illuminance": "<VAR>"},
+      {"location": "StdDev", "temperature":  "<STDDEV>", "illuminance": "<STDDEV>"},
+      {"location": "Median", "temperature":  "<MEDIAN>", "illuminance": "<MEDIAN>"}
     ]
   }
 } as IExperiment;
