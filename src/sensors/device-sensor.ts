@@ -4,6 +4,7 @@ import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-2";
 import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
+import { configure } from "enzyme";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -127,6 +128,8 @@ export class DeviceSensor extends Sensor {
     this.devices.forEach(device => {
       uuids = uuids.concat(device.optionalServiceUUIDs);
     });
+    // get unique uuids
+    uuids = uuids.filter((uuid, i) => uuids.indexOf(uuid) === i);
     return uuids;
   }
 }
