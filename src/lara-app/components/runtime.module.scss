@@ -1,19 +1,68 @@
 .runtimeExperiment {
+  position: relative;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+  background-color: #fff;
+  overflow: auto;
+}
+
+.experimentContainer{
+  position: fixed;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
+}
+
+.qrContainer{
   position: fixed;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background-color: #fff;
-  overflow: auto;
-}
+  background-color: rgba(0,0,0,0.5);
+  text-align: center;
 
-.header {
-  margin: 10px 0;
-  font-weight: bold;
-  font-size: 2em;
-}
+  .displayBox{
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin: auto;
+    margin-top: 10px;
+    padding: 10px;
+    width: 450px; // this can be adjusted to change size of svg QR code
+    background: white;
+    box-shadow: 0 11px 15px -7px rgba(0, 0, 0, 0.2), 0 9px 46px 8px rgba(0, 0, 0, 0.12), 0 24px 38px 3px rgba(0, 0, 0, 0.14);
 
-.qrcode {
-  margin: 10px 0;
+    .qrcode {
+      margin: auto;
+      margin-top: -10px;
+      width: 95%;
+    }
+
+    .header {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 4px;
+    }
+    .instructions{
+      font-size: 15px;
+      text-align: left;
+      line-height: 22px;
+      li{
+        margin-top: 4px;
+      }
+    }
+
+    .footer{
+      font-weight: bold;
+      text-align: right;
+      font-size: 1em;
+      .closeDialog{
+        color: #0b809b;
+        text-transform: uppercase;
+      }
+    }
+  }
 }
