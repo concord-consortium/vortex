@@ -15,6 +15,7 @@
   flex-direction: row;
   flex-wrap: nowrap;
   align-items: center;
+  flex-grow: 1; /* to allow the label to take up as much room as possible */
 }
 
 .error {
@@ -80,4 +81,17 @@
 .connectedValues {
 }
 .disconnectedValues {
+}
+
+.saveButton,
+.saveButton:focus {
+  margin-right: 10px;
+  margin-top: -2px;
+  border: 1px solid #0b809b;
+  background-color: #fff;
+  color: #0b809b;
+  border-radius: 5px;
+  padding: 3px 10px;
+  text-transform: uppercase;
+  outline: none;
 }
