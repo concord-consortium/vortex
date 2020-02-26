@@ -4,6 +4,7 @@ import { ExperimentWrapper } from "./experiment-wrapper";
 import { RunPicker } from "./run-picker";
 import { useRuns, IRun } from "../hooks/use-runs";
 import { Uploader } from "./uploader";
+import { getURLParam } from "../../shared/utils/get-url-param";
 
 import css from "./app.module.scss";
 
@@ -13,6 +14,8 @@ export const AppComponent: React.FC = () => {
 
   const exitExperiment = () => setActiveRun(null);
   const closeUploader = () => setUploadRun(undefined);
+
+  const allowReset = getURLParam("allowReset") || false;
 
   const renderRunPicker = () => {
     if (runs.length > 0) {
@@ -24,7 +27,7 @@ export const AppComponent: React.FC = () => {
             onRunSelect={setActiveRun}
             onRunUpload={setUploadRun}
           />
-          <button onClick={resetRuns} style={{ margin: 20 }}>Reset Local Data</button>
+          {allowReset ? <button onClick={resetRuns} style={{ margin: 20 }}>Reset Local Data</button> : undefined}
         </>
       );
     }

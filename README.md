@@ -1,5 +1,12 @@
 # Vortex
 
+## Url Params
+
+When testing in the browser the following url params are available:
+
+1. `?allowReset` - if present in query string the "Reset Local Data" button is shown under the experiment run list.  This param doesn't need a value.
+2. `?mockSensor` - if present in query string the mock sensor is automatically used in the measurement tab. This param doesn't need a value.
+
 ## Development
 
 ### Building
