@@ -247,9 +247,9 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
           <div className={css.addPhoto} onClick={handleAddPhoto}>
             <Icon name="camera" />
           </div>
-          {photos().map((photo, index) => {
+          {photos().map((photo) => {
             const selected = photo === selectedPhoto;
-            return <Thumbnail key={index} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
+            return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
           })}
         </div>
       </div>
