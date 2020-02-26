@@ -1,10 +1,10 @@
 import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions } from "./sensor";
 
 import { Device } from "./devices/device";
-import { SensorTag2Device } from "./devices/sensor-tag-2";
+import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
+import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
 import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
-import { configure } from "enzyme";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -23,6 +23,7 @@ export class DeviceSensor extends Sensor {
     super(options);
     this.devices = [
       new SensorTag2Device(options.capabilities),
+      new SensorTagCC1350Device(options.capabilities),
       new MultiSensorDevice(options.capabilities)
     ].filter(device => device.matchesCapabilities());
   }

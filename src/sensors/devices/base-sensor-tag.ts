@@ -1,13 +1,15 @@
 import { Device, IDeviceOptions } from "./device";
 import { ISensorCapabilities, ISensorValues, AllCapabilityKeys } from "../sensor";
 
+interface ISensorConfig {
+  service: string;
+  data: string;
+  characteristic: string;
+  convert: (dataView: DataView) => number;
+}
+
 interface IBaseSensorConfig {
-  [key: string]: {
-    service: string;
-    data: string;
-    characteristic: string;
-    convert: (dataView: DataView) => number;
-  };
+  [key: string]: ISensorConfig;
 }
 
 interface IDataCharacteristics {
@@ -38,37 +40,35 @@ export class BaseSensorTagDevice extends Device {
   }
 
   public setupRead(bluetoothServer: BluetoothRemoteGATTServer) {
-    return new Promise<void>((resolve, reject) => {
-      const promises: Promise<BluetoothRemoteGATTCharacteristic>[] = [];
-      this.forEachRequestedCapability(capability => {
-        const promise = this.setupSensor(bluetoothServer, this.config[capability])
-          .then((dataCharacteristic) => this.dataCharacteristics[capability] = dataCharacteristic);
-        promises.push(promise);
-      });
-      // tested this to fix android chrome error, but it didn't work
-      // return serializePromises(promises).then(() => resolve()).catch(reject);
-      return Promise.all(promises).then(() => resolve()).catch(reject);
+    let promise = Promise.resolve();
+    this.forEachRequestedCapability(capability => {
+      promise = promise
+        .then(() => this.setupSensor(bluetoothServer, this.config[capability]))
+        .then((dataCharacteristic) => {
+          this.dataCharacteristics[capability] = dataCharacteristic;
+          return;
+        });
     });
+    return promise;
   }
 
   public read() {
-    return new Promise<ISensorValues>((resolve, reject) => {
-      const promises: Promise<number>[] = [];
-      const values: ISensorValues = {};
-      this.forEachRequestedCapability(capability => {
-        const dataCharacteristic = this.dataCharacteristics[capability];
-        if (dataCharacteristic) {
-          const promise = dataCharacteristic.readValue()
-            .then(dataView => values[capability] = this.config[capability].convert(dataView));
-          promises.push(promise);
-        } else {
-          promises.push(Promise.reject(`No data characteristic for ${capability}`));
-        }
-      });
-      // tested this to fix android chrome error, but it didn't work
-      // return serializePromises(promises).then(() => resolve(values)).catch(reject);
-      return Promise.all(promises).then(() => resolve(values)).catch(reject);
+    const values: ISensorValues = {};
+    let promise = Promise.resolve();
+    this.forEachRequestedCapability(capability => {
+      const dataCharacteristic = this.dataCharacteristics[capability];
+      if (dataCharacteristic) {
+        promise = promise
+          .then(() => dataCharacteristic.readValue())
+          .then(dataView => {
+            values[capability] = this.config[capability].convert(dataView);
+            return;
+          });
+      } else {
+        promise = promise.then(() => Promise.reject(`No data characteristic for ${capability}`));
+      }
     });
+    return promise.then(() => values);
   }
 
   public teardownRead() {
