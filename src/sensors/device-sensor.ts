@@ -1,8 +1,9 @@
 import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions } from "./sensor";
 
 import { Device } from "./devices/device";
-import { SensorTag2Device } from "./devices/sensor-tag-2";
-// import { MultiSensorDevice } from "./devices/multi-sensor";
+import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
+import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
+import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
 
 declare global {
@@ -22,7 +23,8 @@ export class DeviceSensor extends Sensor {
     super(options);
     this.devices = [
       new SensorTag2Device(options.capabilities),
-      // new MultiSensorDevice(options.capabilities)
+      new SensorTagCC1350Device(options.capabilities),
+      new MultiSensorDevice(options.capabilities)
     ].filter(device => device.matchesCapabilities());
   }
 
@@ -37,7 +39,7 @@ export class DeviceSensor extends Sensor {
         return reject("Bluetooth not enabled in this environment");
       }
       const options: RequestDeviceOptions = {
-        filters: [{ services: this.getServiceUUIDs() }],
+        filters: this.getFilters(),
         optionalServices: this.getOptionalServiceUUIDs()
       };
       logInfo("Connecting using", options);
@@ -116,8 +118,10 @@ export class DeviceSensor extends Sensor {
     this.setConnected({connected: false});
   }
 
-  private getServiceUUIDs() {
-    return this.devices.map(device => device.serviceUUID);
+  private getFilters() {
+    return this.devices.map(device => {
+      return {services: [device.serviceUUID]};
+    });
   }
 
   private getOptionalServiceUUIDs() {
@@ -125,6 +129,8 @@ export class DeviceSensor extends Sensor {
     this.devices.forEach(device => {
       uuids = uuids.concat(device.optionalServiceUUIDs);
     });
+    // get unique uuids
+    uuids = uuids.filter((uuid, i) => uuids.indexOf(uuid) === i);
     return uuids;
   }
 }
