@@ -39,12 +39,12 @@
             "title": "Study Site",
             "type": "string",
             "enum": [
-              "Site @1: Conservation Practice in Place",
-              "Site @2"
+              "Study Site #1",
+              "Study Site #2"
             ],
             "enumNames": [
-              "Site @1: Conservation Practice in Place",
-              "Site @2"
+              "Study Site #1",
+              "Study Site #2"
             ]
           },
           "label": {
