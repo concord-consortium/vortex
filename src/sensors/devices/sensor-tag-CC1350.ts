@@ -1,23 +1,6 @@
 import { ISensorCapabilities } from "../sensor";
 import { BaseSensorTagDevice } from "./base-sensor-tag";
 
-// http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User%27s_Guide
-const IR_SCALE_LSB = 0.03125;
-
-// Helper function for debugging
-function toPaddedHexString(num:number) : string {
-    let str = num.toString(16);
-    return "0".repeat(2 - str.length) + str;
-}
-
-function printByteArray(label: string, byteArray:DataView) {
-  let hex:string = "";
-  for(let i=0; i < byteArray.byteLength; i++) {
-    hex += toPaddedHexString(byteArray.getUint8(i));
-  }
-  console.log(`${label}: ${hex}`);
-}
-
 export class SensorTagCC1350Device extends BaseSensorTagDevice {
 
   constructor(requestedCapabilities: ISensorCapabilities) {
@@ -50,7 +33,6 @@ export class SensorTagCC1350Device extends BaseSensorTagDevice {
           data: "f000aa21-0451-4000-b000-000000000000", // TempLSB:TempMSB:HumidityLSB:HumidityMSB
           characteristic: "f000aa22-0451-4000-b000-000000000000",
           convert: (dataView: DataView) => {
-            printByteArray("humidity", dataView);
             let rawHum = dataView.getUint16(2, true);
             rawHum &= ~0x0003; // remove status bits
             return (rawHum / 65536) * 100;
