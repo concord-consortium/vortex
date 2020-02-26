@@ -10,7 +10,7 @@ export class SensorTag2Device extends BaseSensorTagDevice {
     super({
       name: "Sensor Tag 2.0",
       deviceName: "SensorTag",
-      serviceUUID: 0xaa80,
+      filters: [ { services: [0xaa80]}],
       capabilities: {
         illuminance: true,
         temperature: true,

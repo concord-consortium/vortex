@@ -3,7 +3,7 @@ import { ISensorCapabilities, ISensorValues, SensorCapabilityKey, AllCapabilityK
 export interface IDeviceOptions {
   name: string;
   deviceName: string;
-  serviceUUID: number | string;
+  filters: any;
   capabilities: ISensorCapabilities;
   requestedCapabilities: ISensorCapabilities;
 }
@@ -13,14 +13,14 @@ export class Device {
   protected _deviceName: string;
   protected _capabilities: ISensorCapabilities;
   protected _requestedCapabilities: ISensorCapabilities;
-  protected _serviceUUID: number | string;
+  protected _filters: any;
 
   constructor(options: IDeviceOptions) {
     this._name = options.name;
     this._deviceName = options.deviceName;
     this._capabilities = options.capabilities;
     this._requestedCapabilities = options.capabilities;
-    this._serviceUUID = options.serviceUUID;
+    this._filters = options.filters;
   }
 
   public get name() {
@@ -43,8 +43,8 @@ export class Device {
     return matches;
   }
 
-  public get serviceUUID() {
-    return this._serviceUUID;
+  public get filters() {
+    return this._filters;
   }
 
   public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {

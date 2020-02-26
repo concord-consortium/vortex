@@ -119,8 +119,8 @@ export class DeviceSensor extends Sensor {
 
   private getFilters() {
     return this.devices.map(device => {
-      return {services: [device.serviceUUID]};
-    });
+      return device.filters;
+    }).flat();
   }
 
   private getOptionalServiceUUIDs() {

@@ -10,7 +10,7 @@ export class MultiSensorDevice extends BaseSensorTagDevice {
     super({
       name: "Multi-Sensor",
       deviceName: "Multi-Sensor",
-      serviceUUID: "f0001110-0451-4000-b000-000000000000",
+      filters: [{services: ["f0001110-0451-4000-b000-000000000000"]}],
       capabilities: {
         illuminance: true,
         temperature: true,
