@@ -4,12 +4,26 @@ import { BaseSensorTagDevice } from "./base-sensor-tag";
 // http://processors.wiki.ti.com/index.php/CC2650_SensorTag_User%27s_Guide
 const IR_SCALE_LSB = 0.03125;
 
-export class SensorTag2Device extends BaseSensorTagDevice {
+// Helper function for debugging
+function toPaddedHexString(num:number) : string {
+    let str = num.toString(16);
+    return "0".repeat(2 - str.length) + str;
+}
+
+function printByteArray(label: string, byteArray:DataView) {
+  let hex:string = "";
+  for(let i=0; i < byteArray.byteLength; i++) {
+    hex += toPaddedHexString(byteArray.getUint8(i));
+  }
+  console.log(`${label}: ${hex}`);
+}
+
+export class SensorTagCC1350Device extends BaseSensorTagDevice {
 
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
-      name: "Sensor Tag 2.0",
-      deviceName: "CC2650 SensorTag",
+      name: "Sensor Tag CC1350",
+      deviceName: "CC1350 SensorTag",
       filters: [ { services: [0xaa80]}],
       capabilities: {
         illuminance: true,
@@ -36,18 +50,19 @@ export class SensorTag2Device extends BaseSensorTagDevice {
           data: "f000aa21-0451-4000-b000-000000000000", // TempLSB:TempMSB:HumidityLSB:HumidityMSB
           characteristic: "f000aa22-0451-4000-b000-000000000000",
           convert: (dataView: DataView) => {
+            printByteArray("humidity", dataView);
             let rawHum = dataView.getUint16(2, true);
             rawHum &= ~0x0003; // remove status bits
             return (rawHum / 65536) * 100;
           }
         },
         temperature: {
-          service: "f000aa00-0451-4000-b000-000000000000",
-          data: "f000aa01-0451-4000-b000-000000000000", // ObjectLSB:ObjectMSB:AmbientLSB:AmbientMSB
-          characteristic: "f000aa02-0451-4000-b000-000000000000",
+          service: "f000aa20-0451-4000-b000-000000000000",
+          data: "f000aa21-0451-4000-b000-000000000000", // ObjectLSB:ObjectMSB:AmbientLSB:AmbientMSB
+          characteristic: "f000aa22-0451-4000-b000-000000000000",
           convert: (dataView: DataView) => {
-            const rawTemp = dataView.getUint16(2, true);
-            return (rawTemp >> 2) * IR_SCALE_LSB;
+            const rawTemp = dataView.getInt16(0, true);
+            return (rawTemp / 65536)*165 - 40;
           }
         }
       }
