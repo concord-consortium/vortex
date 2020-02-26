@@ -36,7 +36,7 @@ const experiment2 = {
   "schema": {
     "sections": [
       {
-        "title": "Measure",
+        "title": "Collect",
         "icon": "settings_input_antenna",
         "formFields": ["tableTitle", "experimentData"]
       }
@@ -128,7 +128,7 @@ const experiment3 = {
   "schema": {
     "sections": [
       {
-        "title": "Measure",
+        "title": "Collect",
         "icon": "settings_input_antenna",
         "formFields": ["experimentData"]
       }

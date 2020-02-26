@@ -16,7 +16,7 @@
           "components": ["metadata"]
         },
         {
-          "title": "Measure",
+          "title": "Collect",
           "icon": "settings_input_antenna",
           "formFields": ["experimentData"]
         },
@@ -142,7 +142,7 @@
           "formFields": ["label", "groupMembers"]
         },
         {
-          "title": "Measure",
+          "title": "Collect",
           "icon": "settings_input_antenna",
           "formFields": ["experimentData"]
         }
