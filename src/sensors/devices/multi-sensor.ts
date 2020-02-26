@@ -23,12 +23,7 @@ export class MultiSensorDevice extends BaseSensorTagDevice {
           data: "f000aa71-0451-4000-b000-000000000000",
           characteristic: "f000aa72-0451-4000-b000-000000000000",
           convert: (dataView:DataView) => {
-            const rawData = dataView.getUint16(0, true);
-            const m = rawData & 0x0FFF;
-            let e = (rawData & 0xF000) >> 12;
-            /** e on 4 bits stored in a 16 bit unsigned => it can store 2 << (e - 1) with e < 16 */
-            e = (e === 0) ? 1 : 2 << (e - 1);
-            return m * (0.01 * e);
+            return dataView.getFloat32(0, true);
           }
         },
         humidity: {
@@ -36,9 +31,7 @@ export class MultiSensorDevice extends BaseSensorTagDevice {
           data: "f000aa21-0451-4000-b000-000000000000", // TempLSB:TempMSB:HumidityLSB:HumidityMSB
           characteristic: "f000aa22-0451-4000-b000-000000000000",
           convert: (dataView: DataView) => {
-            let rawHum = dataView.getUint16(2, true);
-            rawHum &= ~0x0003; // remove status bits
-            return (rawHum / 65536) * 100;
+            return dataView.getFloat32(0, true);
           }
         },
         temperature: {
@@ -46,8 +39,7 @@ export class MultiSensorDevice extends BaseSensorTagDevice {
           data: "f000aa01-0451-4000-b000-000000000000", // ObjectLSB:ObjectMSB:AmbientLSB:AmbientMSB
           characteristic: "f000aa02-0451-4000-b000-000000000000",
           convert: (dataView: DataView) => {
-            const rawTemp = dataView.getUint16(2, true);
-            return (rawTemp >> 2) * IR_SCALE_LSB;
+            return dataView.getFloat32(0, true);
           }
         }
       }
