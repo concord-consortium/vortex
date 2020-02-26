@@ -239,14 +239,14 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   };
 
   const renderPhotoSubTab = () => {
-    const selectedPhotoKey = selectedPhoto ? formData.indexOf(selectedPhoto) : -1;
     return (
       <div className={css.photoSubTab}>
         {renderCameraOrPhoto()}
         <div className={css.thumbnails}>
-          <div className={css.addPhoto} onClick={handleAddPhoto}>
-            <Icon name="camera" />
-          </div>
+          {photos().length > 0 ?
+            <div className={css.addPhoto} onClick={handleAddPhoto}>
+              <Icon name="camera" />
+            </div> : undefined}
           {photos().map((photo) => {
             const selected = photo === selectedPhoto;
             return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;

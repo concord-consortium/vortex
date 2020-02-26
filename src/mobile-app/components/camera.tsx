@@ -122,23 +122,14 @@ export const Camera = (props: IProps) => {
     }
   }, []);
 
-  const renderPlaceholder = () => {
-    const size = parentRect ? parentRect.width : 0;
-    return <div className={css.placeholder} style={{width: size, height: size}} />;
-  };
-
-  const renderCanvas = () => {
-    return (
-      <div className={css.canvas}>
-        <canvas ref={canvasRef} />
-        <div ref={cameraButtonRef} className={css.cameraButton} onClick={handleCanvasClicked} />
-      </div>
-    );
-  };
+  const canvasStyle = parentRect ? {width: parentRect.width, height: parentRect.width} : {};
 
   return (
     <div className={css.camera} ref={parentRef}>
-      {capturing ? renderCanvas() : renderPlaceholder()}
+      <div className={css.canvas} style={canvasStyle}>
+        <canvas ref={canvasRef} />
+        {capturing ? <div ref={cameraButtonRef} className={css.cameraButton} onClick={handleCanvasClicked} /> : undefined}
+      </div>
     </div>
   );
 };

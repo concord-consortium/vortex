@@ -4,6 +4,7 @@ $button-size: 60px;
   position: relative;
   display: flex;
   justify-content: center;
+  background-color: #000;
 }
 
 .cameraButton {
@@ -16,6 +17,3 @@ $button-size: 60px;
   border-radius: $button-size / 2;
 }
 
-.placeholder {
-  background-color: #000;
-}
