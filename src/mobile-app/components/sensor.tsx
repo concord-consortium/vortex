@@ -88,6 +88,8 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
   );
 
   const renderMenu = () => {
+    // disable show plots menu item for initial testing
+    const addShowPlotsMenuItem = false;
     return (
       <MenuComponent>
         {onResetAll ? <MenuItemComponent onClick={handleResetAllMenuItem}>Reset All</MenuItemComponent> : undefined}
@@ -95,7 +97,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
           ? <MenuItemComponent onClick={handleDisconnectMenuItem}>Disconnect</MenuItemComponent>
           : <MenuItemComponent onClick={handleConnectMenuItem}>Connect</MenuItemComponent>
         }
-        <MenuItemComponent onClick={handleShowPlotsMenuItem}>Show Plots (TDB)</MenuItemComponent>
+        { addShowPlotsMenuItem ? <MenuItemComponent onClick={handleShowPlotsMenuItem}>Show Plots (TDB)</MenuItemComponent> : undefined}
         {onSetMode ? <MenuItemComponent onClick={handleSensorModeMenuItem}>Sensor Mode</MenuItemComponent> : undefined}
         {onSetMode ? <MenuItemComponent onClick={handleManualModeMenuItem}>Manual Entry</MenuItemComponent> : undefined}
       </MenuComponent>

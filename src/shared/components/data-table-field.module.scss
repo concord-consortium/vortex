@@ -64,6 +64,9 @@ $headerBorder: #fff;
       height: 100%;
       text-align: center;
     }
+    input[disabled] {
+      opacity: 1;
+    }
     .refreshSensorReadingColumn {
       width: 54px;
     }

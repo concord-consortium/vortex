@@ -11,6 +11,7 @@ import Menu from "../icons/menu-24px.svg";
 import AddCircle from "../icons/add_circle-24px.svg";
 import Photo from "../icons/photo-24px.svg";
 import Comment from "../icons/comment-24px.svg";
+import TableChart from "../icons/table_chart-24px.svg";
 
 const Icons: {[key: string]: any} = {
   label: Label,
@@ -24,7 +25,8 @@ const Icons: {[key: string]: any} = {
   menu: Menu,
   add_circle: AddCircle,
   photo: Photo,
-  comment: Comment
+  comment: Comment,
+  collect: TableChart
 };
 
 interface IProps {
