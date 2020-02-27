@@ -37,7 +37,7 @@ const experiment2 = {
     "sections": [
       {
         "title": "Collect",
-        "icon": "settings_input_antenna",
+        "icon": "collect",
         "formFields": ["tableTitle", "experimentData"]
       }
     ],
@@ -129,7 +129,7 @@ const experiment3 = {
     "sections": [
       {
         "title": "Collect",
-        "icon": "settings_input_antenna",
+        "icon": "collect",
         "formFields": ["experimentData"]
       }
     ],

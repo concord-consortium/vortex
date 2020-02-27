@@ -17,7 +17,7 @@
         },
         {
           "title": "Collect",
-          "icon": "settings_input_antenna",
+          "icon": "collect",
           "formFields": ["experimentData"]
         },
         {
@@ -149,7 +149,7 @@
         },
         {
           "title": "Collect",
-          "icon": "settings_input_antenna",
+          "icon": "collect",
           "formFields": ["experimentData"]
         }
       ],
