@@ -9,6 +9,12 @@ const QRCode = require("qrcode-svg");
 
 import css from "./runtime.module.scss";
 
+export interface IQRCodeContentV1 {
+  version: "1.0.0";
+  url: string;
+}
+export type IQRCodeContent = IQRCodeContentV1;
+
 interface IProps {
   experiment: IExperiment;
   runKey: string;
@@ -32,13 +38,17 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       .limit(1)
       .onSnapshot(snapshot => {
         setQueriedFirestore(true);
-        setExperimentData(snapshot.docs[0]?.data?.().data as IExperimentData | undefined);
-        setDisplayQr(experimentData === undefined);
+        const newData = snapshot.docs[0]?.data?.().experiment?.data as IExperimentData | undefined;
+        setExperimentData(newData);
+        setDisplayQr(newData === undefined);
         // generate QR code
         const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
-        const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
+        const content = JSON.stringify({
+          version: "1.0.0",
+          url: `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`
+        });
         setQRCode(new QRCode({
-          content: url,
+          content,
           ecl: "M", // default error correction level = M. Possible options are L, M, Q, H for low-high correction.
           join: true,
           container: "svg-viewbox"

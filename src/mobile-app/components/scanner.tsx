@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from "react";
 import jsQR from "jsqr";
 import { Point } from "jsqr/dist/locator";
 import { inCordova } from "../../shared/utils/in-cordova";
+import { IQRCodeContent } from "../../lara-app/components/runtime";
 
 enum UploadState {
   NotScanning,
@@ -41,21 +42,25 @@ export const Scanner = (props: IProps) => {
         inversionAttempts: "dontInvert",
       });
       if (code) {
-        const isUrl = code.data.match(/^http/);
-        const color = isUrl ? "#0f0" : "#f00";
-        drawLine(canvas, code.location.topLeftCorner, code.location.topRightCorner, color);
-        drawLine(canvas, code.location.topRightCorner, code.location.bottomRightCorner, color);
-        drawLine(canvas, code.location.bottomRightCorner, code.location.bottomLeftCorner, color);
-        drawLine(canvas, code.location.bottomLeftCorner, code.location.topLeftCorner, color);
-        if (isUrl) {
-          onFound?.();
-          // call after next render
-          setTimeout(() => props.onScanned(code.data), 1);
-          foundQRCode = false;
-        } else {
-          drawLine(canvas, code.location.topLeftCorner, code.location.bottomRightCorner, color);
-          drawLine(canvas, code.location.topRightCorner, code.location.bottomLeftCorner, color);
-        }
+        try {
+          const json = JSON.parse(code.data) as IQRCodeContent;
+          const hasUrl = json && (json.version === "1.0.0") && json.url;
+          const color = hasUrl ? "#0f0" : "#f00";
+          drawLine(canvas, code.location.topLeftCorner, code.location.topRightCorner, color);
+          drawLine(canvas, code.location.topRightCorner, code.location.bottomRightCorner, color);
+          drawLine(canvas, code.location.bottomRightCorner, code.location.bottomLeftCorner, color);
+          drawLine(canvas, code.location.bottomLeftCorner, code.location.topLeftCorner, color);
+          if (hasUrl) {
+            onFound?.();
+            // call after next render
+            setTimeout(() => props.onScanned(json.url), 1);
+            foundQRCode = true;
+          } else {
+            drawLine(canvas, code.location.topLeftCorner, code.location.bottomRightCorner, color);
+            drawLine(canvas, code.location.topRightCorner, code.location.bottomLeftCorner, color);
+          }
+        // tslint:disable-next-line:no-empty
+        } catch (e) {}
       }
       return foundQRCode;
     };
