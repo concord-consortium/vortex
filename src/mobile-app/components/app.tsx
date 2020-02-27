@@ -9,7 +9,7 @@ import { getURLParam } from "../../shared/utils/get-url-param";
 import css from "./app.module.scss";
 
 export const AppComponent: React.FC = () => {
-  const { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun } = useRuns();
+  const { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun, deleteRun } = useRuns();
   const [uploadRun, setUploadRun] = useState<IRun|undefined>();
 
   const exitExperiment = () => setActiveRun(null);
@@ -17,15 +17,22 @@ export const AppComponent: React.FC = () => {
 
   const allowReset = getURLParam("allowReset") || false;
 
+  const handleDeleteRun = (run: IRun) => {
+    if (confirm(`Delete ${run.experiment.metadata.name} #${run.experimentIdx}?`)) {
+      deleteRun(run);
+    }
+  };
+
   const renderRunPicker = () => {
     if (runs.length > 0) {
-      // LATER: add support for onRunEdit and onRunDelete
+      // LATER: add support for onRunEdit
       return (
         <>
           <RunPicker
             runs={runs}
             onRunSelect={setActiveRun}
             onRunUpload={setUploadRun}
+            onRunDelete={handleDeleteRun}
           />
           {allowReset ? <button onClick={resetRuns} style={{ margin: 20 }}>Reset Local Data</button> : undefined}
         </>
