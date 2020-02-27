@@ -1,14 +1,8 @@
-import React, { useState } from "react";
-import { S3ResourceHelper, IS3ResourceHelperOpts} from "../shared/utils/s3-helpers";
-import { S3Resource, ResourceTool } from "@concord-consortium/token-service";
+import { useState } from "react";
+import { S3ResourceHelper, IS3ResourceHelperOpts} from "../shared/utils/s3-resource-helper";
+import { S3Resource } from "@concord-consortium/token-service";
 
-
-// TODO: Maybe these could be arguments to UseS3.
-const s3helperOpts: IS3ResourceHelperOpts = {
-  portalUrl:"https://app.portal.docker",
-  tool: "vortex" as ResourceTool
-};
-const helper = new S3ResourceHelper(s3helperOpts);
+let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
 
 export enum S3Status {
   Init = "Initializing",
@@ -20,8 +14,8 @@ export enum S3Status {
   Error = "Error"
 }
 
-// TODO: Look at this query hook: https://github.com/tannerlinsley/react-query
-export const UseS3 = () => {
+// TODO: Maybe use this query hook https://github.com/tannerlinsley/react-query
+export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const [ s3Resource, setS3Resource ] = useState(null as S3Resource|null);
   const [ resources, setResources ] = useState([] as S3Resource[]);
   const [ resourceUrl, setResourceUrl ] = useState(null as string|null);
@@ -29,14 +23,18 @@ export const UseS3 = () => {
   const [ status, setStatus ] = useState(S3Status.Init);
   const [ statusMsg, setStatusMsg] = useState("");
 
+  if (!helper) {
+    helper = new S3ResourceHelper(s3helperOpts);
+  }
+
   const handleError = (err: Error) => {
+    // tslint:disable-next-line
     console.error(err);
     setStatus(S3Status.Error);
     setStatusMsg(err.message);
   };
 
   const listCallback = (_resources: S3Resource[]) => {
-    // TODO: Q: Is this slice necessary here to set to new array?
     setResources(_resources.slice());
     setStatus(S3Status.Complete);
   };
@@ -53,13 +51,11 @@ export const UseS3 = () => {
   };
 
   const stageContentFn = (jsObject: object) => {
-    console.log('Updating draft resourceContent');
     const json =JSON.stringify(jsObject, null, 2);
     setResourceContent(json);
   };
 
   const saveFn = () => {
-    console.log("save triggered");
     setStatus(S3Status.SavePending);
     if(s3Resource) {
       // TODO: Look at this post-refactor.
@@ -117,11 +113,9 @@ export const UseS3 = () => {
   };
 
   const createCallback = ( resource: S3Resource) => {
-    console.log("create Complete");
     setS3Resource(resource);
-    helper.s3Upload({s3Resource: resource, body: "{}"})
+    helper.s3Upload({s3Resource: resource, body: ""})
     .then((url) => {
-      console.log(url);
       setStatus(S3Status.Complete);
       loadFn(resource);
       refreshList();
@@ -131,7 +125,6 @@ export const UseS3 = () => {
   const createFn = () => {
     const name = "untitled";
     const description = "a new document";
-    console.log("create triggered");
     setStatus(S3Status.CreatePending);
     helper.s3New(name, description)
     .then(createCallback)
@@ -139,7 +132,6 @@ export const UseS3 = () => {
   };
 
   const deleteFn = () => {
-    console.log("Delete resource");
     if(s3Resource) {
       setStatus(S3Status.DeletePending);
       helper.s3Delete(s3Resource)
@@ -158,18 +150,15 @@ export const UseS3 = () => {
   };
 
   const selectFn = (resource: S3Resource) => {
-    console.log("Set resource");
     setS3Resource(resource);
     setResourceUrl(null);
     loadFn(resource);
   };
 
-
-  let resourceObject: any = {};
+  let resourceObject: any = null;
   if(resourceContent) {
     try {
       resourceObject = JSON.parse(resourceContent);
-      console.log(resourceObject);
     }
     catch(e) {
       handleError(e);

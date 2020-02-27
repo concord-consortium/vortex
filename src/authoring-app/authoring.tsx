@@ -6,6 +6,7 @@ import { Button } from "../shared/components/button";
 import { ResourceListing } from "./resource-listing";
 import { MobilePreview } from "./mobile-preview";
 import { UseS3, S3Status } from "./use-s3";
+import { GetS3Config  } from "./getS3Config";
 interface IProps {
   experiment?: IExperiment;
 }
@@ -14,7 +15,7 @@ export const AuthoringComponent = (props : IProps) => {
   const {
     s3Resource, resources, resourceUrl, resourceObject, status, statusMsg,
     refreshList, selectFn, deleteFn, createFn, stageContentFn, saveFn
-  } = UseS3();
+  } = UseS3(GetS3Config());
 
   const nameRef = React.createRef<HTMLInputElement>();
   const descRef = React.createRef<HTMLInputElement>();

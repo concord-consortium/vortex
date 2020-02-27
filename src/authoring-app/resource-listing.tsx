@@ -14,7 +14,6 @@ const ResourceList = (opts: IResourceListOpts) => {
   const { resource, resources, selectFn} = opts;
   const resElems = resources.map( (r:S3Resource) => {
     const selectHandler = (e: React.MouseEvent<HTMLElement>) => {
-      console.log(`selected ${r.name}`);
       selectFn && selectFn(r);
     };
     const selected = resource ? resource.id === r.id : false;

@@ -1,5 +1,5 @@
 import * as React from "react";
-import Button from "../shared/components/button";
+import { Button } from "../shared/components/button";
 import { TokenServiceClient, Resource, S3Resource } from "@concord-consortium/token-service";
 import * as css from "./resource-selector.scss";
 
@@ -210,8 +210,6 @@ export default class ResourceSelector extends React.Component<IProps, IState> {
     if(resource) {
       functions.save();
     }
-    // TODO: Can we keep track of the current resource in the helper?
-    console.log("this.props.s3Helper.s3Upload();");
   }
 
   private handleLoad = (e: React.MouseEvent<HTMLSpanElement>) => {

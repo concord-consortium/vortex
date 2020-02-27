@@ -4,7 +4,7 @@ import { Base64 } from "js-base64";
 import "firebase/firestore";
 import "firebase/auth";
 
-import { AuthoringComponent } from "./authoring";
+import { LaraAuthoringComponent } from "./authoring";
 import { RuntimeComponent } from "./runtime";
 import { inIframe } from "../utils/in-iframe";
 import { useInteractiveApi } from "../hooks/interactive-api";
@@ -29,7 +29,10 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
     }
 
     if (initInteractiveData.mode === "authoring") {
-      return <AuthoringComponent experiment={experiment} phone={phone} />;
+      return <LaraAuthoringComponent
+        authoredState={initInteractiveData.authoredState}
+        experiment={experiment}
+        phone={phone} />;
     }
 
     if (!initInteractiveData.interactiveStateUrl) {

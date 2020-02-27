@@ -8,12 +8,8 @@ import {
 } from "@concord-consortium/token-service";
 import { IJwtResponse } from "@concord-consortium/lara-plugin-api";
 import { getURLParam } from "./get-url-param";
-
-import {useState, useEffect } from 'react';
-
 import ClientOAuth2 from "client-oauth2";
 import "whatwg-fetch"; // window.fetch polyfill for older browsers (IE)
-
 
 // TODO: Probably these shouldn't be Constants
 export const DEFAULT_FILENAME = "vortex.json";
@@ -28,26 +24,25 @@ export interface ISimplifiedS3UploadParams {
   cacheControl?: string; // Defaults to DEFAULT_CACHE_CONTROL
 }
 
-export interface IS3Status {
-  state: "init"| "pending" | "error";
-  error: any;
-  message: string;
-}
-
-export interface IS3StatusMonitor {
-  udate: (status: IS3Status) => void;
-}
-
 // Portal has to have AuthClient configured with this clientId.
 const PORTAL_AUTH_PATH = "/auth/oauth_authorize";
 
 export interface IS3ResourceHelperOpts {
-  portalUrl: string;
+  portalUrl: string;       // eg: https://learn-staging.concord.org/
   tool: ResourceTool;
-  extraState?: any; // TODO: Do we need this?
-  monitor?: IS3StatusMonitor;
+  oauthClientName: string; // Should match Portal → Admin → Clients
+  jwtAppName: string;      // Should match Portal → Admin → Firebase Apps
+  extraState?: any;        // For perserving state durring OAuth callback.
 }
-// Wraps all of our S3 requests up.
+
+
+/**
+ * Helper class for working with TokenService S3Reources.
+ * TODO: This file should probably be added to the TokenService Client Library.
+ * 
+ * @export
+ * @class S3ResourceHelper
+ */
 export class S3ResourceHelper {
 
   // The URL for portal are we will be working with:
@@ -57,7 +52,7 @@ export class S3ResourceHelper {
   public readonly extraState: any;
 
    // Portal OAuthClient name. (Portal → Admin → Clients)
-  public readonly oauthClientName: string = "vortex";
+  public readonly oauthClientName: string;
 
   // Portal JWT Firebase App name. (Portal → Admin → Firebase Apps)
   public readonly jwtAppName: string = "token-service"; // portal FirebaseApp
@@ -68,6 +63,7 @@ export class S3ResourceHelper {
   constructor(options: IS3ResourceHelperOpts) {
     this.portalUrl = options.portalUrl;
     this.extraState = options.extraState;
+    this.oauthClientName = options.oauthClientName;
     this.tool = options.tool;
   }
 
@@ -98,7 +94,7 @@ export class S3ResourceHelper {
         .then((token) => {
           // Remove fragment that includes access token and other data coming from
           // server to make leak a bit less likely.
-          // history.replaceState("", document.title, window.location.pathname + window.location.search);
+          history.replaceState("", document.title, window.location.pathname + window.location.search);
           return token;
         });
     } else if (getURLParam("code")) {
@@ -191,7 +187,6 @@ export class S3ResourceHelper {
     return this.client.getPublicS3Url(s3Resource, filename);
   }
 
- 
   /**
    * S3Delete() Removes an S3Resource from
    *
@@ -218,8 +213,7 @@ export class S3ResourceHelper {
       return true;
     }
     catch(error) {
-      console.error(error);
-      return false;
+      this.error(error);
     }
   }
 
@@ -235,7 +229,7 @@ export class S3ResourceHelper {
     const client = await this.getTokenServiceClient();
     const resource: S3Resource = await client.createResource(
       {
-        tool: S3ResourceTool.Vortex,
+        tool: this.tool,
         type: "s3Folder",
         name: filename,
         description: "noahs test data",
@@ -266,11 +260,13 @@ export class S3ResourceHelper {
 
   error (msg: string) {
     // TODO: something better later.
+    // tslint:disable-next-line
     console.error(msg);
   }
 
   update (state: string, msg: string){
     // TODO: something better later.
+    // tslint:disable-next-line
     console.log(msg);
   }
 

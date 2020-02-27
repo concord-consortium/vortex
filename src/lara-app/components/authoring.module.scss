@@ -9,3 +9,16 @@
   margin: 10px 0;
   font-style: italic;
 }
+
+.selectedName {
+  color: hsl(34, 100%, 40%);
+  font-weight: bold;
+  font-size: 14pt;
+};
+
+.invalidExperiment {
+  color: hsl(0, 100%, 30%);
+  font-weight: bold;
+  font-style: italic;
+  font-size: 12pt;
+};

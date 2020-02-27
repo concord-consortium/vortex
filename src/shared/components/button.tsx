@@ -4,7 +4,7 @@ import css from "./button.module.scss";
 interface IProps {
   onClick: (e: React.MouseEvent) => void;
   label?: string;
-  children?: React.Component[];
+  children?: React.Component[]|string;
   disabled?: boolean;
   className?: string;
 }
