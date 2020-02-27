@@ -17,11 +17,30 @@ export interface IUseRunsResult {
   saveActiveRunData: (data: IExperimentData) => void;
   resetRuns: () => void;
   saveUploadedRun: (run: IRun) => void;
+  deleteRun: (run: IRun) => void;
 }
 
 export const useRuns = (): IUseRunsResult => {
   const [runs, setRuns] = useLocalStorage<IRun[]>("runs", []);
   const [ activeRun, setActiveRun ] = useState<IRun | null>(null);
+
+  // returns index of run or end of array index to append run
+  const getRunIndex = (run: IRun) => {
+    let index = 0;
+    for (; index < runs.length; index++) {
+      if (runs[index].key === run.key) {
+        break;
+      }
+    }
+    return index;
+  };
+
+  const updateRun = (oldRun: IRun, newRun: IRun) => {
+    const index = getRunIndex(oldRun);
+    const newRuns = runs.slice();
+    newRuns[index] = newRun;
+    setRuns(newRuns);
+  };
 
   const startNewRun = (experiment: IExperiment) => {
     const timestamp = Date.now();
@@ -45,37 +64,21 @@ export const useRuns = (): IUseRunsResult => {
 
   const saveActiveRunData = (data: IExperimentData) => {
     if (activeRun) {
-      // Update active run.
-      const newRun = Object.assign({}, activeRun, { data });
-      setActiveRun(newRun);
-      // Update runs list.
-      // Old school `for` loop as we need index anyway. We could use binary search, as runs array will be always
-      // sorted by keys/timestamps, but not worth the effort for a few runs.
-      let idx = 0;
-      for (; idx < runs.length; idx += 1) {
-        if (runs[idx].key === activeRun.key) {
-          break;
-        }
-      }
-      const newRuns = runs.slice();
-      newRuns[idx] = newRun;
-      setRuns(newRuns);
+      const newActiveRun = Object.assign({}, activeRun, { data });
+      setActiveRun(newActiveRun);
+      updateRun(activeRun, newActiveRun);
     }
   };
 
-  const saveUploadedRun = (uploadRun: IRun) => {
-    const newUploadRun = Object.assign({}, uploadRun);
-    // Update runs list.
-    // Old school `for` loop as we need index anyway. We could use binary search, as runs array will be always
-    // sorted by keys/timestamps, but not worth the effort for a few runs.
-    let idx = 0;
-    for (; idx < runs.length; idx += 1) {
-      if (runs[idx].key === uploadRun.key) {
-        break;
-      }
-    }
+  const saveUploadedRun = (uploadedRun: IRun) => {
+    const newUploadedRun = Object.assign({}, uploadedRun);
+    updateRun(uploadedRun, newUploadedRun);
+  };
+
+  const deleteRun = (runToDelete: IRun) => {
+    const idx = getRunIndex(runToDelete);
     const newRuns = runs.slice();
-    newRuns[idx] = newUploadRun;
+    newRuns.splice(idx, 1);
     setRuns(newRuns);
   };
 
@@ -83,5 +86,5 @@ export const useRuns = (): IUseRunsResult => {
     setRuns([]);
   };
 
-  return { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun };
+  return { runs, startNewRun, saveActiveRunData, resetRuns, activeRun, setActiveRun, saveUploadedRun, deleteRun };
 };
