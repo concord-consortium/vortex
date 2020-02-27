@@ -146,21 +146,29 @@ const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
   return schema as IDataTableDataSchema;
 };
 
+// cache sensors so they are re-used on renders, otherwise, re-connects and disconnects aren't
+// handled by the same object
+const sensorCache: {[key: string]: MockSensor | DeviceSensor} = {};
+
 const getSensor = (sensorFields: string[]) => {
   const useMockSensor = getURLParam("mockSensor") || false;
   const capabilities: ISensorCapabilities = {};
   sensorFields.forEach(fieldName => capabilities[fieldName as SensorCapabilityKey] = true);
-  if (useMockSensor) {
-    return new MockSensor({
-      capabilities,
-      pollInterval: 500,
-      deviceName: "Mocked Sensor"
-    });
-  } else {
-    return new DeviceSensor({
-      capabilities
-    });
+  const key = JSON.stringify(capabilities);
+  if (!sensorCache[key]) {
+    if (useMockSensor) {
+      sensorCache[key] = new MockSensor({
+        capabilities,
+        pollInterval: 500,
+        deviceName: "Mocked Sensor"
+      });
+    } else {
+      sensorCache[key] = new DeviceSensor({
+        capabilities
+      });
+    }
   }
+  return sensorCache[key];
 };
 
 const isRowComplete = (row: { [k: string]: any }, fieldKeys: string[]) => {
