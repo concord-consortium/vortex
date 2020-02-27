@@ -1,7 +1,7 @@
 import React from "react";
 import { S3Resource } from "@concord-consortium/token-service";
 import css from "./resource-listing.module.scss";
-import Button from "../shared/components/button";
+import { Button } from "../shared/components/button";
 
 
 interface IResourceListOpts {
@@ -17,7 +17,7 @@ const ResourceList = (opts: IResourceListOpts) => {
       console.log(`selected ${r.name}`);
       selectFn && selectFn(r);
     };
-    const selected = resource ? resource.id == r.id : false;
+    const selected = resource ? resource.id === r.id : false;
     const cssName = selected
       ? `${css.resourceItem} ${css.selected}`
       : css.resourceItem;

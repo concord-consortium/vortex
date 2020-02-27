@@ -1,12 +1,12 @@
 
 .resourceListContainer{
   max-height: 10em;
-  width: 30vw;
+  // width: 30vw;
   overflow: auto;
-  background-color: hsl(0,10%,98%);
-  border: 1px solid gray;
+  background-color: hsl(34,40%,98%);
+  border: 1px solid  hsl(34, 77%, 79%);
   padding: 0.2em;
-  border-radius: 0.2em;
+  border-radius: 0.3em;
 }
 
 .resourceList{
@@ -15,21 +15,51 @@
   display: flex;
   flex-direction: column;
   .resourceItem:nth-child(1n) {
-    background-color: hsl(0,10%,90%)
+    background-color: hsl(34,40%,90%)
   }
   .resourceItem:nth-child(2n) {
-    background-color: hsl(0,10%,95%)
+    background-color: hsl(34,40%,95%)
   }
   .resourceItem:hover {
     color: white;
-    background-color: hsl(0,10%,75%)
+    background-color: hsl(34,40%,75%)
+  }
+  .resourceItem {
+    padding:  0.25em 0.5em;
+    margin: 0.25em;
+    border-radius: 0.25em;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    div {
+      padding: 0.1em;
+      margin: 0;
+    }
+    .name {
+      font-weight: bold;
+      &:hover {
+        text-decoration: underline;
+      }
+    };
+    .description {
+      font-style: italic;
+    }
+    .delete:hover {
+      background-color: hsl(34,70%,42%);
+      color: white;
+    }
+    &.selected {
+      background-color: hsl(34, 100%, 69%);
+      color: white;
+    }
   }
 }
+
 
 .buttons {
   display: flex;
   flex-direction: row;
-  background-color: hsl(0,10%,90%);
+  background-color: hsl(34,10%,90%);
   padding: 0.25em;
   justify-content: space-between;
   .button {
@@ -37,14 +67,14 @@
     margin: 0px;
     border-radius: 0.2em;
     padding: 0.5em;
-    background-color: hsl(0,10%,75%);
-    box-shadow:  2px 2px 5px  hsl(0,10%,65%);
+    background-color: hsl(34,10%,75%);
+    box-shadow:  2px 2px 5px  hsl(34,10%,65%);
     &:hover {
-      background-color: hsl(0,10%,65%);
+      background-color: hsl(34,10%,65%);
     }
     &.disabled {
-      background-color: hsl(0,10%,85%);
-      box-shadow:  0px 0px 2px  hsl(0,10%,65%);
+      background-color: hsl(34,10%,85%);
+      box-shadow:  0px 0px 2px  hsl(34,10%,65%);
     }
   }
 }
