@@ -2,9 +2,11 @@ import * as React from "react";
 import { useState } from "react";
 import { Scanner } from "./scanner";
 
-import css from "./uploader.module.scss";
 import { RunInfoComponent } from "./run-info";
 import { IRun } from "../hooks/use-runs";
+import { IPhotoOrNote } from "../../shared/components/photo-or-note-field";
+
+import css from "./uploader.module.scss";
 
 export enum UploadState {
   Scanning,
@@ -16,6 +18,7 @@ export enum UploadState {
 interface IProps {
   run: IRun;
   onClose: () => void;
+  saveUploadedRun: (run: IRun) => void;
 }
 
 export const Uploader = (props: IProps) => {
@@ -29,26 +32,93 @@ export const Uploader = (props: IProps) => {
 
   const handleOnScanned = (url: string) => {
     changeState(UploadState.Uploading);
-    const fetchOptions: RequestInit = {
-      method: "POST",
-      mode: "cors",
-      cache: "no-cache",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(props.run)
+
+    let promise = Promise.resolve();
+
+    const sendPostRequest = (body: any) => {
+      const fetchOptions: RequestInit = {
+        method: "POST",
+        mode: "cors",
+        cache: "no-cache",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(body)
+      };
+      return fetch(url, fetchOptions);
     };
-    fetch(url, fetchOptions)
-      .then((resp) => {
-        if (resp.status === 200) {
-          changeState(UploadState.Uploaded);
-        } else {
-          resp.text().then((text) => changeState(UploadState.UploadFailed, text));
+
+    // save all photos first
+    let remotePhotoUrlsChanged = false;
+    const photos = props.run.data.photo as IPhotoOrNote[] || [];
+    if (photos.length > 0) {
+      const uploadPhoto = (localPhotoUrl: string) => {
+        return new Promise<string>((resolve, reject) => {
+          return sendPostRequest({localPhotoUrl})
+            .then((resp) => resp.json())
+            .then(json => {
+              if (json.success) {
+                resolve(json.result);
+              } else {
+                reject(json.result);
+              }
+            });
+        });
+      };
+
+      photos.map(photo => {
+        if (photo.localPhotoUrl) {
+          if (!photo.remotePhotoUrl) {
+            promise = promise.then(() => {
+              if (uploadState !== UploadState.UploadFailed) {
+                return uploadPhoto(photo.localPhotoUrl)
+                  .then((remotePhotoUrl) => {
+                    photo.remotePhotoUrl = remotePhotoUrl;
+                    remotePhotoUrlsChanged = true;
+                  })
+                  .catch((err) => {
+                    changeState(UploadState.UploadFailed, err);
+                  });
+                }
+            });
+          }
         }
-      })
-      .catch((err) => {
-        changeState(UploadState.UploadFailed, err);
       });
+    }
+
+    promise = promise.then(() => {
+      // clear the localPhoto urls as they are large data uris before uploading
+      const savedLocalPhotoUrls = photos.map(photo => {
+        const savedUrl = photo.localPhotoUrl;
+        photo.localPhotoUrl = "";
+        return savedUrl;
+      });
+
+      if (uploadState !== UploadState.UploadFailed) {
+        return sendPostRequest({experiment: props.run})
+          .then((resp) => resp.json())
+          .then(json => {
+            if (json.success) {
+              changeState(UploadState.Uploaded);
+            } else {
+              changeState(UploadState.UploadFailed, json.result);
+            }
+          })
+          .catch((err) => {
+            changeState(UploadState.UploadFailed, err);
+          })
+          .finally(() => {
+            // restore the urls
+            photos.forEach((photo, index) => {
+              photo.localPhotoUrl = savedLocalPhotoUrls[index];
+            });
+            // and save the run locally if the remote urls changed
+            if (remotePhotoUrlsChanged) {
+              props.saveUploadedRun(props.run);
+            }
+          });
+      }
+    });
   };
 
   const contents = () => {

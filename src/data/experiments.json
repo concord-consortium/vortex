@@ -21,14 +21,9 @@
           "formFields": ["experimentData"]
         },
         {
-          "title": "Photo",
-          "icon": "camera",
-          "formFields": []
-        },
-        {
-          "title": "Note",
+          "title": "Note & Photo",
           "icon": "note_and_photo",
-          "formFields": ["note"]
+          "formFields": ["photo"]
         }
       ],
       "dataSchema": {
@@ -81,11 +76,18 @@
               }
             }
           },
-          "note": {
-            "title": "Notes",
+          "photo": {
+            "title": "Photos and Notes",
             "type": "array",
             "items": {
-              "type": "string"
+              "type": "object",
+              "properties": {
+                "isPhoto": {"type": "boolean"},
+                "localPhotoUrl": {"type": "string"},
+                "remotePhotoUrl": {"type": "string"},
+                "note": {"type": "string"},
+                "timestamp": {"type": "string", "format": "date-time"}
+              }
             }
           }
         }
@@ -114,6 +116,9 @@
             "sensorFields": ["temperature", "humidity", "illuminance"],
             "titleField": "studySite"
           }
+        },
+        "photo": {
+          "ui:field": "photo"
         }
       }
     },
@@ -124,7 +129,8 @@
         {"location": "Corner 3"},
         {"location": "Corner 4"},
         {"location": "Average", "temperature":  "<AVG>", "humidity": "<AVG>", "illuminance": "<AVG>"}
-      ]
+      ],
+      "photo": []
     }
   },
   {

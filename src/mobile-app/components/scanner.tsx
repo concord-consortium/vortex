@@ -17,11 +17,11 @@ interface IProps {
 }
 
 export const Scanner = (props: IProps) => {
-  const camera = (window as any).plugin.CanvasCamera;
+  const camera = (window as any).plugin?.CanvasCamera;
   const [scanning, setScanning] = useState(inCordova);
-  let canvasClicked = false;
+  const canvasClicked = useRef(false);
 
-  const handleCanvasClicked = () => canvasClicked = true;
+  const handleCanvasClicked = () => canvasClicked.current = true;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
   useEffect(() => {
@@ -49,7 +49,8 @@ export const Scanner = (props: IProps) => {
         drawLine(canvas, code.location.bottomLeftCorner, code.location.topLeftCorner, color);
         if (isUrl) {
           onFound?.();
-          props.onScanned(code.data);
+          // call after next render
+          setTimeout(() => props.onScanned(code.data), 1);
           foundQRCode = false;
         } else {
           drawLine(canvas, code.location.topLeftCorner, code.location.bottomRightCorner, color);
@@ -73,8 +74,8 @@ export const Scanner = (props: IProps) => {
             width: r.width,
             height: r.width,
             onAfterDraw: () => {
-              if (canvasClicked) {
-                canvasClicked = false;
+              if (canvasClicked.current) {
+                canvasClicked.current = false;
                 findQRCode(canvasElement, canvas, () => camera.stop());
               }
             }

@@ -6,6 +6,7 @@ import "./boostrap-3.3.7.scss";
 import "./bootstrap-vortex-theme.scss";
 import { IExperiment, IExperimentConfig, IExperimentData } from "../experiment-types";
 import { Sensor } from "../../sensors/sensor";
+import { PhotoOrNoteField } from './photo-or-note-field';
 
 export interface IVortexFormContext {
   experiment: IExperiment;
@@ -17,7 +18,8 @@ export interface IVortexFormContext {
 const VortexFormTheme = {
   FieldTemplate,
   fields: {
-    dataTable: DataTableField
+    dataTable: DataTableField,
+    photo: PhotoOrNoteField
   }
 };
 

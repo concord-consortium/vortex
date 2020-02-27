@@ -12,17 +12,20 @@ const corsHandler = cors({origin: true});
 
 export const saveExperimentRun = functions.https.onRequest((request, response) => {
   corsHandler(request, response, () => {
+    const sendError = (code: number, result: any) => response.status(code).send({success: false, result});
+    const sendSuccess = (result: any) => response.status(200).send({success: true, result});
+
     const {runKey, runData} = request.query;
     if (!runKey) {
-      response.status(400).send("Missing runKey in query string!");
+      sendError(400, "Missing runKey in query string!");
     } else if (!runData) {
-      response.status(400).send("Missing runData in query string!");
+      sendError(400, "Missing runData in query string!");
     } else {
       let runDataJSON: any;
       try {
         runDataJSON = JSON.parse(Base64.decode(runData))
       } catch (err){
-        response.status(500).send(`Error decoding runData: ${err.toString()}`)
+        sendError(500, `Error decoding runData: ${err.toString()}`)
         return
       }
       runDataJSON = runDataJSON || {}
@@ -47,15 +50,62 @@ export const saveExperimentRun = functions.https.onRequest((request, response) =
           })
           .then(() => {
             body.createdAt = now
-            return runDocRef
-              .collection("experiments")
-              .add(body)
-              .then(() => response.status(200).send("Run saved"))
-              .catch(err => response.status(500).send(err.toString()))
+            body.updatedAt = now
+            if (body.experiment) {
+              return runDocRef
+                .collection("experiments")
+                .add(body)
+                .then(() => sendSuccess("Run saved"))
+                .catch(err => sendError(500, err.toString()))
+            } else if (body.localPhotoUrl)  {
+              return runDocRef
+                .collection("photos")
+                .add(body)
+                .then((doc) => sendSuccess(`photo://${runKey}/${doc.id}`))
+                .catch(err => sendError(500, err.toString()))
+            } else {
+              sendError(500, "Missing experiment or localPhotoUrl in upload")
+              return;
+            }
           })
-          .catch(err => response.status(500).send(err.toString()))
+          .catch(err => sendError(500, err.toString()))
       })
-      .catch(err => response.status(500).send(err.toString()))
+      .catch(err => sendError(500, err.toString()))
+    }
+  });
+});
+
+export const getExperimentPhoto = functions.https.onRequest((request, response) => {
+  corsHandler(request, response, () => {
+    const sendError = (code: number, result: any) => response.status(code).send({success: false, result});
+    const sendSuccess = (result: any) => response.status(200).send({success: true, result});
+
+    const {src} = request.query;
+    if (!src) {
+      sendError(400, "Missing src in query string!");
+    } else {
+      const match = src.match(/^photo\:\/\/([^/]+)\/(.+)$/);
+      if (match) {
+        const runKey = match[1];
+        const docId = match[2];
+        const firestore = admin.firestore();
+        firestore.collection(`runs/${runKey}/photos`).doc(docId).get()
+          .then((doc) => {
+            if (doc.exists) {
+              const data = doc.data();
+              if (data && data.localPhotoUrl) {
+                sendSuccess(data.localPhotoUrl)
+              } else {
+                sendError(500, "No photo data found!");
+              }
+            } else {
+              sendError(500, "Photo does not exist!");
+            }
+          })
+          .catch(err => sendError(500, err.toString()));
+      } else {
+        sendError(500, `Invalid src photo url: ${src}`);
+      }
     }
   });
 });

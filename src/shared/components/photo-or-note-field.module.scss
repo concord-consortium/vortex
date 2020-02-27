@@ -1,0 +1,124 @@
+@import "variables";
+
+.photoOrNote {
+}
+
+.subTabs {
+  display: flex;
+  justify-content: center;
+
+  .icon {
+    padding: 10px 20px;
+
+    &.active svg {
+      fill: #00c30b;
+    }
+
+    svg {
+      transform: scale(2);
+    }
+  }
+}
+
+.noteSubTab {
+  .addNote {
+    border: 0;
+    background-color: #f9ffc0;
+    width: 100%;
+    height: 200px;
+    padding: 10px;
+    font-size: 18px;
+  }
+
+  .note {
+    background-color: #f9ffc0;
+    margin: 5px;
+    padding: 15px 10px;
+
+    .noteMenu {
+      float: right;
+    }
+
+    .noteText {
+      font-weight: bold;
+      font-size: 18px;
+    }
+  }
+}
+
+.photoSubTab {
+
+  .thumbnails {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 5px;
+
+    .addPhoto {
+      width: 80px;
+      height: 80px;
+      margin: 5px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      svg {
+        transform: scale(2);
+      }
+    }
+
+    .thumbnail {
+      width: 80px;
+      height: 80px;
+      border: 2px solid #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      position: relative;
+
+      img {
+        width: 100%;
+        padding: 3px;
+      }
+
+      .hasCaption {
+        position: absolute;
+        top: (80px - 24px) / 2;
+        left: (80px - 24px) / 2;
+
+        svg {
+          fill: #fff;
+        }
+      }
+    }
+
+    .selectedPhoto {
+      border: 2px solid #00e90e;
+    }
+  }
+
+  .photo {
+    position: relative;
+
+    .photoMenu {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+
+      svg {
+        fill: #fff;
+      }
+    }
+
+    img {
+      width: 100%;
+    }
+
+    .photoNote {
+      width: 100%;
+      background-color: #f9ffc0;
+      width: 100%;
+      padding: 10px;
+      font-size: 18px;
+    }
+  }
+}

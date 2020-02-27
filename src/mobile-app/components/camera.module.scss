@@ -1,0 +1,19 @@
+$button-size: 60px;
+
+.canvas {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  background-color: #000;
+}
+
+.cameraButton {
+  position: absolute;
+  bottom: $button-size / 3;
+  width: $button-size;
+  height: $button-size;
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: $button-size / 2;
+}
+
