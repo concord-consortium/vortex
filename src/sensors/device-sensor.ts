@@ -73,13 +73,8 @@ export class DeviceSensor extends Sensor {
   }
 
   public disconnect(): Promise<void> {
-    return new Promise<void>((resolve, reject) => {
-      if (!this.bluetoothDevice || !this.bluetoothDevice.gatt || !this.bluetoothDevice.gatt.connected) {
-        return reject("Not connected to a device");
-      }
-      this.bluetoothDevice.gatt.disconnect();
-      return resolve();
-    });
+    this.setConnected({connected: false});
+    return Promise.resolve();
   }
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
@@ -105,9 +100,7 @@ export class DeviceSensor extends Sensor {
     super.setConnected(options);
     if (!options.connected) {
       this.bluetoothDevice?.removeEventListener("gattserverdisconnected", this.handleDisconnected);
-      if (this.bluetoothDevice?.gatt?.connected) {
-        this.bluetoothDevice.gatt.disconnect();
-      }
+      this.bluetoothDevice?.gatt?.disconnect();
       this.device = undefined;
       this.bluetoothDevice = undefined;
       this.bluetoothServer = undefined;
