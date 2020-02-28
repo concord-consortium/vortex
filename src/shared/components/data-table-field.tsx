@@ -195,6 +195,20 @@ const castToExpectedTypes = (fieldDefinition: {[propName: string]: IDataTableFie
   return newData;
 };
 
+// Note that there's assumption that data has been updated ONLY when some value has been edited. New values or updates from undefined to real value shouldn't
+// be considered as "update".
+const dataEdited = (newData: IDataTableData, oldData: IDataTableData) => {
+  let result = false;
+  oldData.forEach((row, rowIdx) => {
+    Object.keys(row).forEach(propName => {
+      if (row[propName] !== undefined && row[propName] !== "" && row[propName] !== newData[rowIdx][propName]) {
+        result = true;
+      }
+    });
+  });
+  return result;
+};
+
 export const DataTableField: React.FC<FieldProps> = props => {
   const { schema, onChange } = props;
   let validatedSchema = null;
@@ -225,7 +239,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   }, [props.formData]);
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
-  const handleOnChange = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
+  const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
 
   const handleInputChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
     // First update internal state, keep strings here, casting to Numbers here can cause confusing changes of the input.
@@ -233,13 +247,42 @@ export const DataTableField: React.FC<FieldProps> = props => {
     const rawValue = event.currentTarget.value;
     newData[rowIdx] = Object.assign({}, newData[rowIdx], { [propName]: rawValue });
     setFormData(newData);
-    handleOnChange(newData);
+  };
+
+  const handleInputBlur = () => {
+    const oldData = props.formData;
+    if (formData !== oldData) {
+      // New data has been added or something has been edited.
+      if (dataEdited(formData, oldData)) {
+        // Data has been edited, user has to confirm before new data is saved.
+        if (confirm("Update the value?\nYou edited a value. This will replace the previous value with your updated value.")) {
+          saveData(formData);
+        } else {
+          // Restore original data.
+          setFormData(oldData);
+        }
+      } else {
+        // New data has been added. No need to confirm saving.
+        saveData(formData);
+      }
+    }
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
     if (!sensorOutput.connected) {
       alert("Sensor not connected");
       return;
+    }
+    let previousValuesAvailable = false;
+    sensorFields.forEach((name: SensorCapabilityKey) => {
+      if (formData[rowIdx][name] !== undefined && formData[rowIdx][name] !== "") {
+        previousValuesAvailable = true;
+      }
+    });
+    if (previousValuesAvailable) {
+      if (!confirm("Discard sensor values?\nThis will delete row's current values and allow you to record new values from your sensor.")) {
+        return;
+      }
     }
     const values = sensorOutput.values;
     const result: { [k: string]: number } = {};
@@ -253,7 +296,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     const newData = formData.slice();
     newData[rowIdx] = Object.assign({}, newData[rowIdx], result);
     setFormData(newData);
-    handleOnChange(newData);
+    saveData(newData);
   };
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
@@ -306,7 +349,17 @@ export const DataTableField: React.FC<FieldProps> = props => {
       if (isSensorField) classNames += " " + css.sensorField;
       if (isFunction) classNames += " " + css.function;
       return <td key={name} className={classNames}>
-        {readOnly ? value : <input type="text" value={value} disabled={isFunction || isSensorField} onChange={handleInputChange.bind(null, rowIdx, name)}/>}
+        {
+          readOnly ?
+            value :
+            <input
+              type="text"
+              value={value}
+              disabled={isFunction || isSensorField}
+              onChange={handleInputChange.bind(null, rowIdx, name)}
+              onBlur={handleInputBlur.bind(null, rowIdx, name)}
+            />
+        }
       </td>;
     });
   };
