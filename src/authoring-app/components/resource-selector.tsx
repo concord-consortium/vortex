@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Button } from "../shared/components/button";
+import { Button } from "../../shared/components/button";
 import { TokenServiceClient, Resource, S3Resource } from "@concord-consortium/token-service";
 import * as css from "./resource-selector.scss";
 

@@ -1,7 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 
-import { AuthoringComponent } from "./authoring";
+import { AuthoringComponent } from "./components/authoring";
 
 import "./index.scss";
 

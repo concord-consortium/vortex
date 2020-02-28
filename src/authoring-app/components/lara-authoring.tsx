@@ -1,14 +1,10 @@
 import React, { useState } from "react";
 
-import css from "./authoring.module.scss";
+import css from "./lara-authoring.module.scss";
 import { IExperiment } from "../../shared/experiment-types";
-import { UseS3 } from "../../authoring-app/use-s3";
-import { S3Resource } from "@concord-consortium/token-service";
-import { ResourceListing } from "../../authoring-app/resource-listing";
-import { Button } from "../../shared/components/button";
-import { GetS3Config } from "../../authoring-app/getS3Config";
-import { Experiment } from "../../shared/components/experiment";
-
+import { UseS3 } from "../hooks/use-s3";
+import { ResourceListing } from "./resource-listing";
+import { GetS3Config } from "../utils/getS3Config";
 
 export interface IAuthoredState {
   version: string;

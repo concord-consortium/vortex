@@ -1,6 +1,6 @@
 import React from "react";
-import { ExperimentWrapper } from "../mobile-app/components/experiment-wrapper";
-import { IExperiment } from "../shared/experiment-types";
+import { ExperimentWrapper } from "../../mobile-app/components/experiment-wrapper";
+import { IExperiment } from "../../shared/experiment-types";
 
 const validate = (experimentMaybe: Partial<IExperiment>) => {
   // TOOD: Really validate it?
@@ -15,6 +15,7 @@ const errors = (expimentDef: Partial<IExperiment>) => {
 
 const saveActiveRunData = (data: any) => null;
 const exitExperiment = () => null;
+const onUpload = () => null;
 
 export interface IMobilePreviewParams {
   experiment: IExperiment;
@@ -31,6 +32,7 @@ export const MobilePreview = (params: IMobilePreviewParams) => {
         data={{}}
         onDataChange={saveActiveRunData}
         onBackBtnClick={exitExperiment}
+        onUpload={onUpload}
       />
     :
       <div>{errors(experiment)}</div>

@@ -1,7 +1,7 @@
 import React from "react";
 import { S3Resource } from "@concord-consortium/token-service";
 import css from "./resource-listing.module.scss";
-import { Button } from "../shared/components/button";
+import { Button } from "../../shared/components/button";
 
 
 interface IResourceListOpts {

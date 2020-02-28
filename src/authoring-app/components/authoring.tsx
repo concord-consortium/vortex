@@ -1,12 +1,13 @@
 import React from "react";
 import css from "./authoring.module.scss";
-import { IExperiment } from "../shared/experiment-types";
+import { IExperiment } from "../../shared/experiment-types";
 import JSONEditor from "./json-editor";
-import { Button } from "../shared/components/button";
+import { Button } from "../../shared/components/button";
 import { ResourceListing } from "./resource-listing";
 import { MobilePreview } from "./mobile-preview";
-import { UseS3, S3Status } from "./use-s3";
-import { GetS3Config  } from "./getS3Config";
+import { UseS3, S3Status } from "../hooks/use-s3";
+import { GetS3Config  } from "../utils/getS3Config";
+
 interface IProps {
   experiment?: IExperiment;
 }

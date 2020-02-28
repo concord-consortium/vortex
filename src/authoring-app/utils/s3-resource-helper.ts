@@ -7,7 +7,7 @@ import {
   S3ResourceTool
 } from "@concord-consortium/token-service";
 import { IJwtResponse } from "@concord-consortium/lara-plugin-api";
-import { getURLParam } from "./get-url-param";
+import { getURLParam } from "../../shared/utils/get-url-param";
 import ClientOAuth2 from "client-oauth2";
 import "whatwg-fetch"; // window.fetch polyfill for older browsers (IE)
 
@@ -39,7 +39,7 @@ export interface IS3ResourceHelperOpts {
 /**
  * Helper class for working with TokenService S3Reources.
  * TODO: This file should probably be added to the TokenService Client Library.
- * 
+ *
  * @export
  * @class S3ResourceHelper
  */

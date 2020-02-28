@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { S3ResourceHelper, IS3ResourceHelperOpts} from "../shared/utils/s3-resource-helper";
+import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-helper";
 import { S3Resource } from "@concord-consortium/token-service";
 
 let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;

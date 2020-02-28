@@ -4,7 +4,7 @@ import { Base64 } from "js-base64";
 import "firebase/firestore";
 import "firebase/auth";
 
-import { LaraAuthoringComponent } from "./authoring";
+import { LaraAuthoringComponent } from "../../authoring-app/components/lara-authoring";
 import { RuntimeComponent } from "./runtime";
 import { inIframe } from "../utils/in-iframe";
 import { useInteractiveApi } from "../hooks/interactive-api";
