@@ -26,6 +26,7 @@ export const AllCapabilities: ISensorCapabilities = {
 };
 
 export enum SensorEvent {
+  Connecting = "connecting",
   Connection = "connection",
   Values = "values",
   Error = "error",
@@ -111,6 +112,10 @@ export class Sensor extends EventEmitter<SensorEvent> {
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
     return Promise.reject("pollValues() method not overridden!");
+  }
+
+  protected setConnecting() {
+    this.emit(SensorEvent.Connecting);
   }
 
   // can't use private setter as it must agree with public getter

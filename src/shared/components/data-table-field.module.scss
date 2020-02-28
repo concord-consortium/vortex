@@ -3,6 +3,8 @@
 $headerBorder: #fff;
 
 .dataTable {
+  position: relative;
+
   .title {
     font-size: 18px;
     font-weight: normal;
@@ -49,6 +51,9 @@ $headerBorder: #fff;
     }
     .sensorField {
       color: $ccOrange;
+      input:focus {
+        border: solid 2px $ccOrange;
+      }
     }
     .function {
       color: $ccTealDark2;
@@ -95,16 +100,51 @@ $headerBorder: #fff;
       align-items: center;
       &.active {
         background-color: $ccOrange;
+        &.refresh {
+          background-color: $ccOrangeLight1;
+        }
         &:hover {
           cursor: pointer;
         }
       }
-      &.refresh {
-        background-color: $ccOrangeLight1;
-      }
       svg {
         fill: #fff;
       }
+    }
+  }
+
+  .editModeText {
+    display: flex;
+    align-items: center;
+    font-size: 14px;
+    margin-left: 15px;
+    svg {
+      fill: #198ec4;
+      margin-right: 10px;
+    }
+  }
+
+  .topBar {
+    min-height: 30px;
+  }
+
+  .menu {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    display: flex;
+    flex-direction: row;
+
+    .saveButton {
+      margin-right: 10px;
+      margin-top: -2px;
+      border: 1px solid #0b809b;
+      background-color: #fff;
+      color: #0b809b;
+      border-radius: 5px;
+      padding: 3px 10px;
+      text-transform: uppercase;
+      outline: none;
     }
   }
 }

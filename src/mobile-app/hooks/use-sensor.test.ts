@@ -1,4 +1,4 @@
-import { Sensor, ISensorValues, SensorEvent, ISensorConnectionEventData, ISensorValuesEventData, ISensorErrorData } from "../../sensors/sensor";
+import { Sensor } from "../../sensors/sensor";
 import { renderHook, act } from "@testing-library/react-hooks";
 import { MockSensor } from "../../sensors/mock-sensor";
 import { useSensor } from "./use-sensor";
@@ -48,14 +48,6 @@ describe("use-sensor hook", () => {
     await act(async () => { await sensor.disconnect(); });
     // after disconnect it has no device name
     expect(result.current.deviceName).toEqual(undefined);
-  });
-
-  it("autoconnect sensors start connected with values", async () => {
-    const { result } = renderHook(() => useSensor(autoConnectedSensor));
-    expect(result.current.connected).toEqual(true);
-    expect(result.current.values).not.toEqual({});
-    expect(result.current.error).toEqual(undefined);
-    expect(result.current.deviceName).toEqual("Auto-Connected Sensor");
   });
 
   it("sensors can be assigned error values", async () => {

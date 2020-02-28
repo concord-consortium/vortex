@@ -21,10 +21,20 @@
 }
 
 .menuItem {
+  display: flex;
+  align-items: center;
   margin: 10px;
   color: $textBlack;
   white-space: nowrap;
   &:hover {
     cursor: pointer;
+  }
+  svg {
+    margin-right: 10px;
+  }
+
+  .iconPlaceholder {
+    width: 24px;
+    margin-right: 10px;
   }
 }

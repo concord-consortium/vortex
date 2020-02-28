@@ -65,8 +65,13 @@ export class MockSensor extends Sensor {
   }
 
   public connect(): Promise<void> {
-    this.setConnected({connected: true, deviceName: this.mockedDeviceName});
-    return Promise.resolve();
+    this.setConnecting();
+    return new Promise(resolve => {
+      setTimeout(() => {
+        this.setConnected({connected: true, deviceName: this.mockedDeviceName});
+        resolve();
+      }, 500);
+    });
   }
 
   public disconnect(): Promise<void> {

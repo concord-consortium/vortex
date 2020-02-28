@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FieldProps } from "react-jsonschema-form";
-import css from "./data-table-field.module.scss";
 import { MockSensor } from "../../sensors/mock-sensor";
 import { ISensorCapabilities, SensorCapabilityKey } from "../../sensors/sensor";
 import { SensorComponent } from "../../mobile-app/components/sensor";
@@ -12,6 +11,8 @@ import { IFormUiSchema } from "../experiment-types";
 import { Icon } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
 import { tableKeyboardNav } from "../utils/table-keyboard-nav";
+import { MenuComponent, MenuItemComponent } from "./menu";
+import css from "./data-table-field.module.scss";
 
 const defPrecision = 2;
 
@@ -232,11 +233,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
   const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
+  const [manualEntryMode, setManualEntryMode] = useState<boolean>(false);
 
   // listen for prop changes from uploads
   useEffect(() => {
     setFormData(props.formData);
   }, [props.formData]);
+
+  const connectSensor = () => sensor?.connect();
+  const disconnectSensor = () => sensor?.disconnect();
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
@@ -266,6 +271,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
         saveData(formData);
       }
     }
+  };
+
+  const setSensorMode = () => {
+    setManualEntryMode(false);
+  };
+
+  const setEditMode = () => {
+    sensor?.disconnect();
+    setManualEntryMode(true);
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
@@ -355,7 +369,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
             <input
               type="text"
               value={value}
-              disabled={isFunction || isSensorField}
+              disabled={isFunction || (isSensorField && !manualEntryMode)}
               onChange={handleInputChange.bind(null, rowIdx, name)}
               onBlur={handleInputBlur.bind(null, rowIdx, name)}
             />
@@ -366,10 +380,32 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.dataTable}>
-      {sensor && <SensorComponent sensor={sensor}/>}
-      <div className={css.title}>{title}</div>
+      <div className={css.menu}>
+        {
+          sensor &&
+          <MenuComponent>
+            {
+              manualEntryMode ?
+                <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent> :
+                <>
+                  {
+                    sensorOutput.connected ?
+                      <MenuItemComponent onClick={disconnectSensor}>Disconnect</MenuItemComponent> :
+                      <MenuItemComponent onClick={connectSensor}>Connect</MenuItemComponent>
+                  }
+                  <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent>
+                </>
+            }
+          </MenuComponent>
+        }
+      </div>
+      <div className={css.topBar}>
+        {sensor && !manualEntryMode && <SensorComponent sensor={sensor} hideMenu={true}/>}
+        {manualEntryMode && <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>}
+        {title && <div className={css.title}>{title}</div>}
+      </div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>
-        <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>
+        <tbody className={!manualEntryMode && sensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
           {sensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
           {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
