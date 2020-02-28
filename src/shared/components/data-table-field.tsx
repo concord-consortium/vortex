@@ -273,12 +273,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const handleSaveButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // the save button does nothing for now
-    e.preventDefault();
-    e.stopPropagation();
-  };
-
   const setSensorMode = () => {
     setManualEntryMode(false);
   };
@@ -387,7 +381,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
   return (
     <div className={css.dataTable}>
       <div className={css.menu}>
-        <button className={css.saveButton} onClick={handleSaveButton}>Save</button>
         {
           sensor &&
           <MenuComponent>

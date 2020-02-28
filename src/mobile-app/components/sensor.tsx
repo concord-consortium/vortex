@@ -1,4 +1,4 @@
-import React, { useState, useImperativeHandle, forwardRef } from "react";
+import React from "react";
 import { SensorValue } from "./sensor-value";
 import { Sensor } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
