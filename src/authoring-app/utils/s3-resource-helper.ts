@@ -3,8 +3,7 @@ import {
   TokenServiceClient,
   S3Resource,
   FindAllQuery,
-  ResourceTool,
-  S3ResourceTool
+  ResourceTool
 } from "@concord-consortium/token-service";
 import { IJwtResponse } from "@concord-consortium/lara-plugin-api";
 import { getURLParam } from "../../shared/utils/get-url-param";
@@ -153,7 +152,7 @@ export class S3ResourceHelper {
     const firebaseJwt = await this.getFirebaseJwt(oauthToken);
 
     // return our new TokenServiceClient:
-    this.client = new TokenServiceClient({jwt: firebaseJwt.token});
+    this.client = new TokenServiceClient({jwt: firebaseJwt.token, env: "staging"});
     return this.client;
   }
 
