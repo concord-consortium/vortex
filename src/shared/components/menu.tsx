@@ -4,11 +4,13 @@ import css from "./menu.module.scss";
 
 interface IMenuItemProps {
   onClick: () => void;
+  icon?: string;
 }
 
-export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, children}) => {
+export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, children}) => {
   return (
     <div className={css.menuItem} onClick={onClick}>
+      {icon ? <Icon name={icon}/> : <div className={css.iconPlaceholder}/>}
       {children}
     </div>
   );

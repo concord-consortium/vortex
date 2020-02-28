@@ -233,6 +233,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
   const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
+  const [manualEntryMode, setManualEntryMode] = useState<boolean>(false);
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -276,6 +277,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
     // the save button does nothing for now
     e.preventDefault();
     e.stopPropagation();
+  };
+
+  const setSensorMode = () => {
+    setManualEntryMode(false);
+  };
+
+  const setEditMode = () => {
+    sensor?.disconnect();
+    setManualEntryMode(true);
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
@@ -365,7 +375,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
             <input
               type="text"
               value={value}
-              disabled={isFunction || isSensorField}
+              disabled={isFunction || (isSensorField && !manualEntryMode)}
               onChange={handleInputChange.bind(null, rowIdx, name)}
               onBlur={handleInputBlur.bind(null, rowIdx, name)}
             />
@@ -378,19 +388,31 @@ export const DataTableField: React.FC<FieldProps> = props => {
     <div className={css.dataTable}>
       <div className={css.menu}>
         <button className={css.saveButton} onClick={handleSaveButton}>Save</button>
-        <MenuComponent>
-          {
-            sensorOutput.connected
-            ? <MenuItemComponent onClick={disconnectSensor}>Disconnect</MenuItemComponent>
-            : <MenuItemComponent onClick={connectSensor}>Connect</MenuItemComponent>
-          }
-        </MenuComponent>
+        {
+          sensor &&
+          <MenuComponent>
+            {
+              manualEntryMode ?
+                <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent> :
+                <>
+                  {
+                    sensorOutput.connected ?
+                      <MenuItemComponent onClick={disconnectSensor}>Disconnect</MenuItemComponent> :
+                      <MenuItemComponent onClick={connectSensor}>Connect</MenuItemComponent>
+                  }
+                  <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent>
+                </>
+            }
+          </MenuComponent>
+        }
       </div>
-      {sensor && <SensorComponent sensor={sensor} hideMenu={true}/>
-      }
-      <div className={css.title}>{title}</div>
+      <div className={css.topBar}>
+        {sensor && !manualEntryMode && <SensorComponent sensor={sensor} hideMenu={true}/>}
+        {manualEntryMode && <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>}
+        {title && <div className={css.title}>{title}</div>}
+      </div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>
-        <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>
+        <tbody className={!manualEntryMode && sensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
           {sensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
           {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
