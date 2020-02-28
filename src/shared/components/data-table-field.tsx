@@ -212,13 +212,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
   // Sensor instance can be provided in form context or it'll be created using sensorFields as capabilities.
-  const sensor = formContext.experimentConfig?.useSensors ? (formContext.sensor || getSensor(sensorFields)) : null;
+  const sensor = formContext.experimentConfig?.useSensors && sensorFields.length > 0 ? (formContext.sensor || getSensor(sensorFields)) : null;
   const sensorOutput = useSensor(sensor);
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
   const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
-  // Sensor buttons should be rendered only when sensor is available and some properties are connected to sensor.
-  const renderSensorButtons = sensor && sensorFields.length > 0;
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -259,7 +257,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
     const basicCells = renderBasicCells(fieldKeys, row, rowIdx);
-    if (!renderSensorButtons) {
+    if (!sensor) {
       return basicCells;
     }
     // Render another column with sensor record button.
@@ -310,12 +308,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.dataTable}>
-      {sensor && (sensorFields.length > 0) && <SensorComponent sensor={sensor}/>}
+      {sensor && <SensorComponent sensor={sensor}/>}
       <div className={css.title}>{title}</div>
       <table className={css.table}>
         <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
-          {renderSensorButtons && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
+          {sensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
           {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
         </tr>
         {
