@@ -23,6 +23,8 @@ export const AppComponent: React.FC = () => {
     }
   };
 
+  const handleUpload = () => setUploadRun(activeRun || undefined);
+
   const renderRunPicker = () => {
     if (runs.length > 0) {
       // LATER: add support for onRunEdit
@@ -49,14 +51,15 @@ export const AppComponent: React.FC = () => {
           data={activeRun.data}
           onDataChange={saveActiveRunData}
           onBackBtnClick={exitExperiment}
+          onUpload={handleUpload}
         />
         :
         <>
           <ExperimentPicker setExperiment={startNewRun}/>
           {renderRunPicker()}
-          {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} saveUploadedRun={saveUploadedRun} /> : undefined}
         </>
       }
+      {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} saveUploadedRun={saveUploadedRun} /> : undefined}
     </div>
   );
 };
