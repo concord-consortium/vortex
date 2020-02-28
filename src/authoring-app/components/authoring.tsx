@@ -14,27 +14,20 @@ interface IProps {
 
 export const AuthoringComponent = (props : IProps) => {
   const {
+    stagingDescription, stagingName, setStagingDescription, setStagingName,
     s3Resource, resources, resourceUrl, resourceObject, status, statusMsg,
     refreshList, selectFn, deleteFn, createFn, stageContentFn, saveFn
   } = UseS3(GetS3Config());
 
-  const nameRef = React.createRef<HTMLInputElement>();
-  const descRef = React.createRef<HTMLInputElement>();
+  const setName = (e: React.FormEvent<HTMLInputElement>) => {
+    const v = e.currentTarget.value;
+    setStagingName(v);
+  };
 
-
-  // const updateMetaFields = (name: string, description: string) => {
-  //   if(nameRef && nameRef.current) {
-  //     nameRef.current.value = name;
-  //     console.log(`updating name ref ${name}`);
-  //   }
-  //   if(descRef && descRef.current) {
-  //     descRef.current.value = description;
-  //     console.log(`updating desc ref ${description}`);
-  //   }
-  // };
-  // const clearMetaFields = () => {
-  //   updateMetaFields("","");
-  // };
+  const setDescription = (e: React.FormEvent<HTMLInputElement>) => {
+    const v = e.currentTarget.value;
+    setStagingDescription(v);
+  };
 
   return (
     <div className={css.authoring}>
@@ -67,15 +60,15 @@ export const AuthoringComponent = (props : IProps) => {
               Name:
                 <input
                   name="name"
-                  defaultValue={s3Resource.name}
-                  ref={nameRef}
+                  onChange={setName}
+                  value={stagingName}
                 />
               <br/>
               Description:
                 <input
-                  name="name"
-                  defaultValue={s3Resource.description}
-                  ref={descRef}
+                  name="description"
+                  onChange={setDescription}
+                  value={stagingDescription}
                 />
               <br/>
               { resourceUrl

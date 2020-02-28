@@ -17,6 +17,8 @@ export enum S3Status {
 // TODO: Maybe use this query hook https://github.com/tannerlinsley/react-query
 export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const [ s3Resource, setS3Resource ] = useState(null as S3Resource|null);
+  const [ stagingName, setStagingName ] = useState("untitled");
+  const [ stagingDescription, setStagingDescription ] = useState("description");
   const [ resources, setResources ] = useState([] as S3Resource[]);
   const [ resourceUrl, setResourceUrl ] = useState(null as string|null);
   const [ resourceContent, setResourceContent ] = useState("");
@@ -58,17 +60,13 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const saveFn = () => {
     setStatus(S3Status.SavePending);
     if(s3Resource) {
-      // TODO: Look at this post-refactor.
-      // const nameInput = nameRef.current?.value;
-      // const descInput = descRef.current?.value;
-      // Helper will check dirty status, so this update can return fast:
-      // helper.updateMetaData(s3Resource,nameInput, descInput).then(newResource => {
+      helper.updateMetaData(s3Resource, stagingName, stagingDescription).then(newResource => {
         helper.s3Upload({
           s3Resource,
           body: resourceContent,
-          filename: "newResource.name", // TODO: Fix this ⬅
+          filename: stagingName
         }).then(saveCallback);
-      // });
+      });
 
     }
     else {
@@ -83,32 +81,23 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     setStatus(S3Status.Complete);
   };
 
-
-  // const updateMetaFields = (name: string, description: string) => {
-  //   if(nameRef && nameRef.current) {
-  //     nameRef.current.value = name;
-  //     console.log(`updating name ref ${name}`);
-  //   }
-  //   if(descRef && descRef.current) {
-  //     descRef.current.value = description;
-  //     console.log(`updating desc ref ${description}`);
-  //   }
-  // };
-  // const clearMetaFields = () => {
-  //   updateMetaFields("","");
-  // };
+  const clearMetaFields = () => {
+    setStagingName("untitled");
+    setStagingDescription("description");
+  };
 
   const loadFn = (resource?: S3Resource) => {
     const newResource = resource ? resource : s3Resource;
     if(newResource) {
-      // updateMetaFields(newResource.name, newResource.description);
+      setStagingName(newResource.name);
+      setStagingDescription(newResource.description);
       setStatus(S3Status.LoadPending);
       setS3Resource(newResource);
       helper.loadJSONFromS3(newResource)
       .then(loadCallback)
       .catch(handleError);
     } else {
-      // clearMetaFields();
+      clearMetaFields();
     }
   };
 
@@ -169,6 +158,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   if(status === S3Status.Init) { refreshList(); }
 
   return ({
+    stagingName, setStagingName, stagingDescription, setStagingDescription,
     s3Resource, setS3Resource, resources, setResources,
     resourceUrl, setResourceUrl, resourceObject, resourceContent,
     setResourceContent, status, setStatus, statusMsg, setStatusMsg,
