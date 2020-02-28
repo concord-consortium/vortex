@@ -33,7 +33,7 @@ export class DeviceSensor extends Sensor {
     if (this.device) {
       this.setConnected({connected: false});
     }
-
+    this.setConnecting();
     return new Promise<void>((resolve, reject) => {
       if (!navigator.bluetooth) {
         return reject("Bluetooth not enabled in this environment");

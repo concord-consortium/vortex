@@ -1,6 +1,5 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { FieldProps } from "react-jsonschema-form";
-import css from "./data-table-field.module.scss";
 import { MockSensor } from "../../sensors/mock-sensor";
 import { ISensorCapabilities, SensorCapabilityKey } from "../../sensors/sensor";
 import { SensorComponent } from "../../mobile-app/components/sensor";
@@ -12,6 +11,8 @@ import { IFormUiSchema } from "../experiment-types";
 import { Icon } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
 import { tableKeyboardNav } from "../utils/table-keyboard-nav";
+import { MenuComponent, MenuItemComponent } from "./menu";
+import css from "./data-table-field.module.scss";
 
 const defPrecision = 2;
 
@@ -238,6 +239,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
     setFormData(props.formData);
   }, [props.formData]);
 
+  const connectSensor = () => sensor?.connect();
+  const disconnectSensor = () => sensor?.disconnect();
+
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
 
@@ -266,6 +270,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
         saveData(formData);
       }
     }
+  };
+
+  const handleSaveButton = (e: React.MouseEvent<HTMLButtonElement>) => {
+    // the save button does nothing for now
+    e.preventDefault();
+    e.stopPropagation();
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
@@ -366,7 +376,18 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.dataTable}>
-      {sensor && <SensorComponent sensor={sensor}/>}
+      <div className={css.menu}>
+        <button className={css.saveButton} onClick={handleSaveButton}>Save</button>
+        <MenuComponent>
+          {
+            sensorOutput.connected
+            ? <MenuItemComponent onClick={disconnectSensor}>Disconnect</MenuItemComponent>
+            : <MenuItemComponent onClick={connectSensor}>Connect</MenuItemComponent>
+          }
+        </MenuComponent>
+      </div>
+      {sensor && <SensorComponent sensor={sensor} hideMenu={true}/>
+      }
       <div className={css.title}>{title}</div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>
         <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>

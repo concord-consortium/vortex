@@ -3,6 +3,7 @@ import { Sensor, ISensorValues, SensorEvent, ISensorConnectionEventData, ISensor
 import { logError } from "../../shared/utils/log";
 
 export interface IUseSensorResult {
+  connecting: boolean;
   connected: boolean;
   deviceName: string | undefined;
   values: ISensorValues;
@@ -12,6 +13,7 @@ export interface IUseSensorResult {
 export const useSensor = (sensor: Sensor | null) => {
   if (!sensor) {
     return {
+      connecting: false,
       connected: false,
       deviceName: undefined,
       values: {},
@@ -19,11 +21,21 @@ export const useSensor = (sensor: Sensor | null) => {
     };
   }
   const {connected, deviceName, values} = sensor;
-  const [useSensorResult, setUseSensorResult] = useState<IUseSensorResult>({connected, deviceName, values, error: undefined});
+  const [useSensorResult, setUseSensorResult] = useState<IUseSensorResult>({connecting: false, connected, deviceName, values, error: undefined});
 
   useEffect(() => {
+    const onConnecting = (data: ISensorConnectionEventData) => {
+      setUseSensorResult({
+        connecting: true,
+        connected: false,
+        deviceName: undefined,
+        values: {},
+        error: undefined
+      });
+    };
     const onConnection = (data: ISensorConnectionEventData) => {
       setUseSensorResult({
+        connecting: false,
         connected: data.connected,
         deviceName: data.deviceName,
         values: {},
@@ -32,6 +44,7 @@ export const useSensor = (sensor: Sensor | null) => {
     };
     const onValues = (data: ISensorValuesEventData) => {
       setUseSensorResult({
+        connecting: false,
         connected: sensor.connected,
         deviceName: data.deviceName,
         values: data.values,
@@ -43,17 +56,20 @@ export const useSensor = (sensor: Sensor | null) => {
         logError(data.error);
       }
       setUseSensorResult({
+        connecting: false,
         connected: sensor.connected,
         deviceName: data.deviceName,
         values: {},
         error: data.error
       });
     };
+    sensor.on(SensorEvent.Connecting, onConnecting);
     sensor.on(SensorEvent.Connection, onConnection);
     sensor.on(SensorEvent.Values, onValues);
     sensor.on(SensorEvent.Error, onError);
 
     return () => {
+      sensor.off(SensorEvent.Connecting, onConnecting);
       sensor.off(SensorEvent.Connection, onConnection);
       sensor.off(SensorEvent.Values, onValues);
       sensor.off(SensorEvent.Error, onError);

@@ -3,6 +3,8 @@
 $headerBorder: #fff;
 
 .dataTable {
+  position: relative;
+
   .title {
     font-size: 18px;
     font-weight: normal;
@@ -105,6 +107,26 @@ $headerBorder: #fff;
       svg {
         fill: #fff;
       }
+    }
+  }
+
+  .menu {
+    position: absolute;
+    top: 0;
+    right: 10px;
+    display: flex;
+    flex-direction: row;
+
+    .saveButton {
+      margin-right: 10px;
+      margin-top: -2px;
+      border: 1px solid #0b809b;
+      background-color: #fff;
+      color: #0b809b;
+      border-radius: 5px;
+      padding: 3px 10px;
+      text-transform: uppercase;
+      outline: none;
     }
   }
 }
