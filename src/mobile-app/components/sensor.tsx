@@ -46,11 +46,6 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
   const handleSensorModeMenuItem = () => onSetMode?.("sensor");
   const handleManualModeMenuItem = () => onSetMode?.("manual");
   const handleShowPlotsMenuItem = () => /* TBD */ undefined;
-  const handleSaveButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    // the save button does nothing for now
-    e.preventDefault();
-    e.stopPropagation();
-  };
 
   const renderIcon = (icon: "connected" | "disconnected" | "error") => (
     <div className={css.statusIcon}>
@@ -151,7 +146,6 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
     <div className={css.sensor}>
       <div className={connectionClassName} onClick={connecting || connected ? undefined : handleConnect}>
         {error ? renderError() : (connected ? renderConnected() : (connecting ? renderConnecting() : renderDisconnected()))}
-        <button className={css.saveButton} onClick={handleSaveButton}>Save</button>
         {renderMenu()}
       </div>
       {renderValues()}

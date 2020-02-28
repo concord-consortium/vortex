@@ -2,9 +2,10 @@ import React from "react";
 import { IExperiment, IExperimentConfig, IExperimentData } from "../../shared/experiment-types";
 import { Experiment } from "../../shared/components/experiment";
 import { Initials } from "../../shared/components/initials";
+import { Icon } from "../../shared/components/icon";
+import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 
 import css from "./experiment-wrapper.module.scss";
-import { Icon } from "../../shared/components/icon";
 
 interface IProps {
   experiment: IExperiment;
@@ -12,6 +13,7 @@ interface IProps {
   data: IExperimentData;
   onDataChange: (data: IExperimentData) => void;
   onBackBtnClick: () => void;
+  onUpload: () => void;
 }
 
 // App specific config. Mobile app shouldn't show labels and it should use sensors.
@@ -21,9 +23,15 @@ const experimentConfig: IExperimentConfig = {
   useSensors: true
 };
 
-export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick }) => {
+export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload }) => {
   const { metadata } = experiment;
   const { initials } = metadata;
+
+  const handleSave = () => {
+    // blur the active input element if focused
+    (document.activeElement as HTMLElement)?.blur?.();
+  };
+
   let title = null;
   if (experiment.schema.titleField) {
     title = data[experiment.schema.titleField];
@@ -36,6 +44,12 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
         <div className={css.headerTitle}>
           <div>{`${experiment.metadata.name} #${experimentIdx}`}</div>
           <div>{title}</div>
+        </div>
+        <div className={css.headerMenu}>
+          <MenuComponent>
+            <MenuItemComponent onClick={handleSave}>Save</MenuItemComponent>
+            <MenuItemComponent onClick={onUpload}>Upload</MenuItemComponent>
+          </MenuComponent>
         </div>
       </div>
       <div className={css.workspace}>
