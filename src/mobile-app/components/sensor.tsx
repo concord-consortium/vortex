@@ -28,9 +28,9 @@ export const SensorComponent: React.FC<IProps> = ({sensor, onResetAll, onSetMode
   const [connecting, setConnecting] = useState(false);
 
   const handleConnectPromise = (isConnecting: boolean, handler: () => Promise<void>) => {
+    sensor.setError(undefined);
     setConnecting(isConnecting);
     handler()
-      .then(() => sensor.setError(undefined))
       .catch(err => sensor.setError(err))
       .finally(() => setConnecting(false));
   };
