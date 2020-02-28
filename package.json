@@ -121,7 +121,7 @@
   },
   "dependencies": {
     "@concord-consortium/lara-plugin-api": "^3.1.2",
-    "@concord-consortium/token-service": "file:../token-service",
+    "@concord-consortium/token-service": "^1.2.0",
     "aws-sdk": "^2.454.0",
     "client-oauth2": "^4.2.5",
     "eventemitter3": "^4.0.0",
