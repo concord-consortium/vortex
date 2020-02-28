@@ -310,7 +310,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.dataTable}>
-      {sensor && <SensorComponent sensor={sensor}/>}
+      {sensor && (sensorFields.length > 0) && <SensorComponent sensor={sensor}/>}
       <div className={css.title}>{title}</div>
       <table className={css.table}>
         <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>

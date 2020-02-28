@@ -12,23 +12,36 @@
         {
           "title": "Label",
           "icon": "assignment",
-          "formFields": ["studySite", "label", "groupMembers"],
-          "components": ["metadata"]
+          "formFields": [
+            "studySite",
+            "label",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
         },
         {
           "title": "Collect",
           "icon": "collect",
-          "formFields": ["experimentData"]
+          "formFields": [
+            "experimentData"
+          ]
         },
         {
           "title": "Note & Photo",
           "icon": "note_and_photo",
-          "formFields": ["photo"]
+          "formFields": [
+            "photo"
+          ]
         }
       ],
       "dataSchema": {
         "type": "object",
-        "required": ["studySite", "label"],
+        "required": [
+          "studySite",
+          "label"
+        ],
         "properties": {
           "studySite": {
             "title": "Study Site",
@@ -54,23 +67,41 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["location"],
+              "required": [
+                "teamlabel"
+              ],
               "properties": {
-                "location": {
-                  "title": "Location",
+                "teamlabel": {
+                  "title": "Team",
                   "type": "string",
                   "readOnly": true
                 },
-                "temperature": {
-                  "title": "Temperature (C)",
+                "ph": {
+                  "title": "pH (SU)",
                   "type": "number"
                 },
-                "illuminance": {
-                  "title": "Illuminance (lux)",
+                "airtemp": {
+                  "title": "Air Temp (\u00B0C)",
                   "type": "number"
                 },
-                "humidity": {
-                  "title": "Humidity (%)",
+                "watertemp": {
+                  "title": "Water Temp (\u00B0C)",
+                  "type": "number"
+                },
+                "nitrate": {
+                  "title": "Nitrate (ppm)",
+                  "type": "number"
+                },
+                "phosphate": {
+                  "title": "Phosphate (ppm)",
+                  "type": "number"
+                },
+                "oxygen": {
+                  "title": "Dissolved Oxygen (ppm)",
+                  "type": "number"
+                },
+                "turbidity": {
+                  "title": "Turbidity (JTU)",
                   "type": "number"
                 }
               }
@@ -82,11 +113,22 @@
             "items": {
               "type": "object",
               "properties": {
-                "isPhoto": {"type": "boolean"},
-                "localPhotoUrl": {"type": "string"},
-                "remotePhotoUrl": {"type": "string"},
-                "note": {"type": "string"},
-                "timestamp": {"type": "string", "format": "date-time"}
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
               }
             }
           }
@@ -113,8 +155,9 @@
         "experimentData": {
           "ui:field": "dataTable",
           "ui:dataTableOptions": {
-            "sensorFields": ["temperature", "humidity", "illuminance"],
-            "titleField": "studySite"
+            "sensorFields": [
+            ],
+            "titleField": "teamlabel"
           }
         },
         "photo": {
@@ -124,62 +167,14 @@
     },
     "data": {
       "experimentData": [
-        {"location": "Corner 1"},
-        {"location": "Corner 2"},
-        {"location": "Corner 3"},
-        {"location": "Corner 4"},
-        {"location": "Average", "temperature":  "<AVG>", "humidity": "<AVG>", "illuminance": "<AVG>"}
-      ],
-      "photo": []
-    }
-  },
-  {
-    "version": "1.0.1",
-    "metadata": {
-      "uuid": "d27df06a-0997-4c53-8afd-d5dcc627d44f",
-      "name": "Stream Study",
-      "initials": "SS"
-    },
-    "schema": {
-      "sections": [
         {
-          "title": "Label",
-          "icon": "assignment",
-          "formFields": ["label", "groupMembers"]
+          "teamlabel": "1"
         },
         {
-          "title": "Collect",
-          "icon": "collect",
-          "formFields": ["experimentData"]
+          "teamlabel": "2"
         }
       ],
-      "dataSchema": {
-        "type": "object",
-        "required": ["label"],
-        "properties": {
-          "label": {
-            "title": "Label",
-            "type": "string"
-          },
-          "groupMembers": {
-            "title": "Group Members",
-            "type": "string"
-          },
-          "experimentData": {
-            "title": "Experiment Data",
-            "type": "object",
-            "properties": {
-              "temperature": {
-                "title": "Temperature",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
-                }
-              }
-            }
-          }
-        }
-      }
+      "photo": []
     }
   }
 ]
