@@ -64,6 +64,14 @@ const experiment2 = {
                 "title": "Comment",
                 "type": "string"
               },
+              "pH": {
+                "title": "pH",
+                "type": "number"
+              },
+              "airTemp": {
+                "title": "Air Temp",
+                "type": "number"
+              },
               "temperature": {
                 "title": "Temperature (C)",
                 "type": "number"
@@ -93,7 +101,7 @@ const experiment2 = {
   "data": {
     "experimentData": [
       {"location": "Corner 1"},
-      {"location": "Corner 2"},
+      {"location": "Corner 2", "pH": "<AVG>"},
       {"location": "Corner 3"},
       {"location": "Corner 4"},
       {"location": "Average", "temperature":  "<AVG>", "illuminance": "<AVG>"},

@@ -11,6 +11,7 @@ import { JSONSchema7 } from "json-schema";
 import { IFormUiSchema } from "../experiment-types";
 import { Icon } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
+import { tableKeyboardNav } from "../utils/table-keyboard-nav";
 
 const defPrecision = 2;
 
@@ -300,7 +301,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
         isFunction = true;
       }
       const isSensorField = sensorFields.indexOf(name) !== -1;
-      return <td key={name} className={readOnly ? css.readOnly : ""}>
+      let classNames = "";
+      if (readOnly) classNames += " " + css.readOnly;
+      if (isSensorField) classNames += " " + css.sensorField;
+      if (isFunction) classNames += " " + css.function;
+      return <td key={name} className={classNames}>
         {readOnly ? value : <input type="text" value={value} disabled={isFunction || isSensorField} onChange={handleInputChange.bind(null, rowIdx, name)}/>}
       </td>;
     });
@@ -310,7 +315,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     <div className={css.dataTable}>
       {sensor && <SensorComponent sensor={sensor}/>}
       <div className={css.title}>{title}</div>
-      <table className={css.table}>
+      <table className={css.table} onKeyDown={tableKeyboardNav}>
         <tbody className={sensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
           {sensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
