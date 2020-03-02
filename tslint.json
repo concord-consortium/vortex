@@ -3,7 +3,8 @@
   "linterOptions": {
       "exclude": [
           "node_modules/**",
-          "src/cordova-wrapper/node_modules/**"
+          "src/cordova-wrapper/node_modules/**",
+          "src/cordova-wrapper/plugins/**"
       ]
   },
   "rules": {

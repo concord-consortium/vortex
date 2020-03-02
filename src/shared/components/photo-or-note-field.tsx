@@ -6,6 +6,7 @@ import { spinnerUrl } from "./spinner";
 import { Icon } from "./icon";
 import { MenuComponent, MenuItemComponent } from "./menu";
 import { Camera } from "../../mobile-app/components/camera";
+import { alert } from "../utils/dialogs";
 
 import css from "./photo-or-note-field.module.scss";
 

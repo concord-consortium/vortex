@@ -5,6 +5,7 @@ import { RunPicker } from "./run-picker";
 import { useRuns, IRun } from "../hooks/use-runs";
 import { Uploader } from "./uploader";
 import { getURLParam } from "../../shared/utils/get-url-param";
+import { confirm } from "../../shared/utils/dialogs";
 
 import css from "./app.module.scss";
 
@@ -18,9 +19,9 @@ export const AppComponent: React.FC = () => {
   const allowReset = getURLParam("allowReset") || false;
 
   const handleDeleteRun = (run: IRun) => {
-    if (confirm(`Delete ${run.experiment.metadata.name} #${run.experimentIdx}?`)) {
+    confirm(`Delete ${run.experiment.metadata.name} #${run.experimentIdx}?`, () => {
       deleteRun(run);
-    }
+    });
   };
 
   const handleUpload = () => setUploadRun(activeRun || undefined);
