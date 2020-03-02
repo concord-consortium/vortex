@@ -187,6 +187,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const [selectedPhoto, setSelectedPhoto] = useState<IPhotoOrNote|undefined>(photos()[0]);
 
   const [photoSubTabTop, setPhotoSubTabTop] = useState(0);
+  const [thumbnailListWidth, setThumbnailListWidth] = useState(0);
+  const [thumbnailListLeft, setThumbnailListLeft] = useState(0);
 
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
@@ -270,6 +272,46 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
       const photoHeight = window.innerHeight - photoSubTabTop - 100; // 100 is thumbnail height with padding
       const photoWidth = window.innerWidth;
 
+      // manually handle horizontal scrolling
+      // this sets the thumbnailListLeft state variable which ranges from 0 to -maxLeft
+      const handleThumbnailScrollStart = (eStart: React.MouseEvent<HTMLDivElement>|React.TouchEvent<HTMLDivElement>) => {
+        const isTouch = eStart.type === "touchstart";
+
+        const mouseStartEvent = eStart as React.MouseEvent<HTMLDivElement>;
+        const touchStartEvent = eStart as React.TouchEvent<HTMLDivElement>;
+
+        const startLeft = thumbnailListLeft;
+        const startX = touchStartEvent.touches?.[0].clientX || mouseStartEvent.clientX;
+        const maxLeft = Math.min(0, window.innerWidth - thumbnailListWidth);
+
+        let moved = false;
+        const onMove = (eMove: MouseEvent|TouchEvent) => {
+          eMove.stopPropagation();
+          eMove.preventDefault();
+          const mouseMoveEvent = eMove as MouseEvent;
+          const touchMoveEvent = eMove as TouchEvent;
+          const dx = (touchMoveEvent.touches?.[0].clientX || mouseMoveEvent.clientX) - startX;
+          const newLeft = Math.max(maxLeft, Math.min(startLeft + dx, 0));
+          setThumbnailListLeft(newLeft);
+          moved = true;
+        };
+
+        const onEnd = (eUp: MouseEvent|TouchEvent) => {
+          if (moved) {
+            // prevent selecting a thumbnail
+            eUp.stopPropagation();
+            eUp.preventDefault();
+          }
+          window.removeEventListener(isTouch ? "touchmove" : "mousemove", onMove);
+          window.removeEventListener(isTouch ? "touchend" : "mouseup", onEnd);
+        };
+
+        // the passive flag disables Chrome console warnings about cancelling events
+        // see https://developers.google.com/web/updates/2017/01/scrolling-intervention
+        window.addEventListener(isTouch ? "touchmove" : "mousemove", onMove, {passive: false});
+        window.addEventListener(isTouch ? "touchend" : "mouseup", onEnd, {passive: false});
+      };
+
       return (
         <>
           <Photo
@@ -281,7 +323,13 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
             height={photoHeight}
           />
           <div className={css.thumbnails}>
-            <div className={css.thumbnailList} style={{maxWidth: 2000}}>
+            <div
+              className={css.thumbnailList}
+              style={{left: thumbnailListLeft}}
+              ref={el => setThumbnailListWidth(el?.getBoundingClientRect().width || 0)}
+              onMouseDown={handleThumbnailScrollStart}
+              onTouchStart={handleThumbnailScrollStart}
+            >
               {photos().length > 0 ?
                 <div className={css.addPhoto} onClick={handleAddPhoto}>
                   <Icon name="camera" />
