@@ -6,6 +6,8 @@ import css from "./camera.module.scss";
 
 interface IProps {
   onPhoto: (url: string) => void;
+  width: number;
+  height: number;
 }
 
 const getResizedUrl = (canvasElement: HTMLCanvasElement, resizedSize: number) => {
@@ -31,16 +33,10 @@ export const Camera = (props: IProps) => {
   const canvasClicked = useRef(false);
   const handleCanvasClicked = () => canvasClicked.current = true;
 
-  const parentRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const cameraButtonRef = useRef<HTMLDivElement>(null);
-  const [parentRect, setParentRect] = useState<DOMRect|undefined>();
-
-  useEffect(() => {
-    if (parentRef.current) {
-      setParentRect(parentRef.current.getBoundingClientRect());
-    }
-  }, [parentRef.current]);
+  const size = Math.min(props.height, props.width);
+  const left = (props.width - size) / 2;
 
   useEffect(() => {
     if (inCordova) {
@@ -49,7 +45,6 @@ export const Camera = (props: IProps) => {
         const canvas = canvasElement.getContext("2d");
 
         if (canvas) {
-          const size = parentRef.current ? parentRef.current.getBoundingClientRect().width : 0;
           camera.initialize(canvasElement);
           camera.start({
             cameraFacing: "back",
@@ -98,12 +93,8 @@ export const Camera = (props: IProps) => {
             const canvas = canvasElement.getContext("2d");
 
             if (canvas) {
-              let size = 0;
-              if (parentRef.current) {
-                size = parentRef.current.getBoundingClientRect().width;
-                canvasElement.height = size;
-                canvasElement.width = size;
-              }
+              canvasElement.height = size;
+              canvasElement.width = size;
               canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
               if (canvasClicked.current) {
                 const url = getResizedUrl(canvasElement, size);
@@ -122,10 +113,10 @@ export const Camera = (props: IProps) => {
     }
   }, []);
 
-  const canvasStyle = parentRect ? {width: parentRect.width, height: parentRect.width} : {};
+  const canvasStyle = {width: size, height: size, left};
 
   return (
-    <div className={css.camera} ref={parentRef}>
+    <div className={css.camera}>
       <div className={css.canvas} style={canvasStyle}>
         <canvas ref={canvasRef} />
         {capturing ? <div ref={cameraButtonRef} className={css.cameraButton} onClick={handleCanvasClicked} /> : undefined}
