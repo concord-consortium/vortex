@@ -53,7 +53,13 @@ const validateSchema = (schema: JSONSchema7): IPhotoOrNoteSchema => {
   return schema as IPhotoOrNoteSchema;
 };
 
-export const Image: React.FC<{src: string}> = ({src}) => {
+interface IImageProps {
+  src: string;
+  height?: number;
+  width?: number;
+  marginLeft?: number;
+}
+export const Image: React.FC<IImageProps> = ({src, height, width, marginLeft}) => {
   const isPhotoUrl = src.match(/^photo\:\/\//);
   const [resolvedSrc, setResolvedSrc] = useState(isPhotoUrl ? spinnerUrl : src);
 
@@ -81,10 +87,20 @@ export const Image: React.FC<{src: string}> = ({src}) => {
     }
   }, []);
 
-  return <img src={resolvedSrc} />;
+  const style = width ? {width, height, marginLeft} : {width: "100%"};
+
+  return <img src={resolvedSrc} style={style} />;
 };
 
-export const Photo: React.FC<{photo: IPhotoOrNote, deletePhoto: (photo: IPhotoOrNote) => void, saveAll: () => void}> = ({photo, deletePhoto, saveAll}) => {
+interface IPhotoProps {
+  photo: IPhotoOrNote;
+  deletePhoto: (photo: IPhotoOrNote) => void;
+  saveAll: () => void;
+  width: number;
+  height: number;
+}
+
+export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width, height}) => {
   const {localPhotoUrl, remotePhotoUrl} = photo;
   const addCaptionRef = useRef<HTMLInputElement|null>(null);
   const handleDeletePhoto = () => deletePhoto(photo);
@@ -94,17 +110,33 @@ export const Photo: React.FC<{photo: IPhotoOrNote, deletePhoto: (photo: IPhotoOr
       saveAll();
     }
   };
+  const [addCaptionHeight, setAddCaptionHeight] = useState(0);
+
+  const saveAddCaptionRef = (el: HTMLInputElement|null) => {
+    if (el) {
+      addCaptionRef.current = el;
+      setAddCaptionHeight(el.getBoundingClientRect().height);
+    }
+  };
+
+  // since images are square the resizing doesn't need to check ratios
+  const imageHeight = height - addCaptionHeight;
+  const imageWidth = imageHeight;
+  const imageMarginLeft = (width - imageWidth) / 2;
+  const menuRight = imageMarginLeft + 5;
 
   return (
-    <div className={css.photo}>
-      <div className={css.photoMenu}>
-        <MenuComponent>
-          <MenuItemComponent onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
-        </MenuComponent>
+    <>
+      <div className={css.photo}>
+        <div className={css.photoMenu} style={{right: menuRight}}>
+          <MenuComponent>
+            <MenuItemComponent onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
+          </MenuComponent>
+        </div>
+        <Image src={localPhotoUrl || remotePhotoUrl} width={imageWidth} height={imageHeight} marginLeft={imageMarginLeft} />
       </div>
-      <Image src={localPhotoUrl || remotePhotoUrl} />
-      <input type="text" className={css.photoNote} placeholder="Add a note" ref={addCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
-    </div>
+      <input type="text" className={css.photoNote} placeholder="Add a note" ref={saveAddCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
+    </>
   );
 };
 
@@ -153,6 +185,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const notes = () => formData.filter(item => !item.isPhoto);
 
   const [selectedPhoto, setSelectedPhoto] = useState<IPhotoOrNote|undefined>(photos()[0]);
+
+  const [photoSubTabTop, setPhotoSubTabTop] = useState(0);
 
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
@@ -233,25 +267,41 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const renderCameraOrPhoto = () => {
     if (selectedPhoto) {
       const selectedPhotoKey = selectedPhoto ? formData.indexOf(selectedPhoto) : -1;
-      return <Photo key={selectedPhotoKey} photo={selectedPhoto} deletePhoto={handleDeletePhotoOrNote} saveAll={handleSaveAll} />;
+      const photoHeight = window.innerHeight - photoSubTabTop - 100; // 100 is thumbnail height with padding
+      const photoWidth = window.innerWidth;
+
+      return (
+        <>
+          <Photo
+            key={selectedPhotoKey}
+            photo={selectedPhoto}
+            deletePhoto={handleDeletePhotoOrNote}
+            saveAll={handleSaveAll}
+            width={photoWidth}
+            height={photoHeight}
+          />
+          <div className={css.thumbnails}>
+            <div className={css.thumbnailList} style={{maxWidth: 2000}}>
+              {photos().length > 0 ?
+                <div className={css.addPhoto} onClick={handleAddPhoto}>
+                  <Icon name="camera" />
+                </div> : undefined}
+              {photos().map((photo) => {
+                const selected = photo === selectedPhoto;
+                return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
+              })}
+            </div>
+          </div>
+        </>
+      );
     }
     return <Camera onPhoto={handleCameraPhoto} />;
   };
 
   const renderPhotoSubTab = () => {
     return (
-      <div className={css.photoSubTab}>
+      <div className={css.photoSubTab} ref={(el) => setPhotoSubTabTop(el?.getBoundingClientRect().top || 0)}>
         {renderCameraOrPhoto()}
-        <div className={css.thumbnails}>
-          {photos().length > 0 ?
-            <div className={css.addPhoto} onClick={handleAddPhoto}>
-              <Icon name="camera" />
-            </div> : undefined}
-          {photos().map((photo) => {
-            const selected = photo === selectedPhoto;
-            return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
-          })}
-        </div>
       </div>
     );
   };

@@ -1,8 +1,5 @@
 @import "variables";
 
-.photoOrNote {
-}
-
 .subTabs {
   display: flex;
   justify-content: center;
@@ -47,16 +44,16 @@
 }
 
 .photoSubTab {
+  position: relative;
 
   .thumbnails {
-    display: flex;
-    flex-wrap: wrap;
-    margin-top: 5px;
+    position: fixed;
+    bottom: 0;
 
     .addPhoto {
-      width: 80px;
+      width: 60px;
       height: 80px;
-      margin: 5px;
+      margin: 5px 5px 5px 10px;
       display: flex;
       justify-content: center;
       align-items: center;
@@ -66,59 +63,62 @@
       }
     }
 
-    .thumbnail {
-      width: 80px;
-      height: 80px;
-      border: 2px solid #fff;
-      display: flex;
-      justify-content: center;
-      align-items: center;
+    .thumbnailList {
       position: relative;
+      display: flex;
+      flex-wrap: nowrap;
+      overflow: auto;
 
-      img {
-        width: 100%;
-        padding: 3px;
-      }
+      .thumbnail {
+        width: 80px;
+        height: 80px;
+        border: 2px solid #fff;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: relative;
 
-      .hasCaption {
-        position: absolute;
-        top: (80px - 24px) / 2;
-        left: (80px - 24px) / 2;
+        img {
+          width: 100%;
+          padding: 3px;
+        }
 
-        svg {
-          fill: #fff;
+        .hasCaption {
+          position: absolute;
+          top: (80px - 24px) / 2;
+          left: (80px - 24px) / 2;
+
+          svg {
+            fill: #fff;
+          }
         }
       }
-    }
-
-    .selectedPhoto {
-      border: 2px solid #00e90e;
+      .selectedPhoto {
+        border: 2px solid #00e90e;
+      }
     }
   }
 
   .photo {
     position: relative;
+    overflow: hidden;
 
     .photoMenu {
       position: absolute;
       top: 5px;
-      right: 5px;
 
       svg {
         fill: #fff;
       }
     }
+  }
 
-    img {
-      width: 100%;
-    }
-
-    .photoNote {
-      width: 100%;
-      background-color: #f9ffc0;
-      width: 100%;
-      padding: 10px;
-      font-size: 18px;
-    }
+  .photoNote {
+    width: 100%;
+    background-color: #f9ffc0;
+    width: 100%;
+    padding: 10px;
+    font-size: 18px;
+    border: 0;
   }
 }
