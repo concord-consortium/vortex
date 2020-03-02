@@ -343,7 +343,11 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
         </>
       );
     }
-    return <Camera onPhoto={handleCameraPhoto} />;
+
+    const cameraHeight = window.innerHeight - photoSubTabTop - 30; // 15 is the margin
+    const cameraWidth = window.innerWidth;
+
+    return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
   };
 
   const renderPhotoSubTab = () => {
