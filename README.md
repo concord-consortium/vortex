@@ -1,5 +1,13 @@
 # Vortex
 
+## Current Supported Devices
+
+The data table component currently supports these devices:
+
+- Sensor Tag cc2650 (small "green light" sensor)
+- Sensor Tag cc1350 (small "red light" sensor)
+- Multi-Sensor (bigger sensor)
+
 ## Url Params
 
 When testing in the browser the following url params are available:
