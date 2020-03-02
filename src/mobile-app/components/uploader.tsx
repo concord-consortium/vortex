@@ -1,7 +1,7 @@
 import * as React from "react";
 import { useState } from "react";
 import { Scanner } from "./scanner";
-
+import { Initials } from "../../shared/components/initials";
 import { RunInfoComponent } from "./run-info";
 import { IRun } from "../hooks/use-runs";
 import { IPhotoOrNote } from "../../shared/components/photo-or-note-field";
@@ -157,13 +157,32 @@ export const Uploader = (props: IProps) => {
       <div className={css.dialog}>
         <div className={css.header}>
           Upload Experiment
-          <div className={css.floatRight}>
-            <span onClick={props.onClose}>{uploadState === UploadState.Uploaded ? "OK" : "Cancel"}</span>
-          </div>
+
         </div>
         <div className={css.contents}>
-          <RunInfoComponent run={props.run} />
+          <div className={css.run}>
+            <div className={css.initials}><Initials text={props.run.experiment.metadata.initials}/></div>
+            <div className={css.text}>
+              <RunInfoComponent run={props.run} />
+            </div>
+          </div>
+          <div className={css.instructions}>
+            <ol>
+              <li>In the [WATERS] activity, click the Import button to display a QR code.</li>
+              <li>Point your camera at the QR code to begin uploading this experiment.</li>
+            </ol>
+          </div>
+          <div className={css.resultText}>
+            <div className={css.scanInfo}>
+              Position QR code within guides to scan
+            </div>
+
+            <div className={css.okClose}>
+              <span onClick={props.onClose}>{uploadState === UploadState.Uploaded ? "OK" : "Cancel"}</span>
+            </div>
+          </div>
           <div className={css.scanner}>
+            <div className={css.scanGuide} />
             {contents()}
           </div>
         </div>
