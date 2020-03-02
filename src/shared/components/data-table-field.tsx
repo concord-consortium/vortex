@@ -12,6 +12,8 @@ import { Icon } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
 import { tableKeyboardNav } from "../utils/table-keyboard-nav";
 import { MenuComponent, MenuItemComponent } from "./menu";
+import { confirm, alert } from "../../shared/utils/dialogs";
+
 import css from "./data-table-field.module.scss";
 
 const defPrecision = 2;
@@ -260,12 +262,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
       // New data has been added or something has been edited.
       if (dataEdited(formData, oldData)) {
         // Data has been edited, user has to confirm before new data is saved.
-        if (confirm("Update the value?\nYou edited a value. This will replace the previous value with your updated value.")) {
-          saveData(formData);
-        } else {
-          // Restore original data.
-          setFormData(oldData);
-        }
+        confirm("Update the value?\nYou edited a value. This will replace the previous value with your updated value.",
+          // on ok ...
+          () => saveData(formData),
+          // on cancel, restore original data.
+          () => setFormData(oldData)
+        );
       } else {
         // New data has been added. No need to confirm saving.
         saveData(formData);
@@ -293,24 +295,28 @@ export const DataTableField: React.FC<FieldProps> = props => {
         previousValuesAvailable = true;
       }
     });
-    if (previousValuesAvailable) {
-      if (!confirm("Discard sensor values?\nThis will delete row's current values and allow you to record new values from your sensor.")) {
-        return;
-      }
-    }
-    const values = sensorOutput.values;
-    const result: { [k: string]: number } = {};
-    sensorFields.forEach((name: SensorCapabilityKey) => {
-      if (!values[name]) {
-        alert(`Property ${name} is not supported by selected sensor`);
+
+    const recordData = () => {
+      const values = sensorOutput.values;
+      const result: { [k: string]: number } = {};
+      sensorFields.forEach((name: SensorCapabilityKey) => {
+        if (!values[name]) {
+          alert(`Property ${name} is not supported by selected sensor`);
+        } else {
+          result[name] = Number(values[name]?.toFixed(defPrecision));
+        }
+      });
+      const newData = formData.slice();
+      newData[rowIdx] = Object.assign({}, newData[rowIdx], result);
+      setFormData(newData);
+      saveData(newData);
+    };
+
+      if (previousValuesAvailable) {
+        confirm("Discard sensor values?\nThis will delete row's current values and allow you to record new values from your sensor.", recordData);
       } else {
-        result[name] = Number(values[name]?.toFixed(defPrecision));
+        recordData();
       }
-    });
-    const newData = formData.slice();
-    newData[rowIdx] = Object.assign({}, newData[rowIdx], result);
-    setFormData(newData);
-    saveData(newData);
   };
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
