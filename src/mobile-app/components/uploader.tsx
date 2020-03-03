@@ -127,6 +127,7 @@ export const Uploader = (props: IProps) => {
       e.stopPropagation();
       callback();
     };
+
     const handleScanning = handleClick(() => changeState(UploadState.Scanning));
     const button = (label: string) => <button onClick={handleScanning} style={{marginTop: 10}}>{label}</button>;
 
@@ -168,13 +169,14 @@ export const Uploader = (props: IProps) => {
           </div>
           <div className={css.instructions}>
             <ol>
-              <li>In the [WATERS] activity, click the Import button to display a QR code.</li>
+              <li>In the activity, click the Import button to display a QR code.</li>
               <li>Point your camera at the QR code to begin uploading this experiment.</li>
+              <li>Tap the picture when the code is lined up within the green guides to upload the experiment</li>
             </ol>
           </div>
           <div className={css.resultText}>
             <div className={css.scanInfo}>
-              Position QR code within guides to scan
+              Position QR code within guides, tap screen to scan
             </div>
 
             <div className={css.okClose}>
@@ -183,7 +185,7 @@ export const Uploader = (props: IProps) => {
           </div>
           <div className={css.scanner}>
             <div className={css.scanGuide} />
-            {contents()}
+            <div className={css.camera}>{contents()}</div>
           </div>
         </div>
       </div>
