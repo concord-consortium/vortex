@@ -167,6 +167,9 @@
           "location": "Corner 4"
         },
         {
+          "location": "Center"
+        },
+        {
           "location": "Average",
           "temperature": "<AVG>",
           "humidity": "<AVG>",
