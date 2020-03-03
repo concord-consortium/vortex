@@ -111,5 +111,6 @@ ol{
     background-size: 470px 470px;
     background-image: url("../icons/scan_overlay.svg");
     background-position: center top;
+    pointer-events: none;
   }
 }
