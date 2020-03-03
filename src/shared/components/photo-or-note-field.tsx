@@ -191,6 +191,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const [thumbnailListWidth, setThumbnailListWidth] = useState(0);
   const [thumbnailListLeft, setThumbnailListLeft] = useState(0);
 
+  const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: 0, height: 0});
+
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
     onChange(newFormData);
@@ -202,6 +204,14 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
     if (!props.formData) {
       updateFormData([]);
     }
+  }, []);
+
+  // get the initial window info and listen for resize/re-orientation
+  useEffect(() => {
+    const updateWindowInfo = () => setWindowInfo({width: window.innerWidth, height: window.innerHeight});
+    updateWindowInfo();
+    window.addEventListener("resize", updateWindowInfo);
+    return () => window.removeEventListener("resize", updateWindowInfo);
   }, []);
 
   if (formData.constructor !== Array) {
@@ -270,8 +280,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const renderCameraOrPhoto = () => {
     if (selectedPhoto) {
       const selectedPhotoKey = selectedPhoto ? formData.indexOf(selectedPhoto) : -1;
-      const photoHeight = window.innerHeight - photoSubTabTop - 100; // 100 is thumbnail height with padding
-      const photoWidth = window.innerWidth;
+      const photoHeight = windowInfo.height - photoSubTabTop - 100; // 100 is thumbnail height with padding
+      const photoWidth = windowInfo.width;
 
       // manually handle horizontal scrolling
       // this sets the thumbnailListLeft state variable which ranges from 0 to -maxLeft
@@ -283,7 +293,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
         const startLeft = thumbnailListLeft;
         const startX = touchStartEvent.touches?.[0].clientX || mouseStartEvent.clientX;
-        const maxLeft = Math.min(0, window.innerWidth - thumbnailListWidth);
+        const maxLeft = Math.min(0, windowInfo.width - thumbnailListWidth);
 
         let moved = false;
         const onMove = (eMove: MouseEvent|TouchEvent) => {
@@ -345,8 +355,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
       );
     }
 
-    const cameraHeight = window.innerHeight - photoSubTabTop - 30; // 15 is the margin
-    const cameraWidth = window.innerWidth;
+    const cameraHeight = windowInfo.height - photoSubTabTop - 30; // 15 is the margin
+    const cameraWidth = windowInfo.width;
 
     return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
   };
