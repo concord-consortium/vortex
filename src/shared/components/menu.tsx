@@ -27,7 +27,7 @@ export const MenuComponent: React.FC = (props) => {
   const updateMenu = (showing: boolean) => {
     setShowMenu(showing);
     showingMenu.current = showing;
-  }
+  };
 
   // hide the menu if a click is made outside the menu while it is showing
   // this is not called if handleMenuIcon() is called as it stops
