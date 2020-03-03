@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { SensorValue } from "./sensor-value";
 import { Sensor, IConnectDevice, SelectDeviceFn } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
@@ -50,27 +50,33 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
-  const [selectDevice, setSelectDevice] = useState<SelectDeviceFn|undefined>();
-  const [cancelSelectDevice, setCancelSelectDevice] = useState<() => void|undefined>();
   const [showDeviceSelect, setShowDeviceSelect] = useState(false);
+  const selectDevice = useRef<SelectDeviceFn|undefined>();
+  const cancelSelectDevice = useRef<() => void|undefined>();
+
+  const clearSelectDevice = () => {
+    selectDevice.current = undefined;
+    cancelSelectDevice.current = undefined;
+    setShowDeviceSelect(false);
+  }
 
   const handleSelectDevice = (device: IConnectDevice) => {
-    if (selectDevice) {
-      setShowDeviceSelect(false);
-      selectDevice(device);
+    if (selectDevice.current) {
+      selectDevice.current(device);
+      clearSelectDevice();
     }
   };
 
   const handleCancelSelectDevice = () => {
-    cancelSelectDevice?.();
-    setShowDeviceSelect(false);
+    cancelSelectDevice.current?.();
+    clearSelectDevice();
   };
 
   const connect = () => sensor.connect({
     onDevicesFound: ({devices, select, cancel}) => {
       setDevicesFound(devices);
-      setSelectDevice(select);
-      setCancelSelectDevice(cancel);
+      selectDevice.current = select;
+      cancelSelectDevice.current = cancel;
       setShowDeviceSelect(true);
     }
   });
