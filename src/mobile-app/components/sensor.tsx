@@ -1,11 +1,35 @@
-import React from "react";
+import React, { useState } from "react";
 import { SensorValue } from "./sensor-value";
-import { Sensor } from "../../sensors/sensor";
+import { Sensor, IConnectDevice, SelectDeviceFn } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import css from "./sensor.module.scss";
 
-interface IProps {
+interface ISensorSelectorProps {
+  devices: IConnectDevice[];
+  selectDevice: SelectDeviceFn;
+  cancel: () => void;
+}
+
+export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
+  return (
+    <div className={css.sensorSelector}>
+      {devices.map((device, index) => {
+        const handleSelectDevice = () => selectDevice(device);
+        return (
+          <div
+            key={index}
+            className={css.sensorSelectorItem}
+            onClick={handleSelectDevice}>
+              {device.name} ({device.adData.rssi})
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+interface ISensorComponentProps {
   sensor: Sensor;
   hideMenu?: boolean;
 }
@@ -22,10 +46,34 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<IProps> = ({sensor, hideMenu}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMenu}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
-  const connect = () => sensor.connect();
+  const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
+  const [selectDevice, setSelectDevice] = useState<SelectDeviceFn|undefined>();
+  const [cancelSelectDevice, setCancelSelectDevice] = useState<() => void|undefined>();
+  const [showDeviceSelect, setShowDeviceSelect] = useState(false);
+
+  const handleSelectDevice = (device: IConnectDevice) => {
+    if (selectDevice) {
+      setShowDeviceSelect(false);
+      selectDevice(device);
+    }
+  };
+
+  const handleCancelSelectDevice = () => {
+    cancelSelectDevice?.();
+    setShowDeviceSelect(false);
+  };
+
+  const connect = () => sensor.connect({
+    onDevicesFound: ({devices, select, cancel}) => {
+      setDevicesFound(devices);
+      setSelectDevice(select);
+      setCancelSelectDevice(cancel);
+      setShowDeviceSelect(true);
+    }
+  });
   const disconnect = () => sensor.disconnect();
 
   const renderIcon = (icon: "connected" | "disconnected" | "error") => (
@@ -123,6 +171,7 @@ export const SensorComponent: React.FC<IProps> = ({sensor, hideMenu}) => {
         {error ? renderError() : (connected ? renderConnected() : (connecting ? renderConnecting() : renderDisconnected()))}
         {!hideMenu && renderMenu()}
       </div>
+      {showDeviceSelect ? <SensorSelectorComponent devices={devicesFound} selectDevice={handleSelectDevice} cancel={handleCancelSelectDevice} /> : undefined}
       {renderValues()}
     </div>
   );

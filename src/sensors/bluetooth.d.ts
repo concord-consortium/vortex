@@ -8,6 +8,28 @@
 //                 Rob Moran <https://github.com/thegecko>
 // Definitions: https://github.com/DefinitelyTyped/DefinitelyTyped
 
+
+// this is an extension to the BLE interface to allow for search for devices
+interface IConnectDevice {
+	id: string;
+	name: string;
+	uuids: string;
+	adData: {
+		rssi: number;
+		txPower: number;
+		serviceData: any;
+		manufacturerData: any;
+	};
+}
+type SelectDeviceFn = (device: IConnectDevice) => void;
+type CancelDeviceFn = () => void;
+interface IOnDevicesFoundResult {
+	devices: IConnectDevice[];
+	select: SelectDeviceFn;
+	cancel: CancelDeviceFn;
+}
+type OnDevicesFoundFn = (results: IOnDevicesFoundResult) => void;
+
 type BluetoothServiceUUID = number | string;
 type BluetoothCharacteristicUUID = number | string;
 type BluetoothDescriptorUUID = number | string;
@@ -24,6 +46,7 @@ interface BluetoothRequestDeviceFilter {
 type RequestDeviceOptions = {
 	filters: BluetoothRequestDeviceFilter[];
 	optionalServices?: BluetoothServiceUUID[];
+	onDevicesFound?: OnDevicesFoundFn;
 } | {
 	acceptAllDevices: boolean;
 	optionalServices?: BluetoothServiceUUID[];

@@ -56,6 +56,24 @@ export interface IPollOptions {
   lastPoll?: boolean;
 }
 
+// NOTE: these two types need to be repeated in the bluetooth.d.ts declaration file
+export interface IConnectDevice {
+	id: string;
+	name: string;
+	uuids: string;
+	adData: {
+		rssi: number;
+		txPower: number;
+		serviceData: any;
+		manufacturerData: any;
+	};
+}
+export type SelectDeviceFn = (device: IConnectDevice) => void;
+
+export interface IConnectOptions {
+  onDevicesFound: OnDevicesFoundFn;
+}
+
 export class Sensor extends EventEmitter<SensorEvent> {
   protected _deviceName: string | undefined;
   private _connected: boolean;
@@ -90,7 +108,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     return this._deviceName || (this._connected ? "Unknown Device" : undefined);
   }
 
-  public connect(): Promise<void> {
+  public connect(options?: IConnectOptions): Promise<void> {
     return Promise.reject("connect() method not overridden!");
   }
 

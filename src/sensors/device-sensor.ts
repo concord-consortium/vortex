@@ -1,10 +1,11 @@
-import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions } from "./sensor";
+import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions } from "./sensor";
 
 import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
 import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
 import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
+import { inCordova } from "../shared/utils/in-cordova";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -28,7 +29,7 @@ export class DeviceSensor extends Sensor {
     ].filter(device => device.matchesCapabilities());
   }
 
-  public connect(): Promise<void> {
+  public connect(connectOptions: IConnectOptions): Promise<void> {
     // make sure we aren't already connected to something
     if (this.device) {
       this.setConnected({connected: false});
@@ -40,7 +41,8 @@ export class DeviceSensor extends Sensor {
       }
       const options: RequestDeviceOptions = {
         filters: this.getFilters(),
-        optionalServices: this.getOptionalServiceUUIDs()
+        optionalServices: this.getOptionalServiceUUIDs(),
+        onDevicesFound: inCordova ? connectOptions.onDevicesFound : undefined
       };
       logInfo("Connecting using", options);
       navigator.bluetooth.requestDevice(options)
