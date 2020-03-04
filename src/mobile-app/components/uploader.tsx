@@ -151,7 +151,6 @@ export const Uploader = (props: IProps) => {
         return <div>Your experiment has been uploaded</div>;
     }
   };
-
   return (
     <div className={css.uploader}>
       <div className={css.background} />

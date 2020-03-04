@@ -126,6 +126,7 @@ export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width
   const imageMarginLeft = (width - imageWidth) / 2;
   const menuRight = imageMarginLeft + 5;
 
+  // <input type="text" className={css.photoNote} placeholder="Add a note" ref={saveAddCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
   return (
     <>
       <div className={css.photo}>
@@ -136,7 +137,6 @@ export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width
         </div>
         <Image src={localPhotoUrl || remotePhotoUrl} width={imageWidth} height={imageHeight} marginLeft={imageMarginLeft} />
       </div>
-      <input type="text" className={css.photoNote} placeholder="Add a note" ref={saveAddCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
     </>
   );
 };
@@ -190,8 +190,9 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const [photoSubTabTop, setPhotoSubTabTop] = useState(0);
   const [thumbnailListWidth, setThumbnailListWidth] = useState(0);
   const [thumbnailListLeft, setThumbnailListLeft] = useState(0);
-
-  const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: 0, height: 0});
+  const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: window.innerWidth, height: window.innerHeight
+  });
+  // const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: 0, height: 0});
 
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
@@ -207,12 +208,12 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   }, []);
 
   // get the initial window info and listen for resize/re-orientation
-  useEffect(() => {
-    const updateWindowInfo = () => setWindowInfo({width: window.innerWidth, height: window.innerHeight});
-    updateWindowInfo();
-    window.addEventListener("resize", updateWindowInfo);
-    return () => window.removeEventListener("resize", updateWindowInfo);
-  }, []);
+  // useEffect(() => {
+  //   const updateWindowInfo = () => setWindowInfo({width: window.innerWidth, height: window.innerHeight});
+  //   updateWindowInfo();
+    // window.addEventListener("resize", updateWindowInfo);
+    // return () => window.removeEventListener("resize", updateWindowInfo);
+  // }, []);
 
   if (formData.constructor !== Array) {
     return <div>Unexpected photo data format</div>;
