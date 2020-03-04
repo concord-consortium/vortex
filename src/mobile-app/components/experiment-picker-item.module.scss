@@ -17,15 +17,32 @@
   align-items: center;
   justify-content: center;
   border-radius: 20px;
-  background-color: #646464;
+  background-color: $sensorGreen;
   font-size: 32px;
   font-weight: bold;  color: #fff;
   box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.3);
 
   &:hover {
-    background-color: $ccTealDark1;
+    background-color: $sensorGreenLight1;
     cursor: pointer;
   }
+
+  &.SS{
+    background-color: $streamBlue;
+    &:hover {
+      background-color: $streamBlueLight1;
+      cursor: pointer;
+    }
+
+  }
+  &.SI{
+    background-color: $sensorGreen;
+    &:hover {
+      background-color: $sensorGreenLight1;
+      cursor: pointer;
+    }
+  }
+
 }
 
 .title {

@@ -45,6 +45,7 @@ export const AppComponent: React.FC = () => {
 
   return (
     <div className={css.app}>
+      <div className={css.header}/>
       {activeRun ?
         <ExperimentWrapper
           experiment={activeRun.experiment}
