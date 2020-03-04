@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
-import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
 import { IFirebaseJWT } from "../hooks/interactive-api";
 
 const QRCode = require("qrcode-svg");
@@ -27,7 +27,6 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
-  const [manualEntry, setManualEntry] = useState(false);
   const [displayQr, setDisplayQr] = useState(true);
 
   useEffect(() => {
@@ -58,11 +57,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       });
   }, []);
 
-  const handleManualEntry = () => setManualEntry(true);
   const handleUploadAgain = () => {
     setExperimentData(undefined);
     setDisplayQr(true);
   };
+
   const toggleDisplayQr = () => setDisplayQr(!displayQr);
 
   const renderData = () => {
@@ -72,6 +71,14 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     if (!qrCode) {
       return <div>Generating QR code...</div>;
     }
+    const config: IExperimentConfig = {
+      hideLabels: false,
+      useSensors: false,
+      showEditSaveButton: true,
+      callbacks: {
+        onImport: handleUploadAgain,
+      }
+    };
 
     return (
       <div className={`${css.experimentContainer}`}>
@@ -79,10 +86,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
           <Experiment
             experiment={experiment}
             data={experimentData}
-            config={{hideLabels: false, useSensors: false}}
+            config={config}
             defaultSectionIndex={defaultSectionIndex}
           />
-          <div><button onClick={handleManualEntry}>Edit</button><button onClick={handleUploadAgain}>Import</button></div>
         </div>
         {(displayQr && experimentData === undefined) &&
           <div className={css.qrContainer}>

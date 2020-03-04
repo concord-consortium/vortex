@@ -20,7 +20,8 @@ interface IProps {
 // LARA app will have different config.
 const experimentConfig: IExperimentConfig = {
   hideLabels: true,
-  useSensors: true
+  useSensors: true,
+  showEditSaveButton: false
 };
 
 export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload }) => {

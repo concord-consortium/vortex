@@ -1,14 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
-import { IExperiment } from "./experiment-types";
+import { IExperiment, IExperimentConfig } from "./experiment-types";
 import ExperimentJSONs from "../data/experiments.json";
 
 import "./index.sass";
 
-const mobileAppConfig = {
+const mobileAppConfig: IExperimentConfig = {
   hideLabels: true,
-  useSensors: true
+  useSensors: true,
+  showEditSaveButton: false
 };
 
 const experiment1 = ExperimentJSONs[0] as IExperiment;
