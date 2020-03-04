@@ -21,10 +21,21 @@ export const Scanner = (props: IProps) => {
   const camera = (window as any).plugin?.CanvasCamera;
   const [scanning, setScanning] = useState(inCordova);
   const canvasClicked = useRef(false);
+  const [canvasContainerSize, setCanvasContainerSize] = useState<{ width: number, height: number }>({ width: 0, height: 0 });
 
   const handleCanvasClicked = () => canvasClicked.current = true;
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvasElement = canvasRef.current;
+    const w = canvasElement ? canvasElement.parentElement!.getBoundingClientRect().width : 0;
+    const h = canvasElement ? canvasElement.parentElement!.getBoundingClientRect().height : 0;
+    const updateCanvasDimensions = () => setCanvasContainerSize({width: w, height: h});
+    updateCanvasDimensions();
+    window.addEventListener("resize", updateCanvasDimensions);
+    return () => window.removeEventListener("resize", updateCanvasDimensions);
+  }, []);
+
   useEffect(() => {
     const drawLine = (canvas: CanvasRenderingContext2D, begin: Point, end: Point, color: string) => {
       canvas.beginPath();
@@ -118,10 +129,19 @@ export const Scanner = (props: IProps) => {
           if (canvasRef.current) {
             const canvasElement = canvasRef.current;
             const canvas = canvasElement.getContext("2d");
-
+            const boundingRect = canvasContainerSize.width === 0 ? canvasElement.parentElement!.getBoundingClientRect() : canvasContainerSize;
+            const aspectRatio = video.videoWidth / video.videoHeight;
             if (canvas) {
-              canvasElement.height = video.videoHeight;
-              canvasElement.width = video.videoWidth;
+              let cvWidth = boundingRect.width;
+              let cvHeight = cvWidth / aspectRatio;
+
+              if (cvHeight > boundingRect.height) {
+                cvHeight = boundingRect.height;
+                cvWidth = cvHeight * aspectRatio;
+              }
+
+              canvasElement.height = cvHeight;
+              canvasElement.width = cvWidth;
               canvas.drawImage(video, 0, 0, canvasElement.width, canvasElement.height);
               keepScanning = !findQRCode(canvasElement, canvas);
             }
