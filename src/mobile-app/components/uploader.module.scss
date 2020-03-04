@@ -25,7 +25,7 @@ $dialogMargin: 10px;
   margin: 0px 20px 0px 20px;
   padding: 15px;
   background-color: $ccTealLight2;
-  font-size: 18px;
+  font-size: 17px;
   font-weight: 400;
   font-stretch: normal;
   font-style: normal;
@@ -67,7 +67,7 @@ $dialogMargin: 10px;
 .instructions {
   margin: 20px;
   font-size: 15px;
-  line-height: 22px;
+  line-height: 18px;
   color: $textBlack;
 }
 
@@ -79,6 +79,7 @@ ol{
 .resultText {
   position: relative;
   margin: 20px;
+  line-height: 1.2em;
   text-align: center;
   .okClose {
     position: absolute;
@@ -96,7 +97,7 @@ ol{
   position: absolute;
   margin: 20px 0px 0px 0px;
   bottom: 0px;
-  top: 220px;
+  top: 250px;
   left: 0px;
   right: 0px;
   text-align: center;
