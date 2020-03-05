@@ -7,6 +7,7 @@ import { Icon } from "./icon";
 import { MenuComponent, MenuItemComponent } from "./menu";
 import { Camera } from "../../mobile-app/components/camera";
 import { alert } from "../utils/dialogs";
+import { IVortexFormContext } from "./form";
 
 import css from "./photo-or-note-field.module.scss";
 
@@ -194,6 +195,9 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   });
   // const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: 0, height: 0});
 
+  const formContext: IVortexFormContext = props.formContext || {};
+  const showCameraButton = !!formContext.experimentConfig?.showCameraButton;
+
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
     onChange(newFormData);
@@ -342,7 +346,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
               onMouseDown={handleThumbnailScrollStart}
               onTouchStart={handleThumbnailScrollStart}
             >
-              {photos().length > 0 ?
+              {showCameraButton && photos().length > 0 ?
                 <div className={css.addPhoto} onClick={handleAddPhoto}>
                   <Icon name="camera" />
                 </div> : undefined}
@@ -356,10 +360,14 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
       );
     }
 
-    const cameraHeight = windowInfo.height - photoSubTabTop - 30; // 15 is the margin
-    const cameraWidth = windowInfo.width;
+    if (showCameraButton) {
+      const cameraHeight = windowInfo.height - photoSubTabTop - 30; // 15 is the margin
+      const cameraWidth = windowInfo.width;
 
-    return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
+      return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
+    }
+
+    return undefined;
   };
 
   const renderPhotoSubTab = () => {

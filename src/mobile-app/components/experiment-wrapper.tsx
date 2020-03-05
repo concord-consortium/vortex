@@ -21,7 +21,8 @@ interface IProps {
 const experimentConfig: IExperimentConfig = {
   hideLabels: true,
   useSensors: true,
-  showEditSaveButton: false
+  showEditSaveButton: false,
+  showCameraButton: true
 };
 
 export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload }) => {
