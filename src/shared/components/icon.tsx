@@ -14,6 +14,8 @@ import Comment from "../icons/comment-24px.svg";
 import TableChart from "../icons/table_chart-24px.svg";
 import Create from "../icons/create-24px.svg";
 import Sensor from "../icons/sensor.svg";
+import UploadCloud from "../icons/cloud_upload-24px.svg";
+import Delete from "../icons/delete-24px.svg";
 
 const Icons: {[key: string]: any} = {
   label: Label,
@@ -30,7 +32,9 @@ const Icons: {[key: string]: any} = {
   comment: Comment,
   collect: TableChart,
   create: Create,
-  sensor: Sensor
+  sensor: Sensor,
+  upload: UploadCloud,
+  delete: Delete
 };
 
 interface IProps {

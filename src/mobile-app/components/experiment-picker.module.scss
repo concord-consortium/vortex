@@ -2,14 +2,12 @@
 
 .header {
   height: $headerHeight;
+  padding-top: $headerTopPadding;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: nowrap;
-  width: 100%;
-  height: 84px;
   background-color: $ccTealDark2;
-  padding-top: 20px;
 }
 
 .headerIcon {
