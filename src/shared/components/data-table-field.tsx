@@ -287,12 +287,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   };
 
   const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
-
-  const handleImportButton = (e: React.MouseEvent<HTMLButtonElement>) => {
-    e.preventDefault();
-    e.stopPropagation();
-    formContext.experimentConfig?.callbacks?.onImport();
-  };
+  const handleImportButton = () => formContext.experimentConfig?.callbacks?.onImport();
 
   const onSensorRecordClick = (rowIdx: number) => {
     if (!sensorOutput.connected) {
@@ -422,8 +417,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
           {title && <div className={css.title}>{title}</div>}
         </div>
         <div className={css.topBarRight}>
-          {!sensor && showImportButton ? <button onClick={handleImportButton}>Import</button> : undefined}
-          {!sensor && showEditSaveButton ? <button onClick={handleEditSaveButton}>{manualEntryMode ? "Save" : "Edit"}</button> : undefined}
+          {!sensor && showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
+          {!sensor && showEditSaveButton ? <div className={css.button} onClick={handleEditSaveButton}>{manualEntryMode ? "Save" : "Edit"}</div> : undefined}
         </div>
       </div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>

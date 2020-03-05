@@ -134,7 +134,8 @@ $headerBorder: #fff;
       flex-grow: 1;
     }
     .topBarRight {
-      button {
+      .button {
+        display: inline-block;
         margin-right: 10px;
         margin-bottom: 10px;
         border: 1px solid $ccTealDark2;
