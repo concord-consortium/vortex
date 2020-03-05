@@ -2,11 +2,12 @@
 
 .header {
   height: $headerHeight;
+  padding-top: $headerTopPadding;
   display: flex;
   flex-direction: row;
   align-items: center;
   flex-wrap: nowrap;
-  border-bottom: 2px solid #000;
+  background-color: $ccTealDark2;
 }
 
 .headerIcon {
@@ -16,16 +17,20 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 20px;
-  background-color: #afafaf;
-  color: #fff;
+  border-radius: 5px;
+  background-color: $ccOrangeLight1;
+
 }
 
 .headerTitle {
   margin: 0 $headerIconMargin 0 $headerIconMargin;
   font-size: 18px;
-  font-weight: bold;
-  color: #646464;
+  font-weight: normal;
+  font-stretch: normal;
+  font-style: normal;
+  line-height: normal;
+  letter-spacing: normal;
+  color: #ffffff;
 }
 
 .workspace {
@@ -36,7 +41,7 @@
 
 .workspaceTitle {
   font-size: 18px;
-  font-weight: bold;
+  color: $textBlack;
 }
 
 .workspaceItems {
