@@ -449,11 +449,11 @@ describe("DataTableField component", () => {
       {p1: 6, p2: 7, p3: 8, p4: 9, p5: 10},
       {p1: "<AVG>", p2: "<SUM>", p3: "<VAR>", p4: "<STDDEV>", p5: "<MEDIAN>"}
     ]);
-    expect(res.avg).toEqual(3.5);
+    expect(res.avg).toEqual("3.50");
     expect(res.sum).toEqual(9);
-    expect(res.var).toEqual(12.5);
-    expect(res.stdDev).toEqual(3.54);
-    expect(res.median).toEqual(7.5);
+    expect(res.var).toEqual("12.50");
+    expect(res.stdDev).toEqual("3.54");
+    expect(res.median).toEqual("7.50");
 
     res = getResults([
       {p1: 1, p2: 2, p3: 3, p4: 4, p5: 5},
@@ -461,11 +461,11 @@ describe("DataTableField component", () => {
       {p1: 6, p2: 7, p3: 8, p4: 9, p5: 10},
       {p1: "<AVG>", p2: "<SUM>", p3: "<VAR>", p4: "<STDDEV>", p5: "<MEDIAN>"},
     ]);
-    expect(res.avg).toEqual(3.5);
+    expect(res.avg).toEqual("3.50");
     expect(res.sum).toEqual(9);
-    expect(res.var).toEqual(12.5);
-    expect(res.stdDev).toEqual(3.54);
-    expect(res.median).toEqual(7.5);
+    expect(res.var).toEqual("12.50");
+    expect(res.stdDev).toEqual("3.54");
+    expect(res.median).toEqual("7.50");
 
     res = getResults([
       {p1: 1, p2: 2, p3: 3, p4: 4, p5: 5},

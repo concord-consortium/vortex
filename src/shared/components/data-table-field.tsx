@@ -368,6 +368,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
         }
         isFunction = true;
       }
+      if (typeof value === "number") {
+        // convert non-whole numbers (% 1 != 0) to have 2 decimal places
+        value = value % 1 === 0 ? value : value.toFixed(2);
+      }
       const isSensorField = sensorFields.indexOf(name) !== -1;
       let classNames = "";
       if (readOnly) classNames += " " + css.readOnly;
