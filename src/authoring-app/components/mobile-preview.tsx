@@ -1,6 +1,7 @@
 import React from "react";
 import { ExperimentWrapper } from "../../mobile-app/components/experiment-wrapper";
 import { IExperiment } from "../../shared/experiment-types";
+import * as css from "./mobile-preview.module.scss";
 
 const validate = (experimentMaybe: Partial<IExperiment>) => {
   // TOOD: Really validate it?
@@ -25,16 +26,18 @@ export const MobilePreview = (params: IMobilePreviewParams) => {
   return (
     validate(experiment)
     ?
-      <ExperimentWrapper
-        embedded={true}
-        experiment={experiment}
-        experimentIdx={1}
-        data={{}}
-        onDataChange={saveActiveRunData}
-        onBackBtnClick={exitExperiment}
-        onUpload={onUpload}
-      />
+      <div className={css.mobilePreview}>
+        <ExperimentWrapper
+          embeddedPreview={true}
+          experiment={experiment}
+          experimentIdx={1}
+          data={{}}
+          onDataChange={saveActiveRunData}
+          onBackBtnClick={exitExperiment}
+          onUpload={onUpload}
+        />
+      </div>
     :
-      <div>{errors(experiment)}</div>
+      <div className={css.previewError}>{errors(experiment)}</div>
   );
 };

@@ -20,8 +20,14 @@ export const AuthoringComponent = (props : IProps) => {
   } = UseS3(GetS3Config());
 
   const setName = (e: React.FormEvent<HTMLInputElement>) => {
-    const v = e.currentTarget.value;
-    setStagingName(v);
+    const _name = e.currentTarget.value;
+    const {metadata} = resourceObject;
+    setStagingName(_name);
+    metadata.name = _name;
+    if (s3Resource && s3Resource.id) {
+      metadata.uuid = s3Resource.id;
+    }
+    stageContentFn(resourceObject);
   };
 
   const setDescription = (e: React.FormEvent<HTMLInputElement>) => {
@@ -55,37 +61,42 @@ export const AuthoringComponent = (props : IProps) => {
               <Button className={css.button} onClick={saveFn}>Save</Button>
               <Button className={css.button} onClick={deleteFn}>Delete</Button>
             </div>
-
             <div className={css.selectedName}>
-              Name:
-                <input
-                  name="name"
-                  onChange={setName}
-                  value={stagingName}
-                />
-              <br/>
-              Description:
-                <input
-                  name="description"
-                  onChange={setDescription}
-                  value={stagingDescription}
-                />
-              <br/>
-              { resourceUrl
-                ? <span className={css.url}>
-                    url: <a href={resourceUrl} target="_blank">{resourceUrl}</a>
-                  </span>
-                : null
-              }
+              <div className={css.metaFields}>
+                <div className={css.formField}>
+                    <label>Name:</label>
+                    <input
+                      name="name"
+                      onChange={setName}
+                      value={stagingName}
+                    />
+                </div>
+                <div className={css.formField}>
+                  <label>Description:</label>
+                  <input
+                    name="description"
+                    onChange={setDescription}
+                    value={stagingDescription}
+                  />
+                </div>
+                { resourceUrl
+                  ? <span className={css.url}>
+                      url: <a href={resourceUrl} target="_blank">{resourceUrl}</a>
+                    </span>
+                  : null
+                }
+              </div>
             </div>
 
-            <div className={css.jsonEditorContainer}>
-              <JSONEditor
-                width='100%'
-                height='100%'
-                initialValue={resourceObject}
-                onChange={stageContentFn}
-              />
+            <div className={css.editorAndPreview}>
+              <div className={css.jsonEditorContainer}>
+                <JSONEditor
+                  width='50vw'
+                  height='70vh'
+                  initialValue={resourceObject}
+                  onChange={stageContentFn}
+                />
+              </div>
               <MobilePreview experiment={resourceObject as IExperiment} />
             </div>
           </div>

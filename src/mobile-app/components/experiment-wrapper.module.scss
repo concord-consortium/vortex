@@ -41,7 +41,8 @@
   right: 0;
   left: 0;
   overflow: auto;
-  &.embedded {
+  &.embeddedPreview {
     position: relative;
+    top: 0px;
   }
 }

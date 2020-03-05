@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-helper";
 import { S3Resource } from "@concord-consortium/token-service";
+import experiments from "../../data/experiments.json";
 
 let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
 
@@ -102,8 +103,9 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const createCallback = ( resource: S3Resource) => {
+    const defaultContent = JSON.stringify(experiments[0], null, 2);
     setS3Resource(resource);
-    helper.s3Upload({s3Resource: resource, body: ""})
+    helper.s3Upload({s3Resource: resource, body: defaultContent})
     .then((url) => {
       setStatus(S3Status.Complete);
       loadFn(resource);

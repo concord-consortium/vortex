@@ -195,8 +195,7 @@ export class S3ResourceHelper {
    */
   async s3Delete(s3Resource: S3Resource) {
     const client = await this.getTokenServiceClient();
-    const credentials = await client.getCredentials(s3Resource.id);
-
+    await client.getCredentials(s3Resource.id);
     try {
       // We don't delete the S3 Resource for now…
       // const s3 = new AWS.S3({region, accessKeyId, secretAccessKey, sessionToken});
@@ -224,14 +223,14 @@ export class S3ResourceHelper {
    * @returns Promise<string>
    * @memberof S3ResourceHelper
    */
-  async s3New(filename:string, content:string) {
+  async s3New(filename:string, description: string) {
     const client = await this.getTokenServiceClient();
     const resource: S3Resource = await client.createResource(
       {
         tool: this.tool,
         type: "s3Folder",
         name: filename,
-        description: "noahs test data",
+        description,
         accessRuleRole: "owner",
         accessRuleType: "user",
         accessRules: []
@@ -274,17 +273,19 @@ export class S3ResourceHelper {
     newName?: string,
     newDescription?: string) {
       let dirty = false;
-      if(newName && newName !== s3Resource.name) {
+      if(newName && (newName !== s3Resource.name)) {
         s3Resource.name = newName as string;
         dirty = true;
       }
-      if(newDescription && newDescription !== s3Resource.description) {
+      if(newDescription && (newDescription !== s3Resource.description)) {
         s3Resource.description = newDescription;
         dirty = true;
       }
       if(dirty) {
         const client = await this.getTokenServiceClient();
-        return await client.updateResource(s3Resource.id, s3Resource);
+        const result =  await client.updateResource(s3Resource.id, s3Resource);
+        await this.listResources();
+        return result;
       }
       return s3Resource;
   }
