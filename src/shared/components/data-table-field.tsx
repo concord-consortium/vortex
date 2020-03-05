@@ -236,6 +236,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
   const [manualEntryMode, setManualEntryMode] = useState<boolean>(false);
+  const showImportButton = !!formContext.experimentConfig?.callbacks?.onImport;
+  const showEditSaveButton = !!formContext.experimentConfig?.showEditSaveButton;
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -283,6 +285,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
     sensor?.disconnect();
     setManualEntryMode(true);
   };
+
+  const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
+  const handleImportButton = () => formContext.experimentConfig?.callbacks?.onImport();
 
   const onSensorRecordClick = (rowIdx: number) => {
     if (!sensorOutput.connected) {
@@ -406,9 +411,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
         }
       </div>
       <div className={css.topBar}>
-        {sensor && !manualEntryMode && <SensorComponent sensor={sensor} hideMenu={true}/>}
-        {manualEntryMode && <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>}
-        {title && <div className={css.title}>{title}</div>}
+        <div className={css.topBarLeft}>
+          {sensor && !manualEntryMode && <SensorComponent sensor={sensor} hideMenu={true}/>}
+          {manualEntryMode && <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>}
+          {title && <div className={css.title}>{title}</div>}
+        </div>
+        <div className={css.topBarRight}>
+          {!sensor && showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
+          {!sensor && showEditSaveButton ? <div className={css.button} onClick={handleEditSaveButton}>{manualEntryMode ? "Save" : "Edit"}</div> : undefined}
+        </div>
       </div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>
         <tbody className={!manualEntryMode && sensor && !sensorOutput.connected ? css.grayedOut : ""}>

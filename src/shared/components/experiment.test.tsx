@@ -2,7 +2,7 @@ import React from "react";
 import { Experiment } from "./experiment";
 import { mount, shallow } from "enzyme";
 import Form from "react-jsonschema-form";
-import { IExperiment, EXPERIMENT_VERSION_1 } from "../experiment-types";
+import { IExperiment, EXPERIMENT_VERSION_1, IExperimentConfig } from "../experiment-types";
 import { act } from "react-dom/test-utils";
 import { SectionButton } from "./section-button";
 import { Section } from "./section";
@@ -10,7 +10,7 @@ import { Section } from "./section";
 jest.mock("react-jsonschema-form");
 
 describe("Experiment component", () => {
-  const defConfig = {hideLabels: false, useSensors: false};
+  const defConfig: IExperimentConfig = {hideLabels: false, useSensors: false, showEditSaveButton: false};
   const defExperiment = {
     version: EXPERIMENT_VERSION_1,
     metadata: {

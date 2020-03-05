@@ -126,6 +126,30 @@ $headerBorder: #fff;
 
   .topBar {
     min-height: 30px;
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+
+    .topBarLeft {
+      flex-grow: 1;
+    }
+    .topBarRight {
+      .button {
+        display: inline-block;
+        margin-right: 10px;
+        margin-bottom: 10px;
+        border: 1px solid $ccTealDark2;
+        background-color: #fff;
+        color: $ccTealDark2;
+        border-radius: 5px;
+        padding: 3px 8px 2px 10px;
+        text-transform: uppercase;
+        outline: none;
+      }
+      button:hover {
+        background-color: rgba(11, 128, 155, 0.12);
+      }
+    }
   }
 
   .menu {
@@ -134,17 +158,5 @@ $headerBorder: #fff;
     right: 10px;
     display: flex;
     flex-direction: row;
-
-    .saveButton {
-      margin-right: 10px;
-      margin-top: -2px;
-      border: 1px solid #0b809b;
-      background-color: #fff;
-      color: #0b809b;
-      border-radius: 5px;
-      padding: 3px 10px;
-      text-transform: uppercase;
-      outline: none;
-    }
   }
 }

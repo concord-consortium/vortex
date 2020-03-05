@@ -88,4 +88,8 @@ export type SectionComponent = React.FC<ISectionComponentProps>;
 export interface IExperimentConfig {
   hideLabels: boolean;
   useSensors: boolean;
+  showEditSaveButton: boolean;
+  callbacks?: {
+    onImport: () => void;
+  };
 }
