@@ -30,8 +30,9 @@ export const MenuComponent: React.FC = (props) => {
   };
 
   // hide the menu if a click is made outside the menu while it is showing
-  // this is not called if handleMenuIcon() is called as it stops
-  // propagation of the mouse event up to the window element
+  // this is called *before* handleMenuIcon() toggles the menu in a timeout
+  // so that the user can click on a different menu while an existing menu
+  // is open and cause the existing menu to close
   useEffect(() => {
     const handleClick = (e: MouseEvent) => {
       if (showingMenu.current) {
@@ -43,9 +44,10 @@ export const MenuComponent: React.FC = (props) => {
   }, []);
 
   const handleMenuIcon = (e: React.MouseEvent<HTMLDivElement>) => {
-    // stop handleClick() handler above from running
-    e.stopPropagation();
-    updateMenu(!showMenu);
+    // wait until after window click handler hides any existing open
+    // menu before toggling our menu
+    const newShowMenu = !showMenu;
+    setTimeout(() => updateMenu(newShowMenu), 1);
   };
 
   const renderMenu = () => {
