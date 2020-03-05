@@ -119,6 +119,9 @@ export const Camera = (props: IProps) => {
     <div className={css.camera}>
       <div className={css.canvas} style={canvasStyle}>
         <canvas ref={canvasRef} />
+        <div className={css.banner}>
+          Photos are shared data and can be viewed by your teacher and classmates. Be careful about taking pictures of people.
+        </div>
         {capturing ? <div ref={cameraButtonRef} className={css.cameraButton} onClick={handleCanvasClicked} /> : undefined}
       </div>
     </div>
