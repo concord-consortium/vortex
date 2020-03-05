@@ -10,7 +10,7 @@ import { Section } from "./section";
 jest.mock("react-jsonschema-form");
 
 describe("Experiment component", () => {
-  const defConfig: IExperimentConfig = {hideLabels: false, useSensors: false, showEditSaveButton: false};
+  const defConfig: IExperimentConfig = {hideLabels: false, useSensors: false, showEditSaveButton: false, showCameraButton: false};
   const defExperiment = {
     version: EXPERIMENT_VERSION_1,
     metadata: {

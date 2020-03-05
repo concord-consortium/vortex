@@ -89,6 +89,7 @@ export interface IExperimentConfig {
   hideLabels: boolean;
   useSensors: boolean;
   showEditSaveButton: boolean;
+  showCameraButton: boolean;
   callbacks?: {
     onImport: () => void;
   };

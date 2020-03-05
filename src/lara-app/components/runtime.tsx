@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
 import { IFirebaseJWT } from "../hooks/interactive-api";
+import { IRun } from "../../mobile-app/hooks/use-runs";
 
 const QRCode = require("qrcode-svg");
 
@@ -28,6 +29,12 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
   const [displayQr, setDisplayQr] = useState(true);
+  const experimentRef = useRef<IRun|undefined>();
+
+  const getSaveExperimentUrl = () => {
+    const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
+    return `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
+  };
 
   useEffect(() => {
     firebase
@@ -37,14 +44,14 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       .limit(1)
       .onSnapshot(snapshot => {
         setQueriedFirestore(true);
-        const newData = snapshot.docs[0]?.data?.().experiment?.data as IExperimentData | undefined;
+        experimentRef.current = snapshot.docs[0]?.data?.().experiment;
+        const newData = experimentRef.current?.data as IExperimentData | undefined;
         setExperimentData(newData);
         setDisplayQr(newData === undefined);
         // generate QR code
-        const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
         const content = JSON.stringify({
           version: "1.0.0",
-          url: `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`
+          url: getSaveExperimentUrl()
         });
         setQRCode(new QRCode({
           content,
@@ -64,6 +71,26 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
 
   const toggleDisplayQr = () => setDisplayQr(!displayQr);
 
+  const handleSaveData = (data: IExperimentData) => {
+    // use the current run from Firestore or if there isn't one create a new one
+    const experimentRun = experimentRef.current ? Object.assign({}, experimentRef.current, {data}) : {
+      data,
+      experiment,
+      experimentIdx: 1,
+      key: Date.now().toString()
+    };
+    fetch(getSaveExperimentUrl(), {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({experiment: experimentRun})
+    })
+    .catch(err => alert(err.toString()));
+  };
+
   const renderData = () => {
     if (!queriedFirestore) {
       return <div>Looking for existing experiment data...</div>;
@@ -75,6 +102,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       hideLabels: false,
       useSensors: false,
       showEditSaveButton: true,
+      showCameraButton: false,
       callbacks: {
         onImport: handleUploadAgain,
       }
@@ -88,6 +116,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
             data={experimentData}
             config={config}
             defaultSectionIndex={defaultSectionIndex}
+            onDataChange={handleSaveData}
           />
         </div>
         {(displayQr && experimentData === undefined) &&
