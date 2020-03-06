@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
 import { IExperiment, IExperimentConfig } from "./experiment-types";
@@ -13,6 +13,22 @@ const mobileAppConfig: IExperimentConfig = {
   showCameraButton: false
 };
 
+const ExpandoSchema: React.FC<{experiment: IExperiment}> = ({experiment}) => {
+  const [expanded, setExpanded] = useState(false);
+  const handleToggleExpanded = () => setExpanded(!expanded);
+
+  return (
+    <>
+      <div onClick={handleToggleExpanded} className="expando-title">{expanded ? "Hide" : "Show"} Experiment Schema JSON</div>
+      {expanded ?
+        <pre>
+          {JSON.stringify(experiment, null, 2)}
+        </pre>
+      : undefined}
+    </>
+  );
+};
+
 const experiment1 = ExperimentJSONs[0] as IExperiment;
 ReactDOM.render(
   <>
@@ -20,10 +36,7 @@ ReactDOM.render(
       experiment={experiment1}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment1, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment1} />
   </>,
   document.getElementById("experiment-1")
 );
@@ -120,10 +133,7 @@ ReactDOM.render(
       experiment={experiment2}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment2, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment2} />
   </>,
   document.getElementById("experiment-2")
 );
@@ -196,10 +206,9 @@ ReactDOM.render(
       experiment={experiment3}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment3, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment3} />
   </>,
   document.getElementById("experiment-3")
 );
+
+
