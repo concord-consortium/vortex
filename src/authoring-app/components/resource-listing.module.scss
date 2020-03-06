@@ -53,6 +53,11 @@
       background-color: hsl(34, 100%, 69%);
       color: white;
     }
+    &.disabled {
+      opacity: 0.4;
+      pointer-events: none;
+      cursor: default;
+    }
   }
 }
 

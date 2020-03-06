@@ -2,6 +2,7 @@ import { useState } from "react";
 import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-helper";
 import { S3Resource } from "@concord-consortium/token-service";
 import experiments from "../../data/experiments.json";
+import { setState } from "react-jsonschema-form/lib/utils";
 
 let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
 
@@ -11,7 +12,8 @@ export enum S3Status {
   DeletePending = "Pending: Delete",
   SavePending = "Pending: Save",
   LoadPending = "Pending: Load",
-  Complete = "Complete",
+  ListPending = "Pending: List",
+  Ready = "Ready",
   Error = "Error"
 }
 
@@ -39,18 +41,20 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
 
   const listCallback = (_resources: S3Resource[]) => {
     setResources(_resources.slice());
-    setStatus(S3Status.Complete);
+    setStatus(S3Status.Ready);
   };
 
-  const refreshList = () => {
-    helper.listResources()
-    .then(listCallback)
-    .catch(handleError);
+  const refreshList = async () => {
+    setStatus(S3Status.ListPending);
+    const _resources = await helper.listResources();
+    setTimeout(() => listCallback(_resources as S3Resource[]), 1000);
+    // listCallback(_resources as S3Resource[]);
   };
 
-  const saveCallback = (url: string) => {
+  const saveCallback = async (url: string) => {
     setResourceUrl(url);
-    setStatus(S3Status.Complete);
+    setStatus(S3Status.Ready);
+    await refreshList();
   };
 
   const stageContentFn = (jsObject: object) => {
@@ -58,28 +62,29 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     setResourceContent(json);
   };
 
-  const saveFn = () => {
+  const saveFn = async () => {
     setStatus(S3Status.SavePending);
     if(s3Resource) {
-      helper.updateMetaData(s3Resource, stagingName, stagingDescription).then(newResource => {
-        helper.s3Upload({
-          s3Resource,
+      try {
+        const newResource = await helper.updateMetaData(s3Resource, stagingName, stagingDescription);
+        const url = await helper.s3Upload({
+          s3Resource: newResource,
           body: resourceContent,
           filename: stagingName
-        }).then(saveCallback);
-      });
-
-    }
-    else {
-      setStatus(S3Status.Error);
+        });
+        saveCallback(url);
+      }
+      catch(e) {
+        handleError(e);
+      }
     }
   };
 
 
   const loadCallback = (json: string) => {
-    setStatus(S3Status.Complete);
+    setStatus(S3Status.Ready);
     setResourceContent(json);
-    setStatus(S3Status.Complete);
+    setStatus(S3Status.Ready);
   };
 
   const clearMetaFields = () => {
@@ -87,63 +92,78 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     setStagingDescription("description");
   };
 
-  const loadFn = (resource?: S3Resource) => {
+  const loadFn = async (resource?: S3Resource) => {
     const newResource = resource ? resource : s3Resource;
     if(newResource) {
       setStagingName(newResource.name);
       setStagingDescription(newResource.description);
       setStatus(S3Status.LoadPending);
       setS3Resource(newResource);
-      helper.loadJSONFromS3(newResource)
-      .then(loadCallback)
-      .catch(handleError);
+      try {
+        const json = await helper.loadJSONFromS3(newResource);
+        loadCallback(json || "");
+      }
+      catch(e) {
+        handleError(e);
+      }
+
     } else {
       clearMetaFields();
     }
   };
 
-  const createCallback = ( resource: S3Resource) => {
+  const createCallback = async ( _resource: S3Resource) => {
     const defaultContent = JSON.stringify(experiments[0], null, 2);
-    setS3Resource(resource);
-    helper.s3Upload({s3Resource: resource, body: defaultContent})
-    .then((url) => {
-      setStatus(S3Status.Complete);
-      loadFn(resource);
-      refreshList();
-    });
+    const url = await helper.s3Upload({s3Resource: _resource, body: defaultContent});
+    setStatus(S3Status.Ready);
+    setResourceUrl(url);
+    await selectFn(_resource);
+    await refreshList();
   };
 
-  const createFn = () => {
+  const createFn = async () => {
     const name = "untitled";
     const description = "a new document";
     setStatus(S3Status.CreatePending);
-    helper.s3New(name, description)
-    .then(createCallback)
-    .catch(handleError);
+    try {
+      const _resource: S3Resource = await helper.s3New(name, description);
+      await createCallback(_resource);
+    }
+    catch(e) {
+      handleError(e);
+    }
   };
 
-  const deleteFn = () => {
+  const deleteFn = async () => {
     if(s3Resource) {
       setStatus(S3Status.DeletePending);
-      helper.s3Delete(s3Resource)
-      .then((deleted) => {
+      const deleted = await helper.s3Delete(s3Resource);
+      try {
         if (deleted) {
           setS3Resource(null);
           setResourceContent("");
-          setStatus(S3Status.Complete);
+          setStatus(S3Status.Ready);
         }
         else {
           setStatus(S3Status.Error);
         }
-        refreshList();
-      });
+      }
+      catch(e) {
+        handleError(e);
+      }
     }
+    await refreshList();
   };
 
-  const selectFn = (resource: S3Resource) => {
-    setS3Resource(resource);
+  const selectFn = async (_resource: S3Resource) => {
+    setS3Resource(_resource);
     setResourceUrl(null);
-    loadFn(resource);
+    try {
+      await loadFn(_resource);
+    }
+    catch(e) {
+      handleError(e);
+    }
   };
 
   let resourceObject: any = null;
@@ -167,3 +187,4 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     refreshList, selectFn, deleteFn, createFn, loadFn, saveFn, stageContentFn
   });
 };
+

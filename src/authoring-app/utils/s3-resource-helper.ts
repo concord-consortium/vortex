@@ -283,8 +283,7 @@ export class S3ResourceHelper {
       }
       if(dirty) {
         const client = await this.getTokenServiceClient();
-        const result =  await client.updateResource(s3Resource.id, s3Resource);
-        await this.listResources();
+        const result = await client.updateResource(s3Resource.id, s3Resource) as S3Resource;
         return result;
       }
       return s3Resource;

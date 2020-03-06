@@ -11,15 +11,17 @@ interface IResourceListOpts {
 }
 
 const ResourceList = (opts: IResourceListOpts) => {
-  const { resource, resources, selectFn} = opts;
+  const { resource, resources, selectFn, disabled} = opts;
   const resElems = resources.map( (r:S3Resource) => {
-    const selectHandler = (e: React.MouseEvent<HTMLElement>) => {
-      selectFn && selectFn(r);
-    };
-    const selected = resource ? resource.id === r.id : false;
+    const selectHandler = disabled
+      ? (e: React.MouseEvent<HTMLElement>) => null
+      : (e: React.MouseEvent<HTMLElement>) => { selectFn && selectFn(r); };
+
+      const selected = resource ? resource.id === r.id : false;
+    const disabledCSS = disabled ? css.disabled : "";
     const cssName = selected
-      ? `${css.resourceItem} ${css.selected}`
-      : css.resourceItem;
+      ? `${css.resourceItem} ${disabledCSS} ${css.selected}`
+      : `${css.resourceItem} ${disabledCSS}`;
     return(
       <div key={r.id} className={cssName} onClick={selectHandler}>
         <a className={css.name}>{r.name}</a>

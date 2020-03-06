@@ -18,7 +18,7 @@ export const AuthoringComponent = (props : IProps) => {
     s3Resource, resources, resourceUrl, resourceObject, status, statusMsg,
     refreshList, selectFn, deleteFn, createFn, stageContentFn, saveFn
   } = UseS3(GetS3Config());
-  const disableNavigation = status !== S3Status.Ready ? true : false
+  const disableNavigation = status !== S3Status.Ready ? true : false;
   const setName = (e: React.FormEvent<HTMLInputElement>) => {
     const _name = e.currentTarget.value;
     const {metadata} = resourceObject;
