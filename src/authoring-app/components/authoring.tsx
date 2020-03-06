@@ -18,7 +18,7 @@ export const AuthoringComponent = (props : IProps) => {
     s3Resource, resources, resourceUrl, resourceObject, status, statusMsg,
     refreshList, selectFn, deleteFn, createFn, stageContentFn, saveFn
   } = UseS3(GetS3Config());
-
+  const disableNavigation = status !== S3Status.Ready ? true : false
   const setName = (e: React.FormEvent<HTMLInputElement>) => {
     const _name = e.currentTarget.value;
     const {metadata} = resourceObject;
@@ -52,14 +52,26 @@ export const AuthoringComponent = (props : IProps) => {
           resource={s3Resource}
           createFn={createFn}
           selectFn={selectFn}
+          disabled={disableNavigation}
           refreshListFn={refreshList}
         />
 
       { s3Resource
         ? <div className={css.selectedDocument}>
             <div className={css.buttons}>
-              <Button className={css.button} onClick={saveFn}>Save</Button>
-              <Button className={css.button} onClick={deleteFn}>Delete</Button>
+              <Button
+                disabled={disableNavigation}
+                className={css.button}
+                onClick={saveFn}>
+              Save
+              </Button>
+              <Button
+                className={css.button}
+                onClick={deleteFn}
+                disabled={disableNavigation}
+              >
+              Delete
+              </Button>
             </div>
             <div className={css.selectedName}>
               <div className={css.metaFields}>

@@ -37,21 +37,26 @@ const ResourceList = (opts: IResourceListOpts) => {
 export interface IResourceListingOpts {
   resource: S3Resource|null;
   resources: S3Resource[];
+  disabled: boolean;
   refreshListFn: () => void;
   selectFn: (resource: S3Resource) => void;
   createFn?: () => void;
 }
 
 export const ResourceListing = (props: IResourceListingOpts) => {
-  const {createFn, refreshListFn} = props;
+  const {createFn, refreshListFn, disabled} = props;
   return (
     <div className={css.listings}>
       <div className={css.buttons}>
         { createFn
-          ? <Button className={css.button} onClick={createFn}>New</Button>
+          ? <Button disabled={disabled} className={css.button} onClick={createFn}>
+              New
+            </Button>
           : null
         }
-        <Button className={css.button} onClick={refreshListFn}>Refresh list</Button>
+        <Button disabled={disabled} className={css.button} onClick={refreshListFn}>
+          Refresh list
+        </Button>
       </div>
       <div className={css.title}>Experiment Templates:</div>
       <ResourceList {... props} />

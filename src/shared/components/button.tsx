@@ -20,7 +20,7 @@ export const Button:React.FC<IProps> = (props: IProps) => {
   const { label, children, disabled, className } = props;
   return (
     <span
-      className={css.button + " " + (disabled ? css.disabled : "") + (className ? className : "")}
+      className={css.button + " " + (disabled ? css.disabled : "") +  " " + (className ? className : " ")}
       onClick={handleClick}
     >
       <span className={css.label}>{label || children}</span>
