@@ -358,5 +358,117 @@
       ],
       "photo": []
     }
+  },
+  {
+    "version": "1.0.0",
+    "metadata": {
+      "uuid": "sIf0TcSTd30TwIOcenTI",
+      "name": "Untitled Experiment",
+      "initials": "UE"
+    },
+    "schema": {
+      "titleField": "label",
+      "sections": [
+        {
+          "title": "Label",
+          "icon": "assignment",
+          "formFields": [
+            "studySite",
+            "label",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [
+          "studySite",
+          "label"
+        ],
+        "properties": {
+          "studySite": {
+            "title": "Study Site",
+            "type": "string",
+            "enum": [
+              "Study Site #1",
+              "Study Site #2"
+            ],
+            "enumNames": [
+              "Study Site #1",
+              "Study Site #2"
+            ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "photo": {
+            "title": "Photos and Notes",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "label": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Experiment 1"
+        },
+        "groupMembers": {
+          "ui:icon": "group",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [],
+      "photo": []
+    }
   }
 ]

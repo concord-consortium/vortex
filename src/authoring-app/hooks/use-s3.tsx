@@ -2,7 +2,6 @@ import { useState } from "react";
 import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-helper";
 import { S3Resource } from "@concord-consortium/token-service";
 import experiments from "../../data/experiments.json";
-import { setState } from "react-jsonschema-form/lib/utils";
 
 let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
 
@@ -47,8 +46,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const refreshList = async () => {
     setStatus(S3Status.ListPending);
     const _resources = await helper.listResources();
-    setTimeout(() => listCallback(_resources as S3Resource[]), 1000);
-    // listCallback(_resources as S3Resource[]);
+    listCallback(_resources as S3Resource[]);
   };
 
   const saveCallback = async (url: string) => {
@@ -113,7 +111,8 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const createCallback = async ( _resource: S3Resource) => {
-    const defaultContent = JSON.stringify(experiments[0], null, 2);
+    const defaultExperiment= experiments[2];
+    const defaultContent = JSON.stringify(defaultExperiment, null, 2);
     const url = await helper.s3Upload({s3Resource: _resource, body: defaultContent});
     setStatus(S3Status.Ready);
     setResourceUrl(url);
@@ -121,9 +120,22 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     await refreshList();
   };
 
+  const newResourceName = () => {
+    const defaultName = "Untitled Experiment";
+    let testName = defaultName;
+    let count = 0;
+    const names = resources.map(i => i.name);
+    const exists = (_name:string) => names.includes(_name);
+    while(exists(testName)) {
+      count++;
+      testName = `${defaultName} ${count}`;
+    }
+    return testName;
+  };
+
   const createFn = async () => {
-    const name = "untitled";
-    const description = "a new document";
+    const name = newResourceName();
+    const description = " ";
     setStatus(S3Status.CreatePending);
     try {
       const _resource: S3Resource = await helper.s3New(name, description);
