@@ -61,6 +61,13 @@ $headerBorder: #fff;
         background-color: $ccOrangeLight4;
       }
     }
+    .invalid {
+      color: #f00;
+      border: solid 1px #f00;
+      input:focus {
+        border: solid 2px #f00;
+      }
+    }
     .complete > .readOnly {
       background-color: $ccTealLight3;
     }

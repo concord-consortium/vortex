@@ -112,11 +112,18 @@ const isFunctionSymbol = (value: string) => {
 };
 
 // Schema that is accepted by this component.
-type IDataTableField = IDataTableInputField | IDataTableArrayField;
-interface IDataTableInputField {
-  type: "string" | "number";
+type IDataTableField = IDataTableStringInputField | IDataTableNumberInputField | IDataTableArrayField;
+interface IDataTableStringInputField {
+  type: "string";
   title?: string;
   readOnly?: boolean;
+}
+interface IDataTableNumberInputField {
+  type: "number" | "integer";
+  title?: string;
+  readOnly?: boolean;
+  minimum?: number;
+  maximum?: number;
 }
 interface IDataTableArrayFieldItems {
   type: "string" | "number";
@@ -260,6 +267,43 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
+
+  const isValid = (propName: string, value: string) => {
+    // allow blanking out
+    if ((value === undefined) || (value === "")) {
+      return true;
+    }
+
+    const propType = fieldDefinition[propName].type;
+    if ((propType === "number") || (propType === "integer")) {
+      const {minimum, maximum} = fieldDefinition[propName] as IDataTableNumberInputField;
+      let numericValue: number;
+      if (propType === "integer") {
+        if (!value.trim().match(/^[-+]?[0-9]*$/)) {
+          return false;
+        }
+        numericValue = parseInt(value, 10);
+        if (isNaN(numericValue)) {
+          return false;
+        }
+      } else {
+        if (!value.trim().match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
+          return false;
+        }
+        numericValue = parseFloat(value);
+        if (isNaN(numericValue)) {
+          return false;
+        }
+      }
+      if ((minimum !== undefined) && (numericValue < minimum)) {
+        return false;
+      }
+      if ((maximum !== undefined) && (numericValue > maximum)) {
+        return false;
+      }
+    }
+    return true;
+  };
 
   // for now select is the same as input but that will change once we add input validation
   const handleSelectChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
@@ -421,6 +465,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
       if (readOnly) classNames += " " + css.readOnly;
       if (isSensorField) classNames += " " + css.sensorField;
       if (isFunction) classNames += " " + css.function;
+      if (!isValid(name, String(value))) {
+        classNames += " " + css.invalid;
+      }
 
       let contents;
       if (readOnly) {
