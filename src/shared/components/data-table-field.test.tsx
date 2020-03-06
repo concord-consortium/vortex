@@ -479,4 +479,29 @@ describe("DataTableField component", () => {
     expect(res.stdDev).toEqual(5);
     expect(res.median).toEqual(10);
   });
+
+  it("handles dropdown definitions", () => {
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dropdown": {
+            "title": "Dropdown",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["One", "Two", "Three"]
+            }
+          }
+        }
+      }
+    };
+
+    const formData = [{dropdown: ""}];
+    const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={formData} />);
+    expect(wrapper.find("option").length).toBe(4);
+    expect(wrapper.find("option").map(option => option.props().value)).toStrictEqual(["", "One", "Two", "Three"]);
+    expect(wrapper.find("select").props().value).toBe("");
+  });
 });

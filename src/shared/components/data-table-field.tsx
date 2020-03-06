@@ -112,8 +112,19 @@ const isFunctionSymbol = (value: string) => {
 };
 
 // Schema that is accepted by this component.
-interface IDataTableField {
+type IDataTableField = IDataTableInputField | IDataTableArrayField;
+interface IDataTableInputField {
   type: "string" | "number";
+  title?: string;
+  readOnly?: boolean;
+}
+interface IDataTableArrayFieldItems {
+  type: "string" | "number";
+  enum: any[];
+}
+interface IDataTableArrayField {
+  type: "array";
+  items: IDataTableArrayFieldItems;
   title?: string;
   readOnly?: boolean;
 }
@@ -250,6 +261,14 @@ export const DataTableField: React.FC<FieldProps> = props => {
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
 
+  // for now select is the same as input but that will change once we add input validation
+  const handleSelectChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
+    handleInputChange(rowIdx, propName, event);
+  };
+  const handleSelectBlur = () => {
+    handleInputBlur();
+  };
+
   const handleInputChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
     // First update internal state, keep strings here, casting to Numbers here can cause confusing changes of the input.
     const newData = formData.slice();
@@ -356,6 +375,31 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return [refreshBtnCell].concat(basicCells);
   };
 
+  const renderSelect = (options: {name: string, value: any, rowIdx: number, items: IDataTableArrayFieldItems}) => {
+    const {value, rowIdx, items, name} = options;
+    return (
+      <select value={value} onChange={handleSelectChange.bind(null, rowIdx, name)} onBlur={handleSelectBlur.bind(null, rowIdx, name)}>
+        <>
+          <option value="" />
+          {items.enum.map(item => <option key={item} value={item}>{item}</option>)}
+        </>
+      </select>
+    );
+  };
+
+  const renderInput = (options: {name: string, value: any, rowIdx: number, disabled: boolean}) => {
+    const {name, value, rowIdx, disabled} = options;
+    return (
+      <input
+        type="text"
+        value={value}
+        disabled={disabled}
+        onChange={handleInputChange.bind(null, rowIdx, name)}
+        onBlur={handleInputBlur.bind(null, rowIdx, name)}
+      />
+    );
+  };
+
   const renderBasicCells = (fieldNames: string[], row: { [k: string]: any }, rowIdx: number) => {
     return fieldNames.map(name => {
       let value = row[name] || "";
@@ -377,19 +421,17 @@ export const DataTableField: React.FC<FieldProps> = props => {
       if (readOnly) classNames += " " + css.readOnly;
       if (isSensorField) classNames += " " + css.sensorField;
       if (isFunction) classNames += " " + css.function;
-      return <td key={name} className={classNames}>
-        {
-          readOnly ?
-            value :
-            <input
-              type="text"
-              value={value}
-              disabled={isFunction || (isSensorField && !manualEntryMode)}
-              onChange={handleInputChange.bind(null, rowIdx, name)}
-              onBlur={handleInputBlur.bind(null, rowIdx, name)}
-            />
-        }
-      </td>;
+
+      let contents;
+      if (readOnly) {
+        contents = value;
+      } else if (fieldDefinition[name].type === "array") {
+        contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
+      } else {
+        contents = renderInput({name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode)});
+      }
+
+      return <td key={name} className={classNames}>{contents}</td>;
     });
   };
 
