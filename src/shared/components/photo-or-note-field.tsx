@@ -211,6 +211,11 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
     }
   }, []);
 
+  // listen for prop changes from uploads
+  useEffect(() => {
+    setFormData(props.formData);
+  }, [props.formData]);
+
   // get the initial window info and listen for resize/re-orientation
   // useEffect(() => {
   //   const updateWindowInfo = () => setWindowInfo({width: window.innerWidth, height: window.innerHeight});
