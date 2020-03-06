@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import ReactDOM from "react-dom";
 import { Experiment } from "./components/experiment";
 import { IExperiment, IExperimentConfig } from "./experiment-types";
@@ -13,6 +13,22 @@ const mobileAppConfig: IExperimentConfig = {
   showCameraButton: false
 };
 
+const ExpandoSchema: React.FC<{experiment: IExperiment}> = ({experiment}) => {
+  const [expanded, setExpanded] = useState(false);
+  const handleToggleExpanded = () => setExpanded(!expanded);
+
+  return (
+    <>
+      <div onClick={handleToggleExpanded} className="expando-title">{expanded ? "Hide" : "Show"} Experiment Schema JSON</div>
+      {expanded ?
+        <pre>
+          {JSON.stringify(experiment, null, 2)}
+        </pre>
+      : undefined}
+    </>
+  );
+};
+
 const experiment1 = ExperimentJSONs[0] as IExperiment;
 ReactDOM.render(
   <>
@@ -20,10 +36,7 @@ ReactDOM.render(
       experiment={experiment1}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment1, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment1} />
   </>,
   document.getElementById("experiment-1")
 );
@@ -120,10 +133,7 @@ ReactDOM.render(
       experiment={experiment2}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment2, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment2} />
   </>,
   document.getElementById("experiment-2")
 );
@@ -196,10 +206,83 @@ ReactDOM.render(
       experiment={experiment3}
       config={mobileAppConfig}
     />
-    <h4>Experiment Schema JSON</h4>
-    <pre>
-      {JSON.stringify(experiment3, null, 2)}
-    </pre>
+    <ExpandoSchema experiment={experiment3} />
   </>,
   document.getElementById("experiment-3")
+);
+
+const experiment4 = {
+  "version": "1.0.0",
+  "metadata": {
+    "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
+    "name": "Data Table Example",
+    "initials": "DT"
+  },
+  "schema": {
+    "sections": [
+      {
+        "title": "Collect",
+        "icon": "collect",
+        "formFields": ["experimentData"]
+      }
+    ],
+    "dataSchema": {
+      "type": "object",
+      "required": ["studySite", "label"],
+      "properties": {
+        "experimentData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": [],
+            "properties": {
+              "location": {
+                "title": "Location",
+                "type": "string",
+                "readOnly": true
+              },
+              "trees": {
+                "title": "Tree Count",
+                "type": "number"
+              },
+              "leafColor": {
+                "title": "Leaf Color",
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "enum": ["Green", "Orange", "Red"]
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "formUiSchema": {
+      "experimentData": {
+        "ui:field": "dataTable",
+        "ui:dataTableOptions": {
+          "sensorFields": []
+        }
+      }
+    }
+  },
+  "data": {
+    "experimentData": [
+      {"location": "Corner 1"},
+      {"location": "Corner 2"},
+      {"location": "Corner 3"},
+      {"location": "Corner 4"}
+    ]
+  }
+} as IExperiment;
+ReactDOM.render(
+  <>
+    <Experiment
+      experiment={experiment4}
+      config={mobileAppConfig}
+    />
+    <ExpandoSchema experiment={experiment4} />
+  </>,
+  document.getElementById("experiment-4")
 );
