@@ -38,9 +38,13 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     setStatusMsg(err.message);
   };
 
-  const listCallback = (_resources: S3Resource[]) => {
+  const listCallback = async (_resources: S3Resource[]) => {
     setResources(_resources.slice());
     setStatus(S3Status.Ready);
+    if(s3Resource === null && _resources.length > 0) {
+      // Set our resource to the first one.
+      await selectFn(_resources[0]);
+    }
   };
 
   const refreshList = async () => {

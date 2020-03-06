@@ -362,9 +362,9 @@
   {
     "version": "1.0.0",
     "metadata": {
-      "uuid": "sIf0TcSTd30TwIOcenTI",
+      "uuid": "jdpmrc1YKPH3Xq43uXaQ",
       "name": "Untitled Experiment",
-      "initials": "UE"
+      "initials": "UX"
     },
     "schema": {
       "titleField": "label",
@@ -379,13 +379,6 @@
           ],
           "components": [
             "metadata"
-          ]
-        },
-        {
-          "title": "Note & Photo",
-          "icon": "note_and_photo",
-          "formFields": [
-            "photo"
           ]
         }
       ],
@@ -415,31 +408,6 @@
           "groupMembers": {
             "title": "Group Members",
             "type": "string"
-          },
-          "photo": {
-            "title": "Photos and Notes",
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "isPhoto": {
-                  "type": "boolean"
-                },
-                "localPhotoUrl": {
-                  "type": "string"
-                },
-                "remotePhotoUrl": {
-                  "type": "string"
-                },
-                "note": {
-                  "type": "string"
-                },
-                "timestamp": {
-                  "type": "string",
-                  "format": "date-time"
-                }
-              }
-            }
           }
         }
       },
@@ -455,20 +423,9 @@
         "groupMembers": {
           "ui:icon": "group",
           "ui:placeholder": "Group Team Members"
-        },
-        "note": {
-          "items": {
-            "ui:widget": "textarea"
-          }
-        },
-        "photo": {
-          "ui:field": "photo"
         }
       }
     },
-    "data": {
-      "experimentData": [],
-      "photo": []
-    }
+    "data": {}
   }
 ]
