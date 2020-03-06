@@ -2,7 +2,7 @@ import React, { useState } from "react";
 
 import css from "./lara-authoring.module.scss";
 import { IExperiment } from "../../shared/experiment-types";
-import { UseS3 } from "../hooks/use-s3";
+import { UseS3, S3Status } from "../hooks/use-s3";
 import { ResourceListing } from "./resource-listing";
 import { GetS3Config } from "../utils/getS3Config";
 
@@ -24,11 +24,11 @@ const isValidExperiment = (experiment: IExperiment) => {
 
 export const LaraAuthoringComponent = (props : IProps) => {
   const { s3Resource, resourceObject: selectedResource,
-    resources, refreshList, resourceObject,
+    resources, refreshList, resourceObject, status,
     selectFn } = UseS3(GetS3Config());
   const [experimentId, setExperimentId] = useState<string|undefined>(props.authoredState?.experimentId);
 
-
+  const disabled = status !== S3Status.Ready;
   if(!s3Resource) {
     if(experimentId) {
       const foundResouce = resources.find(r=> r.id === experimentId);
@@ -78,6 +78,7 @@ export const LaraAuthoringComponent = (props : IProps) => {
       <RenderSelected />
       <div className={css.header}>Choose Experiment</div>
         <ResourceListing
+          disabled={disabled}
           resources={resources}
           resource={s3Resource}
           selectFn={selectFn}

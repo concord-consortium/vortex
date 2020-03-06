@@ -7,6 +7,7 @@ import { Button } from "../../shared/components/button";
 interface IResourceListOpts {
   resources: S3Resource[];
   resource: S3Resource | null;
+  disabled: boolean;
   selectFn?: (resource: S3Resource) => void;
 }
 
