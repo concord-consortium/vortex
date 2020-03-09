@@ -296,10 +296,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
         }
       }
       if ((minimum !== undefined) && (numericValue < minimum)) {
-        return {valid: false, error: `Must be >= ${minimum}`};
+        return {valid: false, error: `Must be ≥ ${minimum}`};
       }
       if ((maximum !== undefined) && (numericValue > maximum)) {
-        return {valid: false, error: `Must be <= ${maximum}`};
+        return {valid: false, error: `Must be ≤ ${maximum}`};
       }
     }
     return {valid: true};
