@@ -13,6 +13,7 @@ interface ISensorSelectorProps {
 }
 
 export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
+  const sortedDevices = devices.sort((a, b) => a.id.localeCompare(b.id));
   const handleCancel = () => cancel();
   return (
     <div className={css.sensorSelector}>
@@ -22,7 +23,7 @@ export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices
           <div className={css.sensorSelectorHeaderButton} onClick={handleCancel}>Cancel</div>
         </div>
       </div>
-      {devices.map((device, index) => {
+      {sortedDevices.map((device, index) => {
         const handleSelectDevice = () => selectDevice(device);
         return (
           <div key={index} className={css.sensorSelectorItem} onClick={handleSelectDevice}>
