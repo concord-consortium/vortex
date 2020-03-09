@@ -14,7 +14,7 @@ const rssiRange = maxRssi - minRssi;
 
 export const getStrength = (rssi: number) => {
   // -90 dBm -> -30 dBm : 0 -> 100
-  const clippedRssi = Math.min(maxRssi, Math.max(minRssi, rssi));
+  const clippedRssi = rssi > maxRssi ? maxRssi : (rssi < minRssi ? minRssi : rssi);
   const strength = 100 - (100 * ((maxRssi - clippedRssi) / rssiRange));
   return strength;
 }
