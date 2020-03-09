@@ -23,6 +23,7 @@ $headerBorder: #fff;
       border-width: 2px;
     }
     td {
+      position: relative;  /* for invalid-marker placement */
       font-size: 20px;
       font-weight: bold;
       border-color: #efefef;
@@ -67,6 +68,20 @@ $headerBorder: #fff;
       input:focus {
         border: solid 2px #f00;
       }
+    }
+    .invalidMarker {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 0;
+      height: 0;
+      border-style: solid;
+      border-width: 0 16px 16px 0;
+      border-color: transparent #ff0000 transparent transparent;
+    }
+    .invalidError {
+      font-size: 0.7em;
+      font-weight: normal;
     }
     .complete > .readOnly {
       background-color: $ccTealLight3;
