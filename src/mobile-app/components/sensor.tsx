@@ -4,6 +4,7 @@ import { Sensor, IConnectDevice, SelectDeviceFn } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import css from "./sensor.module.scss";
+import { inCordova } from "../../shared/utils/in-cordova";
 
 interface ISensorSelectorProps {
   devices: IConnectDevice[];
@@ -12,16 +13,21 @@ interface ISensorSelectorProps {
 }
 
 export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
+  const handleCancel = () => cancel();
   return (
     <div className={css.sensorSelector}>
+      <div className={css.sensorSelectorHeader}>
+        <div className={css.sensorSelectorHeaderTitle}>Choose a sensor...</div>
+        <div className={css.sensorSelectorHeaderButtons}>
+          <div className={css.sensorSelectorHeaderButton} onClick={handleCancel}>Cancel</div>
+        </div>
+      </div>
       {devices.map((device, index) => {
         const handleSelectDevice = () => selectDevice(device);
         return (
-          <div
-            key={index}
-            className={css.sensorSelectorItem}
-            onClick={handleSelectDevice}>
-              {device.name} ({device.adData.rssi})
+          <div key={index} className={css.sensorSelectorItem} onClick={handleSelectDevice}>
+            <div className={css.sensorSelectorItemName}>{device.name}</div>
+            <div className={css.sensorSelectorItemRssi}>{device.adData.rssi}</div>
           </div>
         );
       })}
@@ -58,7 +64,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
     selectDevice.current = undefined;
     cancelSelectDevice.current = undefined;
     setShowDeviceSelect(false);
-  }
+  };
 
   const handleSelectDevice = (device: IConnectDevice) => {
     if (selectDevice.current) {
@@ -106,7 +112,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
   const renderConnecting = () => (
     <div className={css.connectionLabel}>
       {renderIcon("connected")}
-      Connecting...
+      {inCordova ? "Searching..." : "Connecting..."}
     </div>
   );
 

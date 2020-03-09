@@ -175,7 +175,8 @@ const getSensor = (sensorFields: string[]) => {
       sensorCache[key] = new MockSensor({
         capabilities,
         pollInterval: 500,
-        deviceName: "Mocked Sensor"
+        deviceName: "Mocked Sensor",
+        showDevicePicker: !!getURLParam("showDevicePicker") || false
       });
     } else {
       sensorCache[key] = new DeviceSensor({

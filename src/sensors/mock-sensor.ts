@@ -1,4 +1,4 @@
-import { Sensor, ISensorOptions, ISensorValues, IPollOptions } from "./sensor";
+import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions } from "./sensor";
 
 type MockValueDirection = "up" | "down";
 interface IStartingSensorValues extends Required<ISensorValues> {
@@ -22,6 +22,7 @@ export interface IMockSensorOptions extends ISensorOptions {
   startingValues?: IStartingSensorValues;
   staticProbability?: number;
   reversalProbability?: number;
+  showDevicePicker?: boolean;
 }
 
 export class MockSensor extends Sensor {
@@ -32,6 +33,7 @@ export class MockSensor extends Sensor {
   private staticProbability: number;
   private reversalProbability: number;
   private mockedDeviceName: string;
+  private showDevicePicker: boolean;
 
   constructor(options: IMockSensorOptions) {
     super(options);
@@ -59,18 +61,41 @@ export class MockSensor extends Sensor {
     };
     this.staticProbability = options.staticProbability || 0.5;
     this.reversalProbability = options.reversalProbability || 0.8;
+    this.showDevicePicker = options.showDevicePicker || false;
     if (options.autoConnect) {
       this.connect();
     }
   }
 
-  public connect(): Promise<void> {
+  public connect(options?: IConnectOptions): Promise<void> {
     this.setConnecting();
-    return new Promise(resolve => {
-      setTimeout(() => {
-        this.setConnected({connected: true, deviceName: this.mockedDeviceName});
-        resolve();
-      }, 500);
+    return new Promise((resolve, reject) => {
+      if (this.showDevicePicker && options?.onDevicesFound) {
+        const devices: IConnectDevice[] = [];
+        for (let i = 1; i <= 5; i++) {
+          devices.push({
+            id: `${i}`,
+            name: `Mocked Sensor ${i}`,
+            uuids: `uuid${i}`,
+            adData: {
+              rssi: Math.floor(Math.random() * 100),
+              txPower: i,
+              serviceData: {},
+              manufacturerData: {}
+            }
+          });
+        }
+        options.onDevicesFound({
+          devices,
+          select: (device) => this.setConnected({connected: true, deviceName: device.name}),
+          cancel: () => reject("requestDevice error: select canceled")
+        });
+      } else {
+        setTimeout(() => {
+          this.setConnected({connected: true, deviceName: this.mockedDeviceName});
+          resolve();
+        }, 500);
+      }
     });
   }
 

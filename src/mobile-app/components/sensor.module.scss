@@ -1,3 +1,5 @@
+@import "../../shared/components/variables";
+
 .sensor {
   width: 100%;
 }
@@ -81,4 +83,54 @@
 .connectedValues {
 }
 .disconnectedValues {
+}
+
+.sensorSelector {
+  padding: 20px;
+  margin: 10px 0;
+  font-size: 15px;
+  background-color: #fadacb;
+
+  .sensorSelectorHeader {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    .sensorSelectorHeaderTitle {
+      flex-grow: 1;
+      font-weight: bold;
+      font-size: 18px;
+    }
+    .sensorSelectorHeaderButton {
+      display: inline-block;
+      margin-right: 10px;
+      margin-bottom: 10px;
+      border: 1px solid $ccTealDark2;
+      background-color: #fff;
+      color: $ccTealDark2;
+      border-radius: 5px;
+      padding: 3px 8px 2px 10px;
+      text-transform: uppercase;
+      outline: none;
+    }
+    .sensorSelectorHeaderButton:hover {
+      background-color: rgba(11, 128, 155, 0.12);
+    }
+  }
+
+  .sensorSelectorItem {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+
+    margin: 15px 0;
+    font-size: 20px;
+
+    .sensorSelectorItemName {
+      flex-grow: 1;
+    }
+    .sensorSelectorItemRssi {
+      color: #777;
+    }
+  }
 }
