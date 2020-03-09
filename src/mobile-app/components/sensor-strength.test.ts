@@ -15,5 +15,5 @@ describe("SensorStrength component", () => {
     expect(getStrength(-29)).toBe(100);
     expect(getStrength(-91)).toBe(0);
     expect(getStrength(-991)).toBe(0);
-  })
+  });
 });

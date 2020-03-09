@@ -17,7 +17,7 @@ export const getStrength = (rssi: number) => {
   const clippedRssi = rssi > maxRssi ? maxRssi : (rssi < minRssi ? minRssi : rssi);
   const strength = 100 - (100 * ((maxRssi - clippedRssi) / rssiRange));
   return strength;
-}
+};
 
 export const SensorStrength: React.FC<IProps> = ({rssi}) => {
   const strength = getStrength(rssi);
@@ -38,5 +38,5 @@ export const SensorStrength: React.FC<IProps> = ({rssi}) => {
       <div style={barStyle(4)} />
     </div>
   );
-}
+};
 
