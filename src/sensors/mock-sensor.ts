@@ -78,7 +78,7 @@ export class MockSensor extends Sensor {
             name: `Mocked Sensor ${i}`,
             uuids: `uuid${i}`,
             adData: {
-              rssi: -30 - Math.floor(Math.random() * 60),
+              rssi: -30 - Math.floor(Math.random() * 50),
               txPower: i,
               serviceData: {},
               manufacturerData: {}

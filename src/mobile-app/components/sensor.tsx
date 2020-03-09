@@ -3,8 +3,10 @@ import { SensorValue } from "./sensor-value";
 import { Sensor, IConnectDevice, SelectDeviceFn } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
-import css from "./sensor.module.scss";
 import { inCordova } from "../../shared/utils/in-cordova";
+import { SensorStrength } from "./sensor-strength";
+
+import css from "./sensor.module.scss";
 
 interface ISensorSelectorProps {
   devices: IConnectDevice[];
@@ -28,7 +30,9 @@ export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices
         return (
           <div key={index} className={css.sensorSelectorItem} onClick={handleSelectDevice}>
             <div className={css.sensorSelectorItemName}>{device.name}</div>
-            <div className={css.sensorSelectorItemRssi}>{device.adData.rssi}</div>
+            <div className={css.sensorSelectorItemRssi}>
+              <SensorStrength rssi={device.adData.rssi} />
+            </div>
           </div>
         );
       })}
@@ -68,10 +72,8 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
   };
 
   const handleSelectDevice = (device: IConnectDevice) => {
-    if (selectDevice.current) {
-      selectDevice.current(device);
-      clearSelectDevice();
-    }
+    selectDevice.current?.(device);
+    clearSelectDevice();
   };
 
   const handleCancelSelectDevice = () => {
@@ -86,7 +88,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
       cancelSelectDevice.current = cancel;
       setShowDeviceSelect(true);
     }
-  });
+  }).catch(() => sensor.disconnect());
   const disconnect = () => sensor.disconnect();
 
   const renderIcon = (icon: "connected" | "disconnected" | "error") => (
