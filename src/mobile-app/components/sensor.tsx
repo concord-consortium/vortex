@@ -52,7 +52,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
   const [showDeviceSelect, setShowDeviceSelect] = useState(false);
   const selectDevice = useRef<SelectDeviceFn|undefined>();
-  const cancelSelectDevice = useRef<() => void|undefined>();
+  const cancelSelectDevice = useRef<CancelDeviceFn|undefined>();
 
   const clearSelectDevice = () => {
     selectDevice.current = undefined;

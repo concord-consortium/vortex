@@ -39,11 +39,18 @@ export class DeviceSensor extends Sensor {
       if (!navigator.bluetooth) {
         return reject("Bluetooth not enabled in this environment");
       }
-      const options: RequestDeviceOptions = {
-        filters: this.getFilters(),
-        optionalServices: this.getOptionalServiceUUIDs(),
-        onDevicesFound: inCordova ? connectOptions.onDevicesFound : undefined
-      };
+      const options: RequestDeviceOptions =
+        inCordova ? {
+          filters: this.getFilters(),
+          optionalServices: this.getOptionalServiceUUIDs(),
+          // the following are extensions to the cordova-plugin-webbluetooth plugin to enable a sensor list
+          onDevicesFound: connectOptions.onDevicesFound, // callback when a new device is found
+          scanTime: -1, // scan forever
+          deviceTimeout: 5000 // drop devices from list after 5 seconds of not hearing from them
+        } : {
+          filters: this.getFilters(),
+          optionalServices: this.getOptionalServiceUUIDs()
+        };
       logInfo("Connecting using", options);
       navigator.bluetooth.requestDevice(options)
         .then(bluetoothDevice => {

@@ -47,9 +47,13 @@ type RequestDeviceOptions = {
 	filters: BluetoothRequestDeviceFilter[];
 	optionalServices?: BluetoothServiceUUID[];
 	onDevicesFound?: OnDevicesFoundFn;
+	scanTime?: number;
+	deviceTimeout?: number;
 } | {
 	acceptAllDevices: boolean;
 	optionalServices?: BluetoothServiceUUID[];
+	scanTime?: number;
+	deviceTimeout?: number;
 };
 
 // tslint:disable-next-line:interface-name
