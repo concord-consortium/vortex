@@ -19,17 +19,32 @@ export enum S3Status {
 // TODO: Maybe use this query hook https://github.com/tannerlinsley/react-query
 export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const [ s3Resource, setS3Resource ] = useState(null as S3Resource|null);
-  const [ stagingName, setStagingName ] = useState("untitled");
-  const [ stagingDescription, setStagingDescription ] = useState("description");
+  const [ stagingName, _setStagingName ] = useState("");
+  const [ stagingDescription, _setStagingDescription ] = useState("");
   const [ resources, setResources ] = useState([] as S3Resource[]);
   const [ resourceUrl, setResourceUrl ] = useState(null as string|null);
   const [ resourceContent, setResourceContent ] = useState("");
+  const [ dirty, setDirty] = useState(true);
   const [ status, setStatus ] = useState(S3Status.Init);
   const [ statusMsg, setStatusMsg] = useState("");
 
   if (!helper) {
     helper = new S3ResourceHelper(s3helperOpts);
   }
+
+  const setStagingName = (newName: string) => {
+    if(newName !== stagingName) {
+      setDirty(true);
+      _setStagingName(newName);
+    }
+  };
+
+  const setStagingDescription = (newDescription: string) => {
+    if(newDescription !== stagingDescription) {
+      setDirty(true);
+      _setStagingDescription(newDescription);
+    }
+  };
 
   const handleError = (err: Error) => {
     // tslint:disable-next-line
@@ -55,12 +70,16 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
 
   const saveCallback = async (url: string) => {
     setResourceUrl(url);
+    setDirty(false);
     setStatus(S3Status.Ready);
     await refreshList();
   };
 
   const stageContentFn = (jsObject: object) => {
     const json =JSON.stringify(jsObject, null, 2);
+    if(resourceContent !== json) {
+      setDirty(true);
+    }
     setResourceContent(json);
   };
 
@@ -82,16 +101,15 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     }
   };
 
-
-  const loadCallback = (json: string) => {
-    setStatus(S3Status.Ready);
-    setResourceContent(json);
-    setStatus(S3Status.Ready);
+  const clearMetaFields = () => {
+    setStagingName(newResourceName());
+    setStagingDescription(" ");
   };
 
-  const clearMetaFields = () => {
-    setStagingName("untitled");
-    setStagingDescription("description");
+  const loadCallback = (json: string) => {
+    setResourceContent(json);
+    setDirty(false);
+    setStatus(S3Status.Ready);
   };
 
   const loadFn = async (resource?: S3Resource) => {
@@ -200,7 +218,8 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     s3Resource, setS3Resource, resources, setResources,
     resourceUrl, setResourceUrl, resourceObject, resourceContent,
     setResourceContent, status, setStatus, statusMsg, setStatusMsg,
-    refreshList, selectFn, deleteFn, createFn, loadFn, saveFn, stageContentFn
+    refreshList, selectFn, deleteFn, createFn, loadFn, saveFn, stageContentFn,
+    dirty
   });
 };
 
