@@ -1,10 +1,11 @@
-import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions } from "./sensor";
+import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions } from "./sensor";
 
 import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
 import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
 import { MultiSensorDevice } from "./devices/multi-sensor";
 import { logInfo } from "../shared/utils/log";
+import { inCordova } from "../shared/utils/in-cordova";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -28,7 +29,7 @@ export class DeviceSensor extends Sensor {
     ].filter(device => device.matchesCapabilities());
   }
 
-  public connect(): Promise<void> {
+  public connect(connectOptions: IConnectOptions): Promise<void> {
     // make sure we aren't already connected to something
     if (this.device) {
       this.setConnected({connected: false});
@@ -38,10 +39,18 @@ export class DeviceSensor extends Sensor {
       if (!navigator.bluetooth) {
         return reject("Bluetooth not enabled in this environment");
       }
-      const options: RequestDeviceOptions = {
-        filters: this.getFilters(),
-        optionalServices: this.getOptionalServiceUUIDs()
-      };
+      const options: RequestDeviceOptions =
+        inCordova ? {
+          filters: this.getFilters(),
+          optionalServices: this.getOptionalServiceUUIDs(),
+          // the following are extensions to the cordova-plugin-webbluetooth plugin to enable a sensor list
+          onDevicesFound: connectOptions.onDevicesFound, // callback when a new device is found
+          scanTime: -1, // scan forever
+          deviceTimeout: 5000 // drop devices from list after 5 seconds of not hearing from them
+        } : {
+          filters: this.getFilters(),
+          optionalServices: this.getOptionalServiceUUIDs()
+        };
       logInfo("Connecting using", options);
       navigator.bluetooth.requestDevice(options)
         .then(bluetoothDevice => {
