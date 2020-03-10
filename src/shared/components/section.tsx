@@ -61,6 +61,7 @@ export const Section: React.FC<IProps> = ({ section, experiment, formData, onDat
           uiSchema={experiment.schema.formUiSchema}
           formData={formData}
           onChange={onChange}
+          noValidate={true}
           formContext={{
             experiment,
             experimentConfig,

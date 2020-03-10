@@ -12,23 +12,36 @@
         {
           "title": "Label",
           "icon": "assignment",
-          "formFields": ["studySite", "label", "groupMembers"],
-          "components": ["metadata"]
+          "formFields": [
+            "studySite",
+            "label",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
         },
         {
           "title": "Collect",
           "icon": "collect",
-          "formFields": ["experimentData"]
+          "formFields": [
+            "experimentData"
+          ]
         },
         {
           "title": "Note & Photo",
           "icon": "note_and_photo",
-          "formFields": ["photo"]
+          "formFields": [
+            "photo"
+          ]
         }
       ],
       "dataSchema": {
         "type": "object",
-        "required": ["studySite", "label"],
+        "required": [
+          "studySite",
+          "label"
+        ],
         "properties": {
           "studySite": {
             "title": "Study Site",
@@ -54,7 +67,9 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": ["location"],
+              "required": [
+                "location"
+              ],
               "properties": {
                 "location": {
                   "title": "Location",
@@ -62,7 +77,7 @@
                   "readOnly": true
                 },
                 "temperature": {
-                  "title": "Temperature (C)",
+                  "title": "Temperature (\u00B0C)",
                   "type": "number"
                 },
                 "illuminance": {
@@ -82,11 +97,22 @@
             "items": {
               "type": "object",
               "properties": {
-                "isPhoto": {"type": "boolean"},
-                "localPhotoUrl": {"type": "string"},
-                "remotePhotoUrl": {"type": "string"},
-                "note": {"type": "string"},
-                "timestamp": {"type": "string", "format": "date-time"}
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
               }
             }
           }
@@ -113,7 +139,11 @@
         "experimentData": {
           "ui:field": "dataTable",
           "ui:dataTableOptions": {
-            "sensorFields": ["temperature", "humidity", "illuminance"],
+            "sensorFields": [
+              "temperature",
+              "humidity",
+              "illuminance"
+            ],
             "titleField": "studySite"
           }
         },
@@ -124,39 +154,89 @@
     },
     "data": {
       "experimentData": [
-        {"location": "Corner 1"},
-        {"location": "Corner 2"},
-        {"location": "Corner 3"},
-        {"location": "Corner 4"},
-        {"location": "Average", "temperature":  "<AVG>", "humidity": "<AVG>", "illuminance": "<AVG>"}
+        {
+          "location": "Corner 1"
+        },
+        {
+          "location": "Corner 2"
+        },
+        {
+          "location": "Corner 3"
+        },
+        {
+          "location": "Corner 4"
+        },
+        {
+          "location": "Center"
+        },
+        {
+          "location": "Average",
+          "temperature": "<AVG>",
+          "humidity": "<AVG>",
+          "illuminance": "<AVG>"
+        }
       ],
-      "photo": []
+      "photo": [
+
+      ]
     }
   },
   {
-    "version": "1.0.1",
+    "version": "1.0.0",
     "metadata": {
       "uuid": "d27df06a-0997-4c53-8afd-d5dcc627d44f",
       "name": "Stream Study",
       "initials": "SS"
     },
     "schema": {
+      "titleField": "label",
       "sections": [
         {
           "title": "Label",
           "icon": "assignment",
-          "formFields": ["label", "groupMembers"]
+          "formFields": [
+            "studySite",
+            "label",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
         },
         {
           "title": "Collect",
           "icon": "collect",
-          "formFields": ["experimentData"]
+          "formFields": [
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
         }
       ],
       "dataSchema": {
         "type": "object",
-        "required": ["label"],
+        "required": [
+          "studySite",
+          "label"
+        ],
         "properties": {
+          "studySite": {
+            "title": "Study Site",
+            "type": "string",
+            "enum": [
+              "Study Site #1",
+              "Study Site #2"
+            ],
+            "enumNames": [
+              "Study Site #1",
+              "Study Site #2"
+            ]
+          },
           "label": {
             "title": "Label",
             "type": "string"
@@ -166,20 +246,117 @@
             "type": "string"
           },
           "experimentData": {
-            "title": "Experiment Data",
-            "type": "object",
-            "properties": {
-              "temperature": {
-                "title": "Temperature",
-                "type": "array",
-                "items": {
-                  "type": ["null", "number"]
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "teamlabel"
+              ],
+              "properties": {
+                "teamlabel": {
+                  "title": "Team",
+                  "type": "string",
+                  "readOnly": true
+                },
+                "ph": {
+                  "title": "pH (SU)",
+                  "type": "number"
+                },
+                "airtemp": {
+                  "title": "Air Temp (\u00B0C)",
+                  "type": "number"
+                },
+                "watertemp": {
+                  "title": "Water Temp (\u00B0C)",
+                  "type": "number"
+                },
+                "nitrate": {
+                  "title": "Nitrate (ppm)",
+                  "type": "number"
+                },
+                "phosphate": {
+                  "title": "Phosphate (ppm)",
+                  "type": "number"
+                },
+                "oxygen": {
+                  "title": "Dissolved Oxygen (ppm)",
+                  "type": "number"
+                },
+                "turbidity": {
+                  "title": "Turbidity (JTU)",
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "photo": {
+            "title": "Photos and Notes",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
                 }
               }
             }
           }
         }
+      },
+      "formUiSchema": {
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "label": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Experiment 1"
+        },
+        "groupMembers": {
+          "ui:icon": "group",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": [
+            ],
+            "titleField": "teamlabel"
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
       }
+    },
+    "data": {
+      "experimentData": [
+        {
+          "teamlabel": "1"
+        },
+        {
+          "teamlabel": "2"
+        }
+      ],
+      "photo": []
     }
   }
 ]

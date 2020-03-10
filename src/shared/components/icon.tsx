@@ -12,6 +12,10 @@ import AddCircle from "../icons/add_circle-24px.svg";
 import Photo from "../icons/photo-24px.svg";
 import Comment from "../icons/comment-24px.svg";
 import TableChart from "../icons/table_chart-24px.svg";
+import Create from "../icons/create-24px.svg";
+import Sensor from "../icons/sensor.svg";
+import UploadCloud from "../icons/cloud_upload-24px.svg";
+import Delete from "../icons/delete-24px.svg";
 
 const Icons: {[key: string]: any} = {
   label: Label,
@@ -26,7 +30,11 @@ const Icons: {[key: string]: any} = {
   add_circle: AddCircle,
   photo: Photo,
   comment: Comment,
-  collect: TableChart
+  collect: TableChart,
+  create: Create,
+  sensor: Sensor,
+  upload: UploadCloud,
+  delete: Delete
 };
 
 interface IProps {

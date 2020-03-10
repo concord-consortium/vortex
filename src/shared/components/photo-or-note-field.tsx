@@ -6,6 +6,8 @@ import { spinnerUrl } from "./spinner";
 import { Icon } from "./icon";
 import { MenuComponent, MenuItemComponent } from "./menu";
 import { Camera } from "../../mobile-app/components/camera";
+import { alert } from "../utils/dialogs";
+import { IVortexFormContext } from "./form";
 
 import css from "./photo-or-note-field.module.scss";
 
@@ -53,7 +55,13 @@ const validateSchema = (schema: JSONSchema7): IPhotoOrNoteSchema => {
   return schema as IPhotoOrNoteSchema;
 };
 
-export const Image: React.FC<{src: string}> = ({src}) => {
+interface IImageProps {
+  src: string;
+  height?: number;
+  width?: number;
+  marginLeft?: number;
+}
+export const Image: React.FC<IImageProps> = ({src, height, width, marginLeft}) => {
   const isPhotoUrl = src.match(/^photo\:\/\//);
   const [resolvedSrc, setResolvedSrc] = useState(isPhotoUrl ? spinnerUrl : src);
 
@@ -81,10 +89,20 @@ export const Image: React.FC<{src: string}> = ({src}) => {
     }
   }, []);
 
-  return <img src={resolvedSrc} />;
+  const style = width ? {width, height, marginLeft} : {width: "100%"};
+
+  return <img src={resolvedSrc} style={style} />;
 };
 
-export const Photo: React.FC<{photo: IPhotoOrNote, deletePhoto: (photo: IPhotoOrNote) => void, saveAll: () => void}> = ({photo, deletePhoto, saveAll}) => {
+interface IPhotoProps {
+  photo: IPhotoOrNote;
+  deletePhoto: (photo: IPhotoOrNote) => void;
+  saveAll: () => void;
+  width: number;
+  height: number;
+}
+
+export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width, height}) => {
   const {localPhotoUrl, remotePhotoUrl} = photo;
   const addCaptionRef = useRef<HTMLInputElement|null>(null);
   const handleDeletePhoto = () => deletePhoto(photo);
@@ -94,17 +112,33 @@ export const Photo: React.FC<{photo: IPhotoOrNote, deletePhoto: (photo: IPhotoOr
       saveAll();
     }
   };
+  const [addCaptionHeight, setAddCaptionHeight] = useState(0);
 
+  const saveAddCaptionRef = (el: HTMLInputElement|null) => {
+    if (el) {
+      addCaptionRef.current = el;
+      setAddCaptionHeight(el.getBoundingClientRect().height);
+    }
+  };
+
+  // since images are square the resizing doesn't need to check ratios
+  const imageHeight = height - addCaptionHeight;
+  const imageWidth = imageHeight;
+  const imageMarginLeft = (width - imageWidth) / 2;
+  const menuRight = imageMarginLeft + 5;
+
+  // <input type="text" className={css.photoNote} placeholder="Add a note" ref={saveAddCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
   return (
-    <div className={css.photo}>
-      <div className={css.photoMenu}>
-        <MenuComponent>
-          <MenuItemComponent onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
-        </MenuComponent>
+    <>
+      <div className={css.photo}>
+        <div className={css.photoMenu} style={{right: menuRight}}>
+          <MenuComponent>
+            <MenuItemComponent onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
+          </MenuComponent>
+        </div>
+        <Image src={localPhotoUrl || remotePhotoUrl} width={imageWidth} height={imageHeight} marginLeft={imageMarginLeft} />
       </div>
-      <Image src={localPhotoUrl || remotePhotoUrl} />
-      <input type="text" className={css.photoNote} placeholder="Add a note" ref={addCaptionRef} defaultValue={photo.note} onKeyUp={handleAddCaptionKeyUp} />
-    </div>
+    </>
   );
 };
 
@@ -154,6 +188,16 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
   const [selectedPhoto, setSelectedPhoto] = useState<IPhotoOrNote|undefined>(photos()[0]);
 
+  const [photoSubTabTop, setPhotoSubTabTop] = useState(0);
+  const [thumbnailListWidth, setThumbnailListWidth] = useState(0);
+  const [thumbnailListLeft, setThumbnailListLeft] = useState(0);
+  const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: window.innerWidth, height: window.innerHeight
+  });
+  // const [windowInfo, setWindowInfo] = useState<{width: number, height: number}>({width: 0, height: 0});
+
+  const formContext: IVortexFormContext = props.formContext || {};
+  const showCameraButton = !!formContext.experimentConfig?.showCameraButton;
+
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
     onChange(newFormData);
@@ -166,6 +210,19 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
       updateFormData([]);
     }
   }, []);
+
+  // listen for prop changes from uploads
+  useEffect(() => {
+    setFormData(props.formData);
+  }, [props.formData]);
+
+  // get the initial window info and listen for resize/re-orientation
+  // useEffect(() => {
+  //   const updateWindowInfo = () => setWindowInfo({width: window.innerWidth, height: window.innerHeight});
+  //   updateWindowInfo();
+    // window.addEventListener("resize", updateWindowInfo);
+    // return () => window.removeEventListener("resize", updateWindowInfo);
+  // }, []);
 
   if (formData.constructor !== Array) {
     return <div>Unexpected photo data format</div>;
@@ -233,25 +290,95 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const renderCameraOrPhoto = () => {
     if (selectedPhoto) {
       const selectedPhotoKey = selectedPhoto ? formData.indexOf(selectedPhoto) : -1;
-      return <Photo key={selectedPhotoKey} photo={selectedPhoto} deletePhoto={handleDeletePhotoOrNote} saveAll={handleSaveAll} />;
+      const photoHeight = windowInfo.height - photoSubTabTop - 100; // 100 is thumbnail height with padding
+      const photoWidth = windowInfo.width;
+
+      // manually handle horizontal scrolling
+      // this sets the thumbnailListLeft state variable which ranges from 0 to -maxLeft
+      const handleThumbnailScrollStart = (eStart: React.MouseEvent<HTMLDivElement>|React.TouchEvent<HTMLDivElement>) => {
+        const isTouch = eStart.type === "touchstart";
+
+        const mouseStartEvent = eStart as React.MouseEvent<HTMLDivElement>;
+        const touchStartEvent = eStart as React.TouchEvent<HTMLDivElement>;
+
+        const startLeft = thumbnailListLeft;
+        const startX = touchStartEvent.touches?.[0].clientX || mouseStartEvent.clientX;
+        const maxLeft = Math.min(0, windowInfo.width - thumbnailListWidth);
+
+        let moved = false;
+        const onMove = (eMove: MouseEvent|TouchEvent) => {
+          eMove.stopPropagation();
+          eMove.preventDefault();
+          const mouseMoveEvent = eMove as MouseEvent;
+          const touchMoveEvent = eMove as TouchEvent;
+          const dx = (touchMoveEvent.touches?.[0].clientX || mouseMoveEvent.clientX) - startX;
+          const newLeft = Math.max(maxLeft, Math.min(startLeft + dx, 0));
+          setThumbnailListLeft(newLeft);
+          moved = true;
+        };
+
+        const onEnd = (eUp: MouseEvent|TouchEvent) => {
+          if (moved) {
+            // prevent selecting a thumbnail
+            eUp.stopPropagation();
+            eUp.preventDefault();
+          }
+          window.removeEventListener(isTouch ? "touchmove" : "mousemove", onMove);
+          window.removeEventListener(isTouch ? "touchend" : "mouseup", onEnd);
+        };
+
+        // the passive flag disables Chrome console warnings about cancelling events
+        // see https://developers.google.com/web/updates/2017/01/scrolling-intervention
+        window.addEventListener(isTouch ? "touchmove" : "mousemove", onMove, {passive: false});
+        window.addEventListener(isTouch ? "touchend" : "mouseup", onEnd, {passive: false});
+      };
+
+      return (
+        <>
+          <Photo
+            key={selectedPhotoKey}
+            photo={selectedPhoto}
+            deletePhoto={handleDeletePhotoOrNote}
+            saveAll={handleSaveAll}
+            width={photoWidth}
+            height={photoHeight}
+          />
+          <div className={css.thumbnails}>
+            <div
+              className={css.thumbnailList}
+              style={{left: thumbnailListLeft}}
+              ref={el => setThumbnailListWidth(el?.getBoundingClientRect().width || 0)}
+              onMouseDown={handleThumbnailScrollStart}
+              onTouchStart={handleThumbnailScrollStart}
+            >
+              {showCameraButton && photos().length > 0 ?
+                <div className={css.addPhoto} onClick={handleAddPhoto}>
+                  <Icon name="camera" />
+                </div> : undefined}
+              {photos().map((photo) => {
+                const selected = photo === selectedPhoto;
+                return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
+              })}
+            </div>
+          </div>
+        </>
+      );
     }
-    return <Camera onPhoto={handleCameraPhoto} />;
+
+    if (showCameraButton) {
+      const cameraHeight = windowInfo.height - photoSubTabTop - 30; // 15 is the margin
+      const cameraWidth = windowInfo.width;
+
+      return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
+    }
+
+    return undefined;
   };
 
   const renderPhotoSubTab = () => {
     return (
-      <div className={css.photoSubTab}>
+      <div className={css.photoSubTab} ref={(el) => setPhotoSubTabTop(el?.getBoundingClientRect().top || 0)}>
         {renderCameraOrPhoto()}
-        <div className={css.thumbnails}>
-          {photos().length > 0 ?
-            <div className={css.addPhoto} onClick={handleAddPhoto}>
-              <Icon name="camera" />
-            </div> : undefined}
-          {photos().map((photo) => {
-            const selected = photo === selectedPhoto;
-            return <Thumbnail key={photo.timestamp} photo={photo} selected={selected} selectPhoto={setSelectedPhoto} />;
-          })}
-        </div>
       </div>
     );
   };

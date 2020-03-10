@@ -119,22 +119,26 @@ describe("DataTableField component", () => {
       {}
     ];
     const onChange = jest.fn();
+    (window as any).confirm = jest.fn(() => true);
     // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
     const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={data} onChange={onChange} />);
 
     wrapper.find("input").at(0).simulate('change', {currentTarget: {value: "123"}});
+    wrapper.find("input").at(0).simulate('blur');
     expect(onChange).toHaveBeenCalledWith([
       {foo: "123", bar: 1}, // data is not changed to number, as foo field is a string type
       {}
     ]);
 
     wrapper.find("input").at(1).simulate('change', {currentTarget: {value: "123"}});
+    wrapper.find("input").at(1).simulate('blur');
     expect(onChange).toHaveBeenCalledWith([
       {foo: "123", bar: 123}, // data is changed to number, as bar field is a number type
       {}
     ]);
 
     wrapper.find("input").at(2).simulate('change', {currentTarget: {value: "321"}});
+    wrapper.find("input").at(2).simulate('blur');
     expect(onChange).toHaveBeenCalledWith([
       {foo: "123", bar: 123},
       {foo: "321"} // data is not changed to number, as foo field is a string type
@@ -142,10 +146,89 @@ describe("DataTableField component", () => {
 
 
     wrapper.find("input").at(3).simulate('change', {currentTarget: {value: "321"}});
+    wrapper.find("input").at(3).simulate('blur');
     expect(onChange).toHaveBeenCalledWith([
       {foo: "123", bar: 123},
       {foo: "321", bar: 321} // data is not changed to number, as foo field is a string type
     ]);
+  });
+
+  it("doesn't require user confirmation when new data is added", () => {
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      }
+    };
+    const data = [{}];
+    const onChange = jest.fn();
+    (window as any).confirm = jest.fn();
+    // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
+    const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={data} onChange={onChange} />);
+
+    wrapper.find("input").at(0).simulate('change', {currentTarget: {value: "123"}});
+    wrapper.find("input").at(0).simulate('blur');
+    expect(window.confirm).not.toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledWith([
+      {foo: "123"}
+    ]);
+  });
+
+  it("requires user confirmation when data is edited", () => {
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      }
+    };
+    const data = [
+      {foo: "old data"}
+    ];
+    const onChange = jest.fn();
+    (window as any).confirm = jest.fn(() => true);
+    // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
+    const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={data} onChange={onChange} />);
+
+    wrapper.find("input").at(0).simulate('change', {currentTarget: {value: "123"}});
+    wrapper.find("input").at(0).simulate('blur');
+    expect(window.confirm).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalled();
+  });
+
+  it("discards edits if user doesn't confirm them", () => {
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "foo": {
+            "type": "string"
+          }
+        }
+      }
+    };
+    const data = [
+      {foo: "test1"}
+    ];
+    const onChange = jest.fn();
+    (window as any).confirm = jest.fn(() => false);
+    // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
+    const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={data} onChange={onChange} />);
+
+    wrapper.find("input").at(0).simulate('change', {currentTarget: {value: "123"}});
+    wrapper.find("input").at(0).simulate('blur');
+    expect(window.confirm).toHaveBeenCalledTimes(1);
+    expect(onChange).not.toHaveBeenCalled();
   });
 
   it("uses sensor when useSensors is specified in formContext.experimentConfig object", async () => {
@@ -222,6 +305,65 @@ describe("DataTableField component", () => {
       {location: "corner 2", temperature: 10}
     ]);
     expect(wrapper.find({name: "replay"}).length).toEqual(2);
+  });
+
+  it("requires confirmation before sensor values are overwritten", async () => {
+    const mockSensor = new MockSensor({
+      capabilities: {temperature: true},
+      pollInterval: 500,
+      deviceName: "Mocked Sensor",
+      minValues: {temperature: 10},
+      maxValues: {temperature: 10}
+    });
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "readOnly": true
+          },
+          "temperature": {
+            "type": "number"
+          }
+        }
+      }
+    };
+    const uiSchema = {
+      "ui:dataTableOptions": {
+        "sensorFields": ["temperature"]
+      }
+    };
+    const formContext = {
+      experimentConfig: {
+        useSensors: true
+      },
+      sensor: mockSensor
+    };
+    const data = [
+      {location: "corner 1", temperature: 5}
+    ];
+    const onChange = jest.fn();
+    // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
+    const wrapper = mount(<DataTableField {...defProps} schema={schema as JSONSchema6} uiSchema={uiSchema} formContext={formContext} formData={data} onChange={onChange} />);
+
+    // Connect sensor.
+    await act(async () => {
+      await mockSensor.connect();
+    });
+
+    (window as any).confirm = jest.fn(() => false);
+    wrapper.find("[data-test='record-sensor']").at(0).simulate("click");
+    expect(window.confirm).toHaveBeenCalled();
+    expect(onChange).not.toHaveBeenCalledWith();
+
+    (window as any).confirm = jest.fn(() => true);
+    wrapper.find("[data-test='record-sensor']").at(0).simulate("click");
+    expect(window.confirm).toHaveBeenCalled();
+    expect(onChange).toHaveBeenCalledWith([
+      {location: "corner 1", temperature: 10}
+    ]);
   });
 
   it("handles function definitions", () => {
@@ -307,11 +449,11 @@ describe("DataTableField component", () => {
       {p1: 6, p2: 7, p3: 8, p4: 9, p5: 10},
       {p1: "<AVG>", p2: "<SUM>", p3: "<VAR>", p4: "<STDDEV>", p5: "<MEDIAN>"}
     ]);
-    expect(res.avg).toEqual(3.5);
+    expect(res.avg).toEqual("3.50");
     expect(res.sum).toEqual(9);
-    expect(res.var).toEqual(12.5);
-    expect(res.stdDev).toEqual(3.54);
-    expect(res.median).toEqual(7.5);
+    expect(res.var).toEqual("12.50");
+    expect(res.stdDev).toEqual("3.54");
+    expect(res.median).toEqual("7.50");
 
     res = getResults([
       {p1: 1, p2: 2, p3: 3, p4: 4, p5: 5},
@@ -319,11 +461,11 @@ describe("DataTableField component", () => {
       {p1: 6, p2: 7, p3: 8, p4: 9, p5: 10},
       {p1: "<AVG>", p2: "<SUM>", p3: "<VAR>", p4: "<STDDEV>", p5: "<MEDIAN>"},
     ]);
-    expect(res.avg).toEqual(3.5);
+    expect(res.avg).toEqual("3.50");
     expect(res.sum).toEqual(9);
-    expect(res.var).toEqual(12.5);
-    expect(res.stdDev).toEqual(3.54);
-    expect(res.median).toEqual(7.5);
+    expect(res.var).toEqual("12.50");
+    expect(res.stdDev).toEqual("3.54");
+    expect(res.median).toEqual("7.50");
 
     res = getResults([
       {p1: 1, p2: 2, p3: 3, p4: 4, p5: 5},
@@ -336,5 +478,30 @@ describe("DataTableField component", () => {
     expect(res.var).toEqual(25);
     expect(res.stdDev).toEqual(5);
     expect(res.median).toEqual(10);
+  });
+
+  it("handles dropdown definitions", () => {
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "dropdown": {
+            "title": "Dropdown",
+            "type": "array",
+            "items": {
+              "type": "string",
+              "enum": ["One", "Two", "Three"]
+            }
+          }
+        }
+      }
+    };
+
+    const formData = [{dropdown: ""}];
+    const wrapper = shallow(<DataTableField {...defProps} schema={schema as JSONSchema6} formData={formData} />);
+    expect(wrapper.find("option").length).toBe(4);
+    expect(wrapper.find("option").map(option => option.props().value)).toStrictEqual(["", "One", "Two", "Three"]);
+    expect(wrapper.find("select").props().value).toBe("");
   });
 });

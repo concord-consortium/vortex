@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
-import { IExperiment, IExperimentData } from "../../shared/experiment-types";
+import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
 import { IFirebaseJWT } from "../hooks/interactive-api";
+import { IRun } from "../../mobile-app/hooks/use-runs";
 
 const QRCode = require("qrcode-svg");
 
@@ -27,8 +28,13 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
-  const [manualEntry, setManualEntry] = useState(false);
   const [displayQr, setDisplayQr] = useState(true);
+  const experimentRef = useRef<IRun|undefined>();
+
+  const getSaveExperimentUrl = () => {
+    const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
+    return `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
+  };
 
   useEffect(() => {
     firebase
@@ -38,14 +44,14 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       .limit(1)
       .onSnapshot(snapshot => {
         setQueriedFirestore(true);
-        const newData = snapshot.docs[0]?.data?.().experiment?.data as IExperimentData | undefined;
+        experimentRef.current = snapshot.docs[0]?.data?.().experiment;
+        const newData = experimentRef.current?.data as IExperimentData | undefined;
         setExperimentData(newData);
         setDisplayQr(newData === undefined);
         // generate QR code
-        const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
         const content = JSON.stringify({
           version: "1.0.0",
-          url: `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`
+          url: getSaveExperimentUrl()
         });
         setQRCode(new QRCode({
           content,
@@ -58,12 +64,32 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       });
   }, []);
 
-  const handleManualEntry = () => setManualEntry(true);
   const handleUploadAgain = () => {
     setExperimentData(undefined);
     setDisplayQr(true);
   };
+
   const toggleDisplayQr = () => setDisplayQr(!displayQr);
+
+  const handleSaveData = (data: IExperimentData) => {
+    // use the current run from Firestore or if there isn't one create a new one
+    const experimentRun = experimentRef.current ? Object.assign({}, experimentRef.current, {data}) : {
+      data,
+      experiment,
+      experimentIdx: 1,
+      key: Date.now().toString()
+    };
+    fetch(getSaveExperimentUrl(), {
+      method: "POST",
+      mode: "cors",
+      cache: "no-cache",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({experiment: experimentRun})
+    })
+    .catch(err => alert(err.toString()));
+  };
 
   const renderData = () => {
     if (!queriedFirestore) {
@@ -72,6 +98,15 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     if (!qrCode) {
       return <div>Generating QR code...</div>;
     }
+    const config: IExperimentConfig = {
+      hideLabels: false,
+      useSensors: false,
+      showEditSaveButton: true,
+      showCameraButton: false,
+      callbacks: {
+        onImport: handleUploadAgain,
+      }
+    };
 
     return (
       <div className={`${css.experimentContainer}`}>
@@ -79,10 +114,10 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
           <Experiment
             experiment={experiment}
             data={experimentData}
-            config={{hideLabels: false, useSensors: false}}
+            config={config}
             defaultSectionIndex={defaultSectionIndex}
+            onDataChange={handleSaveData}
           />
-          <div><button onClick={handleManualEntry}>Edit</button><button onClick={handleUploadAgain}>Import</button></div>
         </div>
         {(displayQr && experimentData === undefined) &&
           <div className={css.qrContainer}>

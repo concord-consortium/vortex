@@ -5,6 +5,7 @@ import { RunPicker } from "./run-picker";
 import { useRuns, IRun } from "../hooks/use-runs";
 import { Uploader } from "./uploader";
 import { getURLParam } from "../../shared/utils/get-url-param";
+import { confirm } from "../../shared/utils/dialogs";
 
 import css from "./app.module.scss";
 
@@ -18,10 +19,12 @@ export const AppComponent: React.FC = () => {
   const allowReset = getURLParam("allowReset") || false;
 
   const handleDeleteRun = (run: IRun) => {
-    if (confirm(`Delete ${run.experiment.metadata.name} #${run.experimentIdx}?`)) {
+    confirm(`Delete ${run.experiment.metadata.name} #${run.experimentIdx}?`, () => {
       deleteRun(run);
-    }
+    });
   };
+
+  const handleUpload = () => setUploadRun(activeRun || undefined);
 
   const renderRunPicker = () => {
     if (runs.length > 0) {
@@ -42,6 +45,7 @@ export const AppComponent: React.FC = () => {
 
   return (
     <div className={css.app}>
+      <div className={css.header}/>
       {activeRun ?
         <ExperimentWrapper
           experiment={activeRun.experiment}
@@ -49,14 +53,15 @@ export const AppComponent: React.FC = () => {
           data={activeRun.data}
           onDataChange={saveActiveRunData}
           onBackBtnClick={exitExperiment}
+          onUpload={handleUpload}
         />
         :
         <>
           <ExperimentPicker setExperiment={startNewRun}/>
           {renderRunPicker()}
-          {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} saveUploadedRun={saveUploadedRun} /> : undefined}
         </>
       }
+      {uploadRun ? <Uploader run={uploadRun} onClose={closeUploader} saveUploadedRun={saveUploadedRun} /> : undefined}
     </div>
   );
 };

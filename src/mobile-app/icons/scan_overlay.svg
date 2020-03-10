@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="2" y1="2" x2="2" y2="10"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="2" y1="2" x2="10" y2="2"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="48" y1="48" x2="48" y2="40"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="48" y1="48" x2="40" y2="48"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="2" y1="48" x2="2" y2="40"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="2" y1="48" x2="10" y2="48"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="48" y1="2" x2="48" y2="10"/>
+  <line style="stroke: rgb(0, 168, 10); stroke-linecap: square; stroke-width: 1.5px;" x1="48" y1="2" x2="40" y2="2"/>
+  <line style="stroke: rgb(255, 0, 0); stroke-width: 0.2px;" x1="5" y1="25" x2="45" y2="25"/>
+</svg>
