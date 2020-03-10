@@ -19,18 +19,12 @@ context("Testing Experiment Selection View", () => {
     describe('Experiment Setup Defaults', () => {
 
         it("verifies presence of all default experiment options", () => {
-            experimentSetup.getNewExperimentOption('Schoolyard Investigation')
-                .should('be.visible')
-            experimentSetup.getNewExperimentOption('Stream Study')
-                .should('be.visible')
+            experimentSetup.getNewExperimentOption('Schoolyard Investigation').should('be.visible')
+            experimentSetup.getNewExperimentOption('Stream Study').should('be.visible')
         })
 
         it("makes sure no experiments are saved to begin", () => {
             experimentSetup.getSavedExperimentLabel().should('not.exist')
-        })
-
-        it('verifies reset button does not appear', () => {
-            experimentSetup.getResetDataButton().should('not.exist')
         })
 
     })
@@ -41,7 +35,7 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.openNewExperiment('Schoolyard Investigation')
             experimentSetup.getBackButton().should('be.visible').click()
             experimentSetup.getSavedExperimentLabel().should('exist').and('be.visible')
-            experimentSetup.getExperiment('Schoolyard Investigation', 1)
+            experimentSetup.getExperiment('Schoolyard Investigation', 1).should('be.visible')
 
         })
         it("edit experiment and verify changes", () => {
@@ -50,7 +44,8 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
             experimentSetup.getHeaderExperimentLabel(testLabel1A)
             experimentSetup.getBackButton().click()
-            experimentSetup.getExperimentLabel(testLabel1A).should('be.visible')
+            experimentSetup.expandAllExperimentLabels()
+            experimentSetup.getExperimentLabel(testLabel1A).should('exist')
         })
         it('verifies label changes/removal from experiement', () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
@@ -60,10 +55,11 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             experimentSetup.getLabelTextBox().type(testLabel1B)
             experimentSetup.getBackButton().click()
+            experimentSetup.expandAllExperimentLabels()
             experimentSetup.getExperimentLabel(testLabel1B).should('be.visible')
         })
-        it("resets all user experiments", () => {
-            experimentSetup.getResetDataButton().should('be.visible').click()
+        it("delete Schooylard Investigation", () => {
+            experimentSetup.deleteExperiment()
         })
 
     })
@@ -81,16 +77,15 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getExperiment('Stream Study', 1).click()
             experimentSetup.getLabelTextBox().type(testLabel2)
             experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
-            // Is this a feature?
-            // experimentSetup.getHeaderExperimentLabel(testLabel2)
+            experimentSetup.getHeaderExperimentLabel(testLabel2)
             experimentSetup.getBackButton().click()
-            // Is this a feature?
-            // experimentSetup.getExperimentLabel(testLabel2).should('be.visible')
+            experimentSetup.expandAllExperimentLabels()
+            experimentSetup.getExperimentLabel(testLabel2).should('be.visible')
         })
-        // No more button for resetting experiments. Add new delete for each experiment
-        // it("resets all user experiments", () => {
-        //     experimentSetup.getResetDataButton().should('be.visible').click()
-        // })
+
+        it("deletes Stream Study experiment", () => {
+            experimentSetup.deleteExperiment()
+        })
 
     })
 
