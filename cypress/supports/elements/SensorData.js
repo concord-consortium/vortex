@@ -1,5 +1,7 @@
 class SensorData {
 
+    // Header
+
     getBackButton() {
         return cy.get('.experiment-wrapper-module-headerBackIcon-vortex')
     }
@@ -8,6 +10,14 @@ class SensorData {
         return cy.get('.section-button-module-sectionButton-vortex').contains(tabName)
     }
 
+    getHeaderOptionsMenu() {
+        return this.getHeaderContent().within(() => {
+            cy.get('.menu-module-menuIcon-vortex')
+        })
+    }
+
+    // Contains Experiment Abbrev Icon, Experiment Index Title,
+    // Experiment Label, Header Menu Options (Save, Upload)
     getHeaderContent() {
         return cy.get('.experiment-wrapper-module-header-vortex')
     }
@@ -50,13 +60,15 @@ class SensorData {
         return cy.get('.data-table-field-module-readOnly-vortex').contains('Average').parent()
     }
 
-    getOptionsMenu() {
-        return cy.get('.menu-module-menuIcon-vortex')
+    getExperimentOptionsMenu() {
+        return cy.get('.data-table-field-module-dataTable-vortex').within(() => {
+            cy.get('.menu-module-menuIcon-vortex')
+        })
     }
 
     selectMenuOption(option) {
-        // Disconnect or Show Plots
-        return this.getOptionsMenu().contains(option).click()
+        // Connect, Disconnect or Show Plots
+        return cy.get('.menu-module-menu-vortex').contains(option).click()
     }
 
     getRecordButton() {
