@@ -91,7 +91,10 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
       setShowDeviceSelect(true);
     }
   }).catch(() => sensor.disconnect());
-  const disconnect = () => sensor.disconnect();
+  const disconnect = () => {
+    sensor.disconnect();
+    clearSelectDevice();
+  };
 
   const renderIcon = (icon: "connected" | "disconnected" | "error") => (
     <div className={css.statusIcon}>
