@@ -71,7 +71,7 @@ context("Testing Experiment Selection View", () => {
     describe("Sensor Connection", () => {
 
         it("connects to (mock) sensor", () => {
-            sensorData.getOptionsMenu().should('be.visible').click()
+            sensorData.getExperimentOptionsMenu().should('be.visible').click()
             sensorData.selectMenuOption('Connect')
             cy.wait(2000)
         })
@@ -80,7 +80,7 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             sensorData.getTab('Collect').click()
             sensorData.getSensorConnectionStatus().should('contain', 'No Sensor Connected')
-            sensorData.getOptionsMenu().click()
+            sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Connect')
             cy.wait(2000)
         })
@@ -94,7 +94,7 @@ context("Testing Experiment Selection View", () => {
             // sensorData.getConnectedSensorValue('Light').should('not.contain','--')
         })
         it("disconnects from mock sensor and verify UI", () => {
-            sensorData.getOptionsMenu().click()
+            sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Disconnect')
 
             sensorData.getSensorConnectionStatus().contains('No Sensor Connected')
@@ -102,10 +102,10 @@ context("Testing Experiment Selection View", () => {
             sensorData.getDisconnectedSensorValue('Temperature').should('contain', '--')
         })
         it("collects data from (mock) sensor", () => {
-            sensorData.getOptionsMenu().click()
-            sensorData.selectMenuOption('Disconnect')
+            sensorData.getExperimentOptionsMenu().click()
+            sensorData.selectMenuOption('Connect')
             
-            for (let i = 1; i <= 4; i++) {
+            for (let i = 0; i <= 5; i++) {
                 sensorData.getDataRow(i).within(() => {
                     sensorData.getRecordButton().dblclick()
                     cy.wait(2000) // wait for new sensor values
