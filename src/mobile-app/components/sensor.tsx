@@ -5,6 +5,7 @@ import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import { inCordova } from "../../shared/utils/in-cordova";
 import { SensorStrength } from "./sensor-strength";
+import { Icon } from "../../shared/components/icon";
 
 import css from "./sensor.module.scss";
 
@@ -42,7 +43,8 @@ export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices
 
 interface ISensorComponentProps {
   sensor: Sensor;
-  hideMenu?: boolean;
+  manualEntryMode?: boolean;
+  setManualEntryMode?: (flag: boolean) => void;
 }
 
 const iconClass = {
@@ -57,7 +59,7 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMenu}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
@@ -127,12 +129,18 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
   );
 
   const renderMenu = () => {
+    const canSwitchModes = !!setManualEntryMode;
+    const setSensorMode = () => setManualEntryMode?.(false);
+    const setEditMode = () => setManualEntryMode?.(true);
+
     return (
       <MenuComponent>
-        {connected
-          ? <MenuItemComponent onClick={disconnect}>Disconnect</MenuItemComponent>
-          : <MenuItemComponent onClick={connect}>Connect</MenuItemComponent>
-        }
+        {manualEntryMode && canSwitchModes
+          ? <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent>
+          : <>
+              {connected ? <MenuItemComponent onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent onClick={connect}>Connect</MenuItemComponent>}
+              {canSwitchModes ? <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent> : undefined}
+            </>}
       </MenuComponent>
     );
   };
@@ -179,12 +187,22 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, hideMe
       </div>
     );
   };
+
+  if (manualEntryMode) {
+    return (
+      <div className={css.connection}>
+        <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>
+        {renderMenu()}
+      </div>
+    );
+  }
+
   const connectionClassName = `${css.connection} ${error ? css.error : ""}`;
   return (
     <div className={css.sensor}>
-      <div className={connectionClassName} onClick={connecting || connected ? undefined : connect}>
+      <div className={connectionClassName}>
         {error ? renderError() : (connected ? renderConnected() : (connecting ? renderConnecting() : renderDisconnected()))}
-        {!hideMenu && renderMenu()}
+        {renderMenu()}
       </div>
       {showDeviceSelect ? <SensorSelectorComponent devices={devicesFound} selectDevice={handleSelectDevice} cancel={handleCancelSelectDevice} /> : undefined}
       {renderValues()}

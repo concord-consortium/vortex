@@ -297,15 +297,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const setSensorMode = () => {
-    setManualEntryMode(false);
-  };
-
-  const setEditMode = () => {
-    sensor?.disconnect();
-    setManualEntryMode(true);
-  };
-
   const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
   const handleImportButton = () => formContext.experimentConfig?.callbacks?.onImport();
 
@@ -438,30 +429,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.dataTable}>
-      <div className={css.menu}>
-        {
-          sensor &&
-          <MenuComponent>
-            {
-              manualEntryMode ?
-                <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent> :
-                <>
-                  {
-                    sensorOutput.connected ?
-                      <MenuItemComponent onClick={disconnectSensor}>Disconnect</MenuItemComponent> :
-                      <MenuItemComponent onClick={connectSensor}>Connect</MenuItemComponent>
-                  }
-                  <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent>
-                </>
-            }
-          </MenuComponent>
-        }
-      </div>
       <div className={css.topBar}>
         <div className={css.topBarLeft}>
-          {sensor && !manualEntryMode && <SensorComponent sensor={sensor} hideMenu={true}/>}
-          {manualEntryMode && <div className={css.editModeText}><Icon name="create" /> Edit values in the data table</div>}
-          {title && <div className={css.title}>{title}</div>}
+          {sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={setManualEntryMode} /> : undefined}
+          {title ? <div className={css.title}>{title}</div> : undefined}
         </div>
         <div className={css.topBarRight}>
           {!sensor && showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
