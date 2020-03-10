@@ -112,11 +112,18 @@ const isFunctionSymbol = (value: string) => {
 };
 
 // Schema that is accepted by this component.
-type IDataTableField = IDataTableInputField | IDataTableArrayField;
-interface IDataTableInputField {
-  type: "string" | "number";
+type IDataTableField = IDataTableStringInputField | IDataTableNumberInputField | IDataTableArrayField;
+interface IDataTableStringInputField {
+  type: "string";
   title?: string;
   readOnly?: boolean;
+}
+interface IDataTableNumberInputField {
+  type: "number" | "integer";
+  title?: string;
+  readOnly?: boolean;
+  minimum?: number;
+  maximum?: number;
 }
 interface IDataTableArrayFieldItems {
   type: "string" | "number";
@@ -262,6 +269,43 @@ export const DataTableField: React.FC<FieldProps> = props => {
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
 
+  const validateInput = (propName: string, value: string): {valid: boolean, error?: string} => {
+    // allow blanking out
+    if ((value === undefined) || (value === "")) {
+      return {valid: true};
+    }
+
+    const propType = fieldDefinition[propName].type;
+    if ((propType === "number") || (propType === "integer")) {
+      const {minimum, maximum} = fieldDefinition[propName] as IDataTableNumberInputField;
+      let numericValue: number;
+      if (propType === "integer") {
+        numericValue = parseInt(value, 10);
+        if (isNaN(numericValue)) {
+          return {valid: false, error: "Not a whole number"};
+        }
+        if (!value.trim().match(/^[-+]?[0-9]*$/)) {
+          return {valid: false, error: "Not a whole number"};
+        }
+      } else {
+        numericValue = parseFloat(value);
+        if (isNaN(numericValue)) {
+          return {valid: false, error: "Not a number"};
+        }
+        if (!value.trim().match(/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/)) {
+          return {valid: false, error: "Not a number"};
+        }
+      }
+      if ((minimum !== undefined) && (numericValue < minimum)) {
+        return {valid: false, error: `Must be ≥ ${minimum}`};
+      }
+      if ((maximum !== undefined) && (numericValue > maximum)) {
+        return {valid: false, error: `Must be ≤ ${maximum}`};
+      }
+    }
+    return {valid: true};
+  };
+
   // for now select is the same as input but that will change once we add input validation
   const handleSelectChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
     handleInputChange(rowIdx, propName, event);
@@ -379,16 +423,20 @@ export const DataTableField: React.FC<FieldProps> = props => {
     );
   };
 
-  const renderInput = (options: {name: string, value: any, rowIdx: number, disabled: boolean}) => {
-    const {name, value, rowIdx, disabled} = options;
+  const renderInput = (options: {name: string, value: any, rowIdx: number, disabled: boolean, error?: string}) => {
+    const {name, value, rowIdx, disabled, error} = options;
     return (
-      <input
-        type="text"
-        value={value}
-        disabled={disabled}
-        onChange={handleInputChange.bind(null, rowIdx, name)}
-        onBlur={handleInputBlur.bind(null, rowIdx, name)}
-      />
+      <>
+        <input
+          type="text"
+          value={value}
+          disabled={disabled}
+          onChange={handleInputChange.bind(null, rowIdx, name)}
+          onBlur={handleInputBlur.bind(null, rowIdx, name)}
+        />
+        {error ? <div className={css.invalidMarker} /> : undefined}
+        {error ? <div className={css.invalidError} >{error}</div> : undefined}
+      </>
     );
   };
 
@@ -409,10 +457,14 @@ export const DataTableField: React.FC<FieldProps> = props => {
         value = value % 1 === 0 ? value : value.toFixed(2);
       }
       const isSensorField = sensorFields.indexOf(name) !== -1;
+      const {valid, error} = isFunction ? {valid: true, error: undefined} : validateInput(name, String(value));
       let classNames = "";
       if (readOnly) classNames += " " + css.readOnly;
       if (isSensorField) classNames += " " + css.sensorField;
       if (isFunction) classNames += " " + css.function;
+      if (!valid) {
+        classNames += " " + css.invalid;
+      }
 
       let contents;
       if (readOnly) {
@@ -420,7 +472,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       } else if (fieldDefinition[name].type === "array") {
         contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
       } else {
-        contents = renderInput({name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode)});
+        contents = renderInput({name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error});
       }
 
       return <td key={name} className={classNames}>{contents}</td>;

@@ -286,3 +286,79 @@ ReactDOM.render(
   </>,
   document.getElementById("experiment-4")
 );
+
+const experiment5 = {
+  "version": "1.0.0",
+  "metadata": {
+    "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
+    "name": "Data Table Example",
+    "initials": "DT"
+  },
+  "schema": {
+    "sections": [
+      {
+        "title": "Collect",
+        "icon": "collect",
+        "formFields": ["experimentData"]
+      }
+    ],
+    "dataSchema": {
+      "type": "object",
+      "required": [],
+      "properties": {
+        "experimentData": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["location"],
+            "properties": {
+              "location": {
+                "title": "Location",
+                "type": "string",
+                "readOnly": true
+              },
+              "noValidation": {
+                "title": "Integer (-100 to 100)",
+                "type": "integer",
+                "minimum": -100,
+                "maximum": 100
+              },
+              "validation": {
+                "title": "Float (-100 to 100)",
+                "type": "number",
+                "minimum": -100,
+                "maximum": 100
+              }
+            }
+          }
+        }
+      }
+    },
+    "formUiSchema": {
+      "experimentData": {
+        "ui:field": "dataTable",
+        "ui:dataTableOptions": {
+          "sensorFields": []
+        }
+      }
+    }
+  },
+  "data": {
+    "experimentData": [
+      {"location": "Corner 1"},
+      {"location": "Corner 2"},
+      {"location": "Corner 3"},
+      {"location": "Corner 4"},
+    ]
+  }
+} as IExperiment;
+ReactDOM.render(
+  <>
+    <Experiment
+      experiment={experiment5}
+      config={mobileAppConfig}
+    />
+    <ExpandoSchema experiment={experiment5} />
+  </>,
+  document.getElementById("experiment-5")
+);
