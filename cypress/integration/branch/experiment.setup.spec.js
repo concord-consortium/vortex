@@ -87,9 +87,10 @@ context("Testing Experiment Selection View", () => {
             // Is this a feature?
             // experimentSetup.getExperimentLabel(testLabel2).should('be.visible')
         })
-        it("resets all user experiments", () => {
-            experimentSetup.getResetDataButton().should('be.visible').click()
-        })
+        // No more button for resetting experiments. Add new delete for each experiment
+        // it("resets all user experiments", () => {
+        //     experimentSetup.getResetDataButton().should('be.visible').click()
+        // })
 
     })
 
