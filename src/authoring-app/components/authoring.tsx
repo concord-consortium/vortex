@@ -1,13 +1,13 @@
-import React from "react";
+import React, {useState} from "react";
 import css from "./authoring.module.scss";
 import { IExperiment } from "../../shared/experiment-types";
-import JSONEditor from "./json-editor";
+import { JSONEditor} from "./json-editor";
 import { Button } from "../../shared/components/button";
 import { ResourceListing } from "./resource-listing";
 import { MobilePreview } from "./mobile-preview";
 import { UseS3, S3Status } from "../hooks/use-s3";
 import { GetS3Config  } from "../utils/getS3Config";
-
+import { UseValidatingEditor } from"../utils/use-validating-editor";
 interface IProps {
   experiment?: IExperiment;
 }
@@ -15,12 +15,46 @@ interface IProps {
 export const AuthoringComponent = (props : IProps) => {
   const {
     stagingDescription, stagingName, setStagingDescription, setStagingName,
-    s3Resource, resources, resourceUrl, resourceObject, status, statusMsg,
-    refreshList, selectFn, deleteFn, createFn, stageContentFn, saveFn, dirty
+    s3Resource, resources, resourceUrl, resourceObject, resourceContent, status, statusMsg,
+    refreshList, selectFn, deleteFn, createFn, stageContentFn, setResourceContent, saveFn, dirty
   } = UseS3(GetS3Config());
+
+  const {
+    updateEditorValue, editorValue, editorDirty, isValid,
+    errors, setOriginalValue, originalValue,
+  } = UseValidatingEditor(resourceContent);
+
+  if(resourceContent !== originalValue) {
+    setOriginalValue(resourceContent);
+    updateEditorValue(resourceContent);
+  }
+
+  let experimentObject: IExperiment = resourceObject;
+  if(isValid) {
+    try{
+      experimentObject = JSON.parse(editorValue);
+    }
+    catch(e) {
+      // tslint:disable-next-line
+      console.error(e);
+    }
+  }
+
+  const saveAll = () => {
+    if(isValid) {
+      try {
+        stageContentFn(JSON.parse(editorValue));
+        saveFn(editorValue, stagingName, stagingDescription);
+      } catch (e) {
+        // tslint:disable-next-line
+        console.error(e);
+      }
+    }
+  };
+
   const disableNavigation = status !== S3Status.Ready ? true : false;
-  const disableSave = !dirty;
-  const disableNew = dirty;
+  const disableSave = !dirty && !editorDirty;
+  // setValue(resourceContent);
   const setName = (e: React.FormEvent<HTMLInputElement>) => {
     const _name = e.currentTarget.value;
     const {metadata} = resourceObject;
@@ -64,13 +98,13 @@ export const AuthoringComponent = (props : IProps) => {
               <Button
                 disabled={disableNavigation || disableSave}
                 className={css.button}
-                onClick={saveFn}>
+                onClick={saveAll}>
               Save
               </Button>
               <Button
                 disabled={disableNavigation || disableSave}
                 className={css.button}
-                onClick={saveFn}>
+                onClick={saveAll}>
               Cancel
               </Button>
               <Button
@@ -113,11 +147,20 @@ export const AuthoringComponent = (props : IProps) => {
                 <JSONEditor
                   width='50vw'
                   height='70vh'
-                  initialValue={resourceObject}
-                  onChange={stageContentFn}
+                  value={editorValue}
+                  update={updateEditorValue}
+                  errors={errors}
                 />
               </div>
-              <MobilePreview experiment={resourceObject as IExperiment} />
+              <div>
+                { isValid
+                  ? null
+                  : <div className={css.warning}>
+                      Your current JSON is invalid, using last valid version.
+                    </div>
+                }
+                <MobilePreview experiment={experimentObject} />
+              </div>
             </div>
           </div>
         : null

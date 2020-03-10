@@ -79,21 +79,24 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     const json =JSON.stringify(jsObject, null, 2);
     if(resourceContent !== json) {
       setDirty(true);
+      setResourceContent(json);
     }
-    setResourceContent(json);
   };
 
-  const saveFn = async () => {
+  const saveFn = async (newContent:string, newName:string, newDescription:string) => {
     setStatus(S3Status.SavePending);
     if(s3Resource) {
       try {
-        const newResource = await helper.updateMetaData(s3Resource, stagingName, stagingDescription);
+        const newResource = await helper.updateMetaData(s3Resource, newName, newDescription);
         const url = await helper.s3Upload({
           s3Resource: newResource,
-          body: resourceContent,
+          body: newContent,
           filename: stagingName
         });
-        saveCallback(url);
+        await saveCallback(url);
+        setStagingName(newName);
+        setStagingDescription(newDescription);
+        setResourceContent(newContent);
       }
       catch(e) {
         handleError(e);
@@ -216,7 +219,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   return ({
     stagingName, setStagingName, stagingDescription, setStagingDescription,
     s3Resource, setS3Resource, resources, setResources,
-    resourceUrl, setResourceUrl, resourceObject, resourceContent,
+    resourceUrl, setResourceUrl, resourceContent, resourceObject,
     setResourceContent, status, setStatus, statusMsg, setStatusMsg,
     refreshList, selectFn, deleteFn, createFn, loadFn, saveFn, stageContentFn,
     dirty

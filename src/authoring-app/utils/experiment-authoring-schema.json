@@ -1,0 +1,1744 @@
+{
+    "type": "object",
+    "title": "The Root Schema",
+    "description": "A Vortex data collection template for experiments",
+    "required": [
+        "version",
+        "metadata",
+        "schema",
+        "data"
+    ],
+    "properties": {
+        "version": {
+            "$id": "#/properties/version",
+            "type": "string",
+            "title": "The Version Schema",
+            "description": "The Vortex experiment template schema version number",
+            "default": "1.0.0",
+            "examples": [
+                "1.0.0"
+            ]
+        },
+        "metadata": {
+            "$id": "#/properties/metadata",
+            "type": "object",
+            "title": "The Metadata Schema",
+            "description": "Metadata for the experiment template",
+            "default": {},
+            "examples": [
+                {
+                    "initials": "SI",
+                    "name": "Schoolyard Investigation",
+                    "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1"
+                }
+            ],
+            "required": [
+                "uuid",
+                "name",
+                "initials"
+            ],
+            "properties": {
+                "uuid": {
+                    "$id": "#/properties/metadata/properties/uuid",
+                    "type": "string",
+                    "title": "The Uuid Schema",
+                    "description": "A unique identifier for the experiment template.",
+                    "default": "",
+                    "examples": [
+                        "e431af00-5ef9-44f8-a887-c76caa6ddde1"
+                    ]
+                },
+                "name": {
+                    "$id": "#/properties/metadata/properties/name",
+                    "type": "string",
+                    "title": "The Name Schema",
+                    "description": "The name of this vortex data collection template.",
+                    "default": "",
+                    "examples": [
+                        "Schoolyard Investigation"
+                    ]
+                },
+                "initials": {
+                    "$id": "#/properties/metadata/properties/initials",
+                    "type": "string",
+                    "title": "The Initials Schema",
+                    "description": "Initials for this template.",
+                    "default": "",
+                    "examples": [
+                        "SI"
+                    ]
+                }
+            }
+        },
+        "schema": {
+            "$id": "#/properties/schema",
+            "type": "object",
+            "title": "The Template Schema",
+            "description": "The Data Collection schema defined by this template",
+            "default": {},
+            "examples": [
+                {
+                    "titleField": "label",
+                    "formUiSchema": {
+                        "label": {
+                            "ui:icon": "label",
+                            "ui:placeholder": "My Experiment 1"
+                        },
+                        "photo": {
+                            "ui:field": "photo"
+                        },
+                        "studySite": {
+                            "ui:icon": "assignment",
+                            "ui:placeholder": "Study Site"
+                        },
+                        "experimentData": {
+                            "ui:field": "dataTable",
+                            "ui:dataTableOptions": {
+                                "titleField": "studySite",
+                                "sensorFields": [
+                                    "temperature",
+                                    "humidity",
+                                    "illuminance"
+                                ]
+                            }
+                        },
+                        "note": {
+                            "items": {
+                                "ui:widget": "textarea"
+                            }
+                        },
+                        "groupMembers": {
+                            "ui:icon": "group",
+                            "ui:placeholder": "Group Team Members"
+                        }
+                    },
+                    "dataSchema": {
+                        "required": [
+                            "studySite",
+                            "label"
+                        ],
+                        "properties": {
+                            "label": {
+                                "type": "string",
+                                "title": "Label"
+                            },
+                            "studySite": {
+                                "enum": [
+                                    "Study Site #1",
+                                    "Study Site #2"
+                                ],
+                                "enumNames": [
+                                    "Study Site #1",
+                                    "Study Site #2"
+                                ],
+                                "title": "Study Site",
+                                "type": "string"
+                            },
+                            "photo": {
+                                "title": "Photos and Notes",
+                                "items": {
+                                    "properties": {
+                                        "note": {
+                                            "type": "string"
+                                        },
+                                        "localPhotoUrl": {
+                                            "type": "string"
+                                        },
+                                        "timestamp": {
+                                            "format": "date-time",
+                                            "type": "string"
+                                        },
+                                        "isPhoto": {
+                                            "type": "boolean"
+                                        },
+                                        "remotePhotoUrl": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "type": "object"
+                                },
+                                "type": "array"
+                            },
+                            "experimentData": {
+                                "type": "array",
+                                "items": {
+                                    "type": "object",
+                                    "required": [],
+                                    "properties": {
+                                        "location": {
+                                            "title": "Location",
+                                            "readOnly": true,
+                                            "type": "string"
+                                        },
+                                        "illuminance": {
+                                            "type": "number",
+                                            "title": "Illuminance (lux)"
+                                        },
+                                        "humidity": {
+                                            "type": "number",
+                                            "title": "Humidity (%)"
+                                        },
+                                        "temperature": {
+                                            "title": "Temperature (°C)",
+                                            "type": "number"
+                                        }
+                                    }
+                                }
+                            },
+                            "groupMembers": {
+                                "type": "string",
+                                "title": "Group Members"
+                            }
+                        },
+                        "type": "object"
+                    },
+                    "sections": [
+                        {
+                            "title": "Label",
+                            "components": [
+                                "metadata"
+                            ],
+                            "formFields": [
+                                "studySite",
+                                "label",
+                                "groupMembers"
+                            ],
+                            "icon": "assignment"
+                        },
+                        {
+                            "title": "Collect",
+                            "formFields": [
+                                "experimentData"
+                            ],
+                            "icon": "collect"
+                        },
+                        {
+                            "title": "Note & Photo",
+                            "formFields": [
+                                "photo"
+                            ],
+                            "icon": "note_and_photo"
+                        }
+                    ]
+                }
+            ],
+            "required": [
+                "titleField",
+                "sections",
+                "dataSchema",
+                "formUiSchema"
+            ],
+            "properties": {
+                "titleField": {
+                    "$id": "#/properties/schema/properties/titleField",
+                    "type": "string",
+                    "title": "The Titlefield Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": "",
+                    "examples": [
+                        "label"
+                    ]
+                },
+                "sections": {
+                    "$id": "#/properties/schema/properties/sections",
+                    "type": "array",
+                    "title": "The Sections Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "items": {
+                        "$id": "#/properties/schema/properties/sections/items",
+                        "type": "object",
+                        "title": "The Items Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "title": "Label",
+                                "components": [
+                                    "metadata"
+                                ],
+                                "formFields": [
+                                    "studySite",
+                                    "label",
+                                    "groupMembers"
+                                ],
+                                "icon": "assignment"
+                            },
+                            {
+                                "title": "Collect",
+                                "formFields": [
+                                    "experimentData"
+                                ],
+                                "icon": "collect"
+                            },
+                            {
+                                "icon": "note_and_photo",
+                                "title": "Note & Photo",
+                                "formFields": [
+                                    "photo"
+                                ]
+                            }
+                        ],
+                        "required": [
+                            "title",
+                            "icon",
+                            "formFields"
+                        ],
+                        "properties": {
+                            "title": {
+                                "$id": "#/properties/schema/properties/sections/items/properties/title",
+                                "type": "string",
+                                "title": "The Title Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Label"
+                                ]
+                            },
+                            "icon": {
+                                "$id": "#/properties/schema/properties/sections/items/properties/icon",
+                                "type": "string",
+                                "title": "The Icon Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "assignment"
+                                ]
+                            },
+                            "formFields": {
+                                "$id": "#/properties/schema/properties/sections/items/properties/formFields",
+                                "type": "array",
+                                "title": "The Formfields Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": [],
+                                "items": {
+                                    "$id": "#/properties/schema/properties/sections/items/properties/formFields/items",
+                                    "type": "string",
+                                    "title": "The Items Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "studySite",
+                                        "label",
+                                        "groupMembers"
+                                    ]
+                                }
+                            },
+                            "components": {
+                                "$id": "#/properties/schema/properties/sections/items/properties/components",
+                                "type": "array",
+                                "title": "The Components Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": [],
+                                "items": {
+                                    "$id": "#/properties/schema/properties/sections/items/properties/components/items",
+                                    "type": "string",
+                                    "title": "The Items Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "metadata"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                },
+                "dataSchema": {
+                    "$id": "#/properties/schema/properties/dataSchema",
+                    "type": "object",
+                    "title": "The Dataschema Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "properties": {
+                                "label": {
+                                    "title": "Label",
+                                    "type": "string"
+                                },
+                                "studySite": {
+                                    "enum": [
+                                        "Study Site #1",
+                                        "Study Site #2"
+                                    ],
+                                    "enumNames": [
+                                        "Study Site #1",
+                                        "Study Site #2"
+                                    ],
+                                    "title": "Study Site",
+                                    "type": "string"
+                                },
+                                "photo": {
+                                    "title": "Photos and Notes",
+                                    "items": {
+                                        "properties": {
+                                            "localPhotoUrl": {
+                                                "type": "string"
+                                            },
+                                            "timestamp": {
+                                                "format": "date-time",
+                                                "type": "string"
+                                            },
+                                            "isPhoto": {
+                                                "type": "boolean"
+                                            },
+                                            "remotePhotoUrl": {
+                                                "type": "string"
+                                            },
+                                            "note": {
+                                                "type": "string"
+                                            }
+                                        },
+                                        "type": "object"
+                                    },
+                                    "type": "array"
+                                },
+                                "experimentData": {
+                                    "items": {
+                                        "properties": {
+                                            "temperature": {
+                                                "title": "Temperature (°C)",
+                                                "type": "number"
+                                            },
+                                            "location": {
+                                                "type": "string",
+                                                "title": "Location",
+                                                "readOnly": true
+                                            },
+                                            "illuminance": {
+                                                "type": "number",
+                                                "title": "Illuminance (lux)"
+                                            },
+                                            "humidity": {
+                                                "type": "number",
+                                                "title": "Humidity (%)"
+                                            }
+                                        },
+                                        "type": "object",
+                                        "required": []
+                                    },
+                                    "type": "array"
+                                },
+                                "groupMembers": {
+                                    "title": "Group Members",
+                                    "type": "string"
+                                }
+                            },
+                            "type": "object",
+                            "required": []
+                        }
+                    ],
+                    "required": [
+                        "type",
+                        "required",
+                        "properties"
+                    ],
+                    "properties": {
+                        "type": {
+                            "$id": "#/properties/schema/properties/dataSchema/properties/type",
+                            "type": "string",
+                            "title": "The Type Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": "",
+                            "examples": [
+                                "object"
+                            ]
+                        },
+                        "required": {
+                            "$id": "#/properties/schema/properties/dataSchema/properties/required",
+                            "type": "array",
+                            "title": "The Required Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": [],
+                            "items": {
+                                "$id": "#/properties/schema/properties/dataSchema/properties/required/items",
+                                "type": "string",
+                                "title": "The Items Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "studySite",
+                                    "label"
+                                ]
+                            }
+                        },
+                        "properties": {
+                            "$id": "#/properties/schema/properties/dataSchema/properties/properties",
+                            "type": "object",
+                            "title": "The Properties Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "studySite": {
+                                        "enum": [
+                                            "Study Site #1",
+                                            "Study Site #2"
+                                        ],
+                                        "enumNames": [
+                                            "Study Site #1",
+                                            "Study Site #2"
+                                        ],
+                                        "title": "Study Site",
+                                        "type": "string"
+                                    },
+                                    "photo": {
+                                        "title": "Photos and Notes",
+                                        "items": {
+                                            "properties": {
+                                                "isPhoto": {
+                                                    "type": "boolean"
+                                                },
+                                                "remotePhotoUrl": {
+                                                    "type": "string"
+                                                },
+                                                "note": {
+                                                    "type": "string"
+                                                },
+                                                "localPhotoUrl": {
+                                                    "type": "string"
+                                                },
+                                                "timestamp": {
+                                                    "format": "date-time",
+                                                    "type": "string"
+                                                }
+                                            },
+                                            "type": "object"
+                                        },
+                                        "type": "array"
+                                    },
+                                    "experimentData": {
+                                        "type": "array",
+                                        "items": {
+                                            "properties": {
+                                                "location": {
+                                                    "title": "Location",
+                                                    "readOnly": true,
+                                                    "type": "string"
+                                                },
+                                                "illuminance": {
+                                                    "type": "number",
+                                                    "title": "Illuminance (lux)"
+                                                },
+                                                "humidity": {
+                                                    "title": "Humidity (%)",
+                                                    "type": "number"
+                                                },
+                                                "temperature": {
+                                                    "type": "number",
+                                                    "title": "Temperature (°C)"
+                                                }
+                                            },
+                                            "type": "object",
+                                            "required": []
+                                        }
+                                    },
+                                    "groupMembers": {
+                                        "type": "string",
+                                        "title": "Group Members"
+                                    },
+                                    "label": {
+                                        "title": "Label",
+                                        "type": "string"
+                                    }
+                                }
+                            ],
+                            "required": [],
+                            "properties": {
+                                "studySite": {
+                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite",
+                                    "type": "object",
+                                    "title": "The Studysite Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "enum": [
+                                                "Study Site #1",
+                                                "Study Site #2"
+                                            ],
+                                            "enumNames": [
+                                                "Study Site #1",
+                                                "Study Site #2"
+                                            ],
+                                            "title": "Study Site",
+                                            "type": "string"
+                                        }
+                                    ],
+                                    "required": [
+                                        "title",
+                                        "type",
+                                        "enum",
+                                        "enumNames"
+                                    ],
+                                    "properties": {
+                                        "title": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/title",
+                                            "type": "string",
+                                            "title": "The Title Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "Study Site"
+                                            ]
+                                        },
+                                        "type": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/type",
+                                            "type": "string",
+                                            "title": "The Type Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "string"
+                                            ]
+                                        },
+                                        "enum": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/enum",
+                                            "type": "array",
+                                            "title": "The Enum Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": [],
+                                            "items": {
+                                                "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/enum/items",
+                                                "type": "string",
+                                                "title": "The Items Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "Study Site #1",
+                                                    "Study Site #2"
+                                                ]
+                                            }
+                                        },
+                                        "enumNames": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/enumNames",
+                                            "type": "array",
+                                            "title": "The Enumnames Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": [],
+                                            "items": {
+                                                "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/studySite/properties/enumNames/items",
+                                                "type": "string",
+                                                "title": "The Items Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "Study Site #1",
+                                                    "Study Site #2"
+                                                ]
+                                            }
+                                        }
+                                    }
+                                },
+                                "label": {
+                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/label",
+                                    "type": "object",
+                                    "title": "The Label Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "type": "string",
+                                            "title": "Label"
+                                        }
+                                    ],
+                                    "required": [
+                                        "title",
+                                        "type"
+                                    ],
+                                    "properties": {
+                                        "title": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/label/properties/title",
+                                            "type": "string",
+                                            "title": "The Title Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "Label"
+                                            ]
+                                        },
+                                        "type": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/label/properties/type",
+                                            "type": "string",
+                                            "title": "The Type Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "string"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "groupMembers": {
+                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/groupMembers",
+                                    "type": "object",
+                                    "title": "The Groupmembers Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "title": "Group Members",
+                                            "type": "string"
+                                        }
+                                    ],
+                                    "required": [
+                                        "title",
+                                        "type"
+                                    ],
+                                    "properties": {
+                                        "title": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/groupMembers/properties/title",
+                                            "type": "string",
+                                            "title": "The Title Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "Group Members"
+                                            ]
+                                        },
+                                        "type": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/groupMembers/properties/type",
+                                            "type": "string",
+                                            "title": "The Type Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "string"
+                                            ]
+                                        }
+                                    }
+                                },
+                                "experimentData": {
+                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData",
+                                    "type": "object",
+                                    "title": "The Experimentdata Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "properties": {
+                                                    "location": {
+                                                        "type": "string",
+                                                        "title": "Location",
+                                                        "readOnly": true
+                                                    },
+                                                    "illuminance": {
+                                                        "type": "number",
+                                                        "title": "Illuminance (lux)"
+                                                    },
+                                                    "humidity": {
+                                                        "type": "number",
+                                                        "title": "Humidity (%)"
+                                                    },
+                                                    "temperature": {
+                                                        "title": "Temperature (°C)",
+                                                        "type": "number"
+                                                    }
+                                                },
+                                                "type": "object",
+                                                "required": []
+                                            }
+                                        }
+                                    ],
+                                    "required": [
+                                        "type",
+                                        "items"
+                                    ],
+                                    "properties": {
+                                        "type": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/type",
+                                            "type": "string",
+                                            "title": "The Type Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "array"
+                                            ]
+                                        },
+                                        "items": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items",
+                                            "type": "object",
+                                            "title": "The Items Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": {},
+                                            "examples": [
+                                                {
+                                                    "type": "object",
+                                                    "required": [],
+                                                    "properties": {
+                                                        "location": {
+                                                            "title": "Location",
+                                                            "readOnly": true,
+                                                            "type": "string"
+                                                        },
+                                                        "illuminance": {
+                                                            "type": "number",
+                                                            "title": "Illuminance (lux)"
+                                                        },
+                                                        "humidity": {
+                                                            "type": "number",
+                                                            "title": "Humidity (%)"
+                                                        },
+                                                        "temperature": {
+                                                            "type": "number",
+                                                            "title": "Temperature (°C)"
+                                                        }
+                                                    }
+                                                }
+                                            ],
+                                            "required": [
+                                                "type",
+                                                "required",
+                                                "properties"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/type",
+                                                    "type": "string",
+                                                    "title": "The Type Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "default": "",
+                                                    "examples": [
+                                                        "object"
+                                                    ]
+                                                },
+                                                "required": {
+                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/required",
+                                                    "type": "array",
+                                                    "title": "The Required Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "default": [],
+                                                    "items": {
+                                                        "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/required/items",
+                                                        "type": "string",
+                                                        "title": "The Items Schema",
+                                                        "description": "An explanation about the purpose of this instance.",
+                                                        "default": "",
+                                                        "examples": [
+                                                            "location"
+                                                        ]
+                                                    }
+                                                },
+                                                "properties": {
+                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties",
+                                                    "type": "object",
+                                                    "title": "The Properties Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "default": {},
+                                                    "examples": [
+                                                        {
+                                                            "location": {
+                                                                "type": "string",
+                                                                "title": "Location",
+                                                                "readOnly": true
+                                                            },
+                                                            "illuminance": {
+                                                                "type": "number",
+                                                                "title": "Illuminance (lux)"
+                                                            },
+                                                            "humidity": {
+                                                                "type": "number",
+                                                                "title": "Humidity (%)"
+                                                            },
+                                                            "temperature": {
+                                                                "type": "number",
+                                                                "title": "Temperature (°C)"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "required": [],
+                                                    "properties": {
+                                                        "location": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/location",
+                                                            "type": "object",
+                                                            "title": "The Location Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "title": "Location",
+                                                                    "readOnly": true,
+                                                                    "type": "string"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "title",
+                                                                "type",
+                                                                "readOnly"
+                                                            ],
+                                                            "properties": {
+                                                                "title": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/location/properties/title",
+                                                                    "type": "string",
+                                                                    "title": "The Title Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "Location"
+                                                                    ]
+                                                                },
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/location/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "string"
+                                                                    ]
+                                                                },
+                                                                "readOnly": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/location/properties/readOnly",
+                                                                    "type": "boolean",
+                                                                    "title": "The Readonly Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": false,
+                                                                    "examples": [
+                                                                        true
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "temperature": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/temperature",
+                                                            "type": "object",
+                                                            "title": "The Temperature Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "title": "Temperature (°C)",
+                                                                    "type": "number"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "title",
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "title": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/temperature/properties/title",
+                                                                    "type": "string",
+                                                                    "title": "The Title Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "Temperature (°C)"
+                                                                    ]
+                                                                },
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/temperature/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "number"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "illuminance": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/illuminance",
+                                                            "type": "object",
+                                                            "title": "The Illuminance Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "title": "Illuminance (lux)",
+                                                                    "type": "number"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "title",
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "title": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/illuminance/properties/title",
+                                                                    "type": "string",
+                                                                    "title": "The Title Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "Illuminance (lux)"
+                                                                    ]
+                                                                },
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/illuminance/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "number"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "humidity": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/humidity",
+                                                            "type": "object",
+                                                            "title": "The Humidity Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "type": "number",
+                                                                    "title": "Humidity (%)"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "title",
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "title": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/humidity/properties/title",
+                                                                    "type": "string",
+                                                                    "title": "The Title Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "Humidity (%)"
+                                                                    ]
+                                                                },
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/experimentData/properties/items/properties/properties/properties/humidity/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "number"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                },
+                                "photo": {
+                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo",
+                                    "type": "object",
+                                    "title": "The Photo Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "type": "array",
+                                            "title": "Photos and Notes",
+                                            "items": {
+                                                "properties": {
+                                                    "localPhotoUrl": {
+                                                        "type": "string"
+                                                    },
+                                                    "timestamp": {
+                                                        "type": "string",
+                                                        "format": "date-time"
+                                                    },
+                                                    "isPhoto": {
+                                                        "type": "boolean"
+                                                    },
+                                                    "remotePhotoUrl": {
+                                                        "type": "string"
+                                                    },
+                                                    "note": {
+                                                        "type": "string"
+                                                    }
+                                                },
+                                                "type": "object"
+                                            }
+                                        }
+                                    ],
+                                    "required": [
+                                        "title",
+                                        "type",
+                                        "items"
+                                    ],
+                                    "properties": {
+                                        "title": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/title",
+                                            "type": "string",
+                                            "title": "The Title Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "Photos and Notes"
+                                            ]
+                                        },
+                                        "type": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/type",
+                                            "type": "string",
+                                            "title": "The Type Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "array"
+                                            ]
+                                        },
+                                        "items": {
+                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items",
+                                            "type": "object",
+                                            "title": "The Items Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": {},
+                                            "examples": [
+                                                {
+                                                    "properties": {
+                                                        "localPhotoUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "timestamp": {
+                                                            "format": "date-time",
+                                                            "type": "string"
+                                                        },
+                                                        "isPhoto": {
+                                                            "type": "boolean"
+                                                        },
+                                                        "remotePhotoUrl": {
+                                                            "type": "string"
+                                                        },
+                                                        "note": {
+                                                            "type": "string"
+                                                        }
+                                                    },
+                                                    "type": "object"
+                                                }
+                                            ],
+                                            "required": [
+                                                "type",
+                                                "properties"
+                                            ],
+                                            "properties": {
+                                                "type": {
+                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/type",
+                                                    "type": "string",
+                                                    "title": "The Type Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "default": "",
+                                                    "examples": [
+                                                        "object"
+                                                    ]
+                                                },
+                                                "properties": {
+                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties",
+                                                    "type": "object",
+                                                    "title": "The Properties Schema",
+                                                    "description": "An explanation about the purpose of this instance.",
+                                                    "default": {},
+                                                    "examples": [
+                                                        {
+                                                            "remotePhotoUrl": {
+                                                                "type": "string"
+                                                            },
+                                                            "note": {
+                                                                "type": "string"
+                                                            },
+                                                            "localPhotoUrl": {
+                                                                "type": "string"
+                                                            },
+                                                            "timestamp": {
+                                                                "type": "string",
+                                                                "format": "date-time"
+                                                            },
+                                                            "isPhoto": {
+                                                                "type": "boolean"
+                                                            }
+                                                        }
+                                                    ],
+                                                    "required": [
+                                                        "isPhoto",
+                                                        "localPhotoUrl",
+                                                        "remotePhotoUrl",
+                                                        "note",
+                                                        "timestamp"
+                                                    ],
+                                                    "properties": {
+                                                        "isPhoto": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/isPhoto",
+                                                            "type": "object",
+                                                            "title": "The Isphoto Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "type": "boolean"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/isPhoto/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "boolean"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "localPhotoUrl": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/localPhotoUrl",
+                                                            "type": "object",
+                                                            "title": "The Localphotourl Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "type": "string"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/localPhotoUrl/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "string"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "remotePhotoUrl": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/remotePhotoUrl",
+                                                            "type": "object",
+                                                            "title": "The Remotephotourl Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "type": "string"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/remotePhotoUrl/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "string"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "note": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/note",
+                                                            "type": "object",
+                                                            "title": "The Note Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "type": "string"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "type"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/note/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "string"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        },
+                                                        "timestamp": {
+                                                            "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/timestamp",
+                                                            "type": "object",
+                                                            "title": "The Timestamp Schema",
+                                                            "description": "An explanation about the purpose of this instance.",
+                                                            "default": {},
+                                                            "examples": [
+                                                                {
+                                                                    "format": "date-time",
+                                                                    "type": "string"
+                                                                }
+                                                            ],
+                                                            "required": [
+                                                                "type",
+                                                                "format"
+                                                            ],
+                                                            "properties": {
+                                                                "type": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/timestamp/properties/type",
+                                                                    "type": "string",
+                                                                    "title": "The Type Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "string"
+                                                                    ]
+                                                                },
+                                                                "format": {
+                                                                    "$id": "#/properties/schema/properties/dataSchema/properties/properties/properties/photo/properties/items/properties/properties/properties/timestamp/properties/format",
+                                                                    "type": "string",
+                                                                    "title": "The Format Schema",
+                                                                    "description": "An explanation about the purpose of this instance.",
+                                                                    "default": "",
+                                                                    "examples": [
+                                                                        "date-time"
+                                                                    ]
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                "formUiSchema": {
+                    "$id": "#/properties/schema/properties/formUiSchema",
+                    "type": "object",
+                    "title": "The Formuischema Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": {},
+                    "examples": [
+                        {
+                            "groupMembers": {
+                                "ui:placeholder": "Group Team Members",
+                                "ui:icon": "group"
+                            },
+                            "label": {
+                                "ui:icon": "label",
+                                "ui:placeholder": "My Experiment 1"
+                            },
+                            "photo": {
+                                "ui:field": "photo"
+                            },
+                            "studySite": {
+                                "ui:icon": "assignment",
+                                "ui:placeholder": "Study Site"
+                            },
+                            "experimentData": {
+                                "ui:dataTableOptions": {
+                                    "sensorFields": [
+                                        "temperature",
+                                        "humidity",
+                                        "illuminance"
+                                    ],
+                                    "titleField": "studySite"
+                                },
+                                "ui:field": "dataTable"
+                            },
+                            "note": {
+                                "items": {
+                                    "ui:widget": "textarea"
+                                }
+                            }
+                        }
+                    ],
+                    "required": [],
+                    "properties": {
+                        "studySite": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/studySite",
+                            "type": "object",
+                            "title": "The Studysite Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "ui:icon": "assignment",
+                                    "ui:placeholder": "Study Site"
+                                }
+                            ],
+                            "required": [
+                                "ui:icon",
+                                "ui:placeholder"
+                            ],
+                            "properties": {
+                                "ui:icon": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/studySite/properties/ui:icon",
+                                    "type": "string",
+                                    "title": "The Ui:icon Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "assignment"
+                                    ]
+                                },
+                                "ui:placeholder": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/studySite/properties/ui:placeholder",
+                                    "type": "string",
+                                    "title": "The Ui:placeholder Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Study Site"
+                                    ]
+                                }
+                            }
+                        },
+                        "label": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/label",
+                            "type": "object",
+                            "title": "The Label Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "ui:icon": "label",
+                                    "ui:placeholder": "My Experiment 1"
+                                }
+                            ],
+                            "required": [
+                                "ui:icon",
+                                "ui:placeholder"
+                            ],
+                            "properties": {
+                                "ui:icon": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/label/properties/ui:icon",
+                                    "type": "string",
+                                    "title": "The Ui:icon Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "label"
+                                    ]
+                                },
+                                "ui:placeholder": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/label/properties/ui:placeholder",
+                                    "type": "string",
+                                    "title": "The Ui:placeholder Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "My Experiment 1"
+                                    ]
+                                }
+                            }
+                        },
+                        "groupMembers": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/groupMembers",
+                            "type": "object",
+                            "title": "The Groupmembers Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "ui:placeholder": "Group Team Members",
+                                    "ui:icon": "group"
+                                }
+                            ],
+                            "required": [
+                                "ui:icon",
+                                "ui:placeholder"
+                            ],
+                            "properties": {
+                                "ui:icon": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/groupMembers/properties/ui:icon",
+                                    "type": "string",
+                                    "title": "The Ui:icon Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "group"
+                                    ]
+                                },
+                                "ui:placeholder": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/groupMembers/properties/ui:placeholder",
+                                    "type": "string",
+                                    "title": "The Ui:placeholder Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "Group Team Members"
+                                    ]
+                                }
+                            }
+                        },
+                        "note": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/note",
+                            "type": "object",
+                            "title": "The Note Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "items": {
+                                        "ui:widget": "textarea"
+                                    }
+                                }
+                            ],
+                            "required": [
+                                "items"
+                            ],
+                            "properties": {
+                                "items": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/note/properties/items",
+                                    "type": "object",
+                                    "title": "The Items Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "ui:widget": "textarea"
+                                        }
+                                    ],
+                                    "required": [
+                                        "ui:widget"
+                                    ],
+                                    "properties": {
+                                        "ui:widget": {
+                                            "$id": "#/properties/schema/properties/formUiSchema/properties/note/properties/items/properties/ui:widget",
+                                            "type": "string",
+                                            "title": "The Ui:widget Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "textarea"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "experimentData": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData",
+                            "type": "object",
+                            "title": "The Experimentdata Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "ui:field": "dataTable",
+                                    "ui:dataTableOptions": {
+                                        "sensorFields": [
+                                            "temperature",
+                                            "humidity",
+                                            "illuminance"
+                                        ],
+                                        "titleField": "studySite"
+                                    }
+                                }
+                            ],
+                            "required": [
+                                "ui:field",
+                                "ui:dataTableOptions"
+                            ],
+                            "properties": {
+                                "ui:field": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData/properties/ui:field",
+                                    "type": "string",
+                                    "title": "The Ui:field Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "dataTable"
+                                    ]
+                                },
+                                "ui:dataTableOptions": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData/properties/ui:dataTableOptions",
+                                    "type": "object",
+                                    "title": "The Ui:datatableoptions Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": {},
+                                    "examples": [
+                                        {
+                                            "sensorFields": [
+                                                "temperature",
+                                                "humidity",
+                                                "illuminance"
+                                            ],
+                                            "titleField": "studySite"
+                                        }
+                                    ],
+                                    "required": [
+                                        "sensorFields",
+                                        "titleField"
+                                    ],
+                                    "properties": {
+                                        "sensorFields": {
+                                            "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData/properties/ui:dataTableOptions/properties/sensorFields",
+                                            "type": "array",
+                                            "title": "The Sensorfields Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": [],
+                                            "items": {
+                                                "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData/properties/ui:dataTableOptions/properties/sensorFields/items",
+                                                "type": "string",
+                                                "title": "The Items Schema",
+                                                "description": "An explanation about the purpose of this instance.",
+                                                "default": "",
+                                                "examples": [
+                                                    "temperature",
+                                                    "humidity",
+                                                    "illuminance"
+                                                ]
+                                            }
+                                        },
+                                        "titleField": {
+                                            "$id": "#/properties/schema/properties/formUiSchema/properties/experimentData/properties/ui:dataTableOptions/properties/titleField",
+                                            "type": "string",
+                                            "title": "The Titlefield Schema",
+                                            "description": "An explanation about the purpose of this instance.",
+                                            "default": "",
+                                            "examples": [
+                                                "studySite"
+                                            ]
+                                        }
+                                    }
+                                }
+                            }
+                        },
+                        "photo": {
+                            "$id": "#/properties/schema/properties/formUiSchema/properties/photo",
+                            "type": "object",
+                            "title": "The Photo Schema",
+                            "description": "An explanation about the purpose of this instance.",
+                            "default": {},
+                            "examples": [
+                                {
+                                    "ui:field": "photo"
+                                }
+                            ],
+                            "required": [
+                                "ui:field"
+                            ],
+                            "properties": {
+                                "ui:field": {
+                                    "$id": "#/properties/schema/properties/formUiSchema/properties/photo/properties/ui:field",
+                                    "type": "string",
+                                    "title": "The Ui:field Schema",
+                                    "description": "An explanation about the purpose of this instance.",
+                                    "default": "",
+                                    "examples": [
+                                        "photo"
+                                    ]
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "data": {
+            "$id": "#/properties/data",
+            "type": "object",
+            "title": "The Data Schema",
+            "description": "An explanation about the purpose of this instance.",
+            "default": {},
+            "examples": [
+                {
+                    "experimentData": [
+                        {
+                            "location": "Corner 1"
+                        },
+                        {
+                            "location": "Corner 2"
+                        },
+                        {
+                            "location": "Corner 3"
+                        },
+                        {
+                            "location": "Corner 4"
+                        },
+                        {
+                            "location": "Center"
+                        },
+                        {
+                            "temperature": "<AVG>",
+                            "location": "Average",
+                            "humidity": "<AVG>",
+                            "illuminance": "<AVG>"
+                        }
+                    ],
+                    "photo": []
+                }
+            ],
+            "required": [
+            ],
+            "properties": {
+                "experimentData": {
+                    "$id": "#/properties/data/properties/experimentData",
+                    "type": "array",
+                    "title": "The Experimentdata Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": [],
+                    "items": {
+                        "$id": "#/properties/data/properties/experimentData/items",
+                        "type": "object",
+                        "title": "The Items Schema",
+                        "description": "An explanation about the purpose of this instance.",
+                        "default": {},
+                        "examples": [
+                            {
+                                "location": "Corner 1"
+                            },
+                            {
+                                "location": "Corner 2"
+                            },
+                            {
+                                "location": "Corner 3"
+                            },
+                            {
+                                "location": "Corner 4"
+                            },
+                            {
+                                "location": "Center"
+                            },
+                            {
+                                "location": "Average",
+                                "humidity": "<AVG>",
+                                "illuminance": "<AVG>",
+                                "temperature": "<AVG>"
+                            }
+                        ],
+                        "required": [],
+                        "properties": {
+                            "location": {
+                                "$id": "#/properties/data/properties/experimentData/items/properties/location",
+                                "type": "string",
+                                "title": "The Location Schema",
+                                "description": "An explanation about the purpose of this instance.",
+                                "default": "",
+                                "examples": [
+                                    "Corner 1"
+                                ]
+                            }
+                        }
+                    }
+                },
+                "photo": {
+                    "$id": "#/properties/data/properties/photo",
+                    "type": "array",
+                    "title": "The Photo Schema",
+                    "description": "An explanation about the purpose of this instance.",
+                    "default": []
+                }
+            }
+        }
+    }
+}
