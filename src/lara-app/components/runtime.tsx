@@ -22,13 +22,14 @@ interface IProps {
   firebaseJWT: IFirebaseJWT;
   setError: (error: any) => void;
   defaultSectionIndex?: number;
+  reportMode?: boolean;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex} : IProps) => {
+export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
-  const [displayQr, setDisplayQr] = useState(true);
+  const [displayQr, setDisplayQr] = useState(!reportMode);
   const experimentRef = useRef<IRun|undefined>();
 
   const getSaveExperimentUrl = () => {
@@ -101,9 +102,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     const config: IExperimentConfig = {
       hideLabels: false,
       useSensors: false,
-      showEditSaveButton: true,
+      showEditSaveButton: !reportMode,
       showCameraButton: false,
-      callbacks: {
+      callbacks: reportMode ? undefined : {
         onImport: handleUploadAgain,
       }
     };
@@ -116,7 +117,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
             data={experimentData}
             config={config}
             defaultSectionIndex={defaultSectionIndex}
-            onDataChange={handleSaveData}
+            onDataChange={reportMode ? undefined : handleSaveData}
           />
         </div>
         {(displayQr && experimentData === undefined) &&
