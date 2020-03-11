@@ -27,14 +27,16 @@ export interface IInitInteractiveData {
 }
 
 // NOTE: this is only a partial description of the returned data, containing only the fields we are interested in
+export interface IFirebaseJWTClaims {
+  platform_id: string;      // "https://app.rigse.docker",
+  platform_user_id: number; // 9,
+  user_id: string;          // "https://app.rigse.docker/users/9",
+  user_type: string;        // "learner"
+  class_hash: string;       // "31f6344410d9e5874e085df0afa048604ee0131912112c7a",
+  offering_id: number;      // 13
+}
 export interface IFirebaseJWT {
-  claims: {
-    platform_id: string;      // "https://app.rigse.docker",
-    platform_user_id: number; // 9,
-    user_id: string;          // "https://app.rigse.docker/users/9",
-    class_hash: string;       // "31f6344410d9e5874e085df0afa048604ee0131912112c7a",
-    offering_id: number       // 13
-  };
+  claims: IFirebaseJWTClaims;
 }
 
 export const useInteractiveApi = (options: {setError: (error: any) => void}) => {

@@ -8,7 +8,7 @@ service cloud.firestore {
     }
 
 		// setup access to runs
-    match /runs/{run}/{document=**} {
+    match /runs/{run} {
     	function isAuthed() {
     		return request.auth != null && request.auth.uid != null && request.auth.token != null && request.auth.token.user_id != null && request.auth.token.user_type != null && request.auth.token.class_hash != null;
     	}
@@ -16,10 +16,8 @@ service cloud.firestore {
       	return request.auth.token.user_type == 'teacher';
       }
       function claimMatchesRun(claim) {
-      	// TODO: fix rule below to assert claims
-      	return true;
-      	// return exists(/databases/$(database)/documents/runs/$(run)) &&
-        //       get(/databases/$(database)/documents/runs/$(run)).data[claim] == request.auth.token[claim]
+      	return exists(/databases/$(database)/documents/runs/$(run)) &&
+               get(/databases/$(database)/documents/runs/$(run)).data[claim] == request.auth.token[claim]
       }
       function isOwner() {
         return isAuthed() && claimMatchesRun("user_id");
@@ -27,15 +25,32 @@ service cloud.firestore {
       function isTeacherOfClass() {
       	return isAuthed() && isTeacher() && claimMatchesRun("class_hash");
       }
+      function isOwnerOrTeacherOfClass() {
+        return isOwner() || isTeacherOfClass();
+      }
 
-      // only allow students or teachers to read their own docs and sub-collections
-    	allow read: if isOwner() || isTeacherOfClass();
+      // only allow students or teachers to read their own run docs
+    	allow read: if isOwnerOrTeacherOfClass();
 
-      // allow any authed user to create docs
+      // allow ANY authed user to create run docs
       allow create: if isAuthed();
 
-      // only allow students or teachers to update their own docs and sub-collections
-      allow update: if isOwner() || isTeacherOfClass();
+      // only allow students or teachers to update their own run docs
+      allow update: if isOwnerOrTeacherOfClass();
+
+      // same as /runs/{run} EXCEPT to create you must own the run
+      match /experiments/{experiment} {
+        allow read: if isOwnerOrTeacherOfClass();
+        allow create: if isOwner();
+        allow update: if isOwnerOrTeacherOfClass();
+      }
+
+      // same as /runs/{run} EXCEPT to create you must own the run
+      match /photos/{photo} {
+        allow read: if isOwnerOrTeacherOfClass();
+        allow create: if isOwner();
+        allow update: if isOwnerOrTeacherOfClass();
+      }
   	}
   }
 }

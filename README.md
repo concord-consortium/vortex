@@ -128,7 +128,7 @@ then run `npm run cordova -- prepare ios` and run again in Xcode to see the chan
 
 Run `npm test` to run jest tests. Run `npm run test:full` to run jest and Cypress tests.
 
-##### Cypress Run Options
+#### Cypress Run Options
 
 Inside of your `package.json` file:
 1. `--browser browser-name`: define browser for running tests
@@ -140,11 +140,18 @@ Inside of your `package.json` file:
 7. `--key`: specify your secret record key
 8. `--reporter`: specify a mocha reporter
 
-##### Cypress Run Examples
+#### Cypress Run Examples
 
 1. `cypress run --browser chrome` will run cypress in a chrome browser
 2. `cypress run --headed --no-exit` will open cypress test runner when tests begin to run, and it will remain open when tests are finished running.
 3. `cypress run --spec 'cypress/integration/examples/smoke-test.js'` will point to a smoke-test file rather than running all of the test files for a project.
+
+#### Firebase rules testing
+
+**NOTE**: these tests are **NOT** run on Travis as part of the build.
+
+1. Setup local firebase emulator using instructions on this page: https://firebase.google.com/docs/rules/emulator-setup
+2. Run tests using `firebase emulators:exec --only firestore 'npm run test:firestore-rules'`
 
 ## License
 
