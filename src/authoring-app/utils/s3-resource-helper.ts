@@ -187,8 +187,8 @@ export class S3ResourceHelper {
   }
 
   /**
-   * S3Delete() Removes an S3Resource from
-   *
+   * S3Delete() Removes an S3Resource reference from firestore
+   * NB: For the moment we don't destroy the underlying S3 object.
    * @param {S3Resource} s3Resource
    * @returns true for successful delete.
    * @memberof S3ResourceHelper
@@ -197,22 +197,20 @@ export class S3ResourceHelper {
     const client = await this.getTokenServiceClient();
     await client.getCredentials(s3Resource.id);
     try {
-      // We don't delete the S3 Resource for now…
-      // const s3 = new AWS.S3({region, accessKeyId, secretAccessKey, sessionToken});
-      // const {name, region} = s3Resource;
-      // const {accessKeyId, secretAccessKey, sessionToken} = credentials;
-      // const key = this.client.getPublicS3Path(s3Resource, name);
-      // const result = await s3.deleteObject({
-      //   Bucket: bucket,
-      //   Key: key,
-      //   Body: {},
-      // }).promise();
+      const {bucket, region, name} = s3Resource;
+      const credentials = await client.getCredentials(s3Resource.id);
+      const {accessKeyId, secretAccessKey, sessionToken} = credentials;
+      const s3 = new AWS.S3({region, accessKeyId, secretAccessKey, sessionToken});
+      // TBD: We don't actually get delete permissions from the token service.
+      // If we want to enable that we can in future releases.
+      // await s3.deleteObject({Bucket: bucket, Key: name}).promise();
       client.deleteResource(s3Resource.id);
       return true;
     }
     catch(error) {
       this.error(error);
     }
+    return false;
   }
 
   /**

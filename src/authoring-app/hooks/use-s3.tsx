@@ -16,7 +16,7 @@ export enum S3Status {
   Error = "Error"
 }
 
-// TODO: Maybe use this query hook https://github.com/tannerlinsley/react-query
+//
 export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const [ s3Resource, setS3Resource ] = useState(null as S3Resource|null);
   const [ stagingName, _setStagingName ] = useState("");
