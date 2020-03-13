@@ -3,7 +3,7 @@ import AceEditor from "react-ace";
 import "ace-builds/src-noconflict/mode-json";
 import "ace-builds/src-noconflict/theme-solarized_dark";
 import * as css from "./json-editor.scss";
-import { IErrorNotation } from "../utils/simple-json-lint";
+import { IErrorNotation } from "../hooks/use-validating-editor";
 
 
 interface IProps {

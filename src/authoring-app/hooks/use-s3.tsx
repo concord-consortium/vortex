@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-helper";
 import { S3Resource } from "@concord-consortium/token-service";
-import experiments from "../../data/experiments.json";
+import defaultExperiment from "../data/default-experiment.json";
 
 let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
 
@@ -16,7 +16,7 @@ export enum S3Status {
   Error = "Error"
 }
 
-//
+// A state manager for TokenService / S3 CRUD.
 export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   const [ s3Resource, setS3Resource ] = useState(null as S3Resource|null);
   const [ stagingName, _setStagingName ] = useState("");
@@ -123,7 +123,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
       setStatus(S3Status.LoadPending);
       setS3Resource(newResource);
       try {
-        const json = await helper.loadJSONFromS3(newResource);
+        const json = await helper.loadFromS3(newResource);
         loadCallback(json || "");
       }
       catch(e) {
@@ -136,7 +136,6 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const createCallback = async ( _resource: S3Resource) => {
-    const defaultExperiment= experiments[2];
     const defaultContent = JSON.stringify(defaultExperiment, null, 2);
     const url = await helper.s3Upload({s3Resource: _resource, body: defaultContent});
     setStatus(S3Status.Ready);
@@ -213,7 +212,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
     }
   }
 
-  // If this is our render, list the resources:
+  // If this is our first pass, make a request to list the resources:
   if(status === S3Status.Init) { refreshList(); }
 
   return ({

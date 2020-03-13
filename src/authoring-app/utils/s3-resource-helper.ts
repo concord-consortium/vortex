@@ -266,6 +266,7 @@ export class S3ResourceHelper {
     console.log(msg);
   }
 
+  // Update the Name or Description of the resource.
   async updateMetaData (
     s3Resource: S3Resource,
     newName?: string,
@@ -287,24 +288,25 @@ export class S3ResourceHelper {
       return s3Resource;
   }
 
-  async loadJSONFromS3(s3Resource: S3Resource) {
+  // Pull content from S3
+  async loadFromS3(s3Resource: S3Resource) {
     const client = await this.getTokenServiceClient();
     if (!client || !s3Resource) {
-      this.error("loadJSONFromS3: Missing token service client or s3Resource");
+      this.error("loadFromS3: Missing token service client or s3Resource");
       return;
     }
-    this.update("pending", "loadJSONFromS3: S3 fetch operation");
+    this.update("pending", "loadFromS3: S3 fetch operation");
 
     const s3Url = client.getPublicS3Url(s3Resource, s3Resource.name);
     try {
       const response = await fetch(s3Url as string);
       if (response.status !== 200) {
-        this.error("loadJSONFromS3: Fail fetch3");
+        this.error("loadFromS3: Fail fetch3");
         return;
       }
       return await response.text();
     } catch (error) {
-      this.error(`loadJSONFromS3: ${error}`);
+      this.error(`loadFromS3: ${error}`);
     }
   }
 

@@ -7,7 +7,7 @@ import { ResourceListing } from "./resource-listing";
 import { MobilePreview } from "./mobile-preview";
 import { UseS3, S3Status } from "../hooks/use-s3";
 import { GetS3Config  } from "../utils/getS3Config";
-import { UseValidatingEditor } from"../utils/use-validating-editor";
+import { UseValidatingEditor } from"../hooks/use-validating-editor";
 import { S3Resource } from "@concord-consortium/token-service";
 interface IProps {
   experiment?: IExperiment;
