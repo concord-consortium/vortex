@@ -3,8 +3,8 @@ import { ResourceTool } from "@concord-consortium/token-service";
 import {getURLParam} from "../../shared/utils/get-url-param";
 
 export const PORTAL_URL_PARAM = "portalUrl";
-const devPortalUrl = "app.portal.docker";
 
+const devPortalUrl:string  = process.env.DEV_PORTAL_KEY || "app.portal.docker";
 
 const guessPortalUrl = ():string => {
   const { host } = window.location;

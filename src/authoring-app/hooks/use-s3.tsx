@@ -3,7 +3,7 @@ import { S3ResourceHelper, IS3ResourceHelperOpts} from "../utils/s3-resource-hel
 import { S3Resource } from "@concord-consortium/token-service";
 import defaultExperiment from "../data/default-experiment.json";
 
-let helper:S3ResourceHelper = null as unknown as S3ResourceHelper;
+let helper:S3ResourceHelper | null = null as unknown as S3ResourceHelper;
 
 export enum S3Status {
   Init = "Initializing",
@@ -64,7 +64,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
 
   const refreshList = async () => {
     setStatus(S3Status.ListPending);
-    const _resources = await helper.listResources();
+    const _resources = await helper?.listResources();
     listCallback(_resources as S3Resource[]);
   };
 
@@ -84,11 +84,11 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const saveFn = async (newContent:string, newName:string, newDescription:string) => {
-    setStatus(S3Status.SavePending);
-    if(s3Resource) {
+    if(s3Resource && helper) {
+      setStatus(S3Status.SavePending);
       try {
         const newResource = await helper.updateMetaData(s3Resource, newName, newDescription);
-        const url = await helper.s3Upload({
+        const url = await helper?.s3Upload({
           s3Resource: newResource,
           body: newContent,
           filename: stagingName
@@ -123,7 +123,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
       setStatus(S3Status.LoadPending);
       setS3Resource(newResource);
       try {
-        const json = await helper.loadFromS3(newResource);
+        const json = await helper?.loadFromS3(newResource);
         loadCallback(json || "");
       }
       catch(e) {
@@ -136,6 +136,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const createCallback = async ( _resource: S3Resource) => {
+    if(helper == null ) { return; }
     const defaultContent = JSON.stringify(defaultExperiment, null, 2);
     const url = await helper.s3Upload({s3Resource: _resource, body: defaultContent});
     setStatus(S3Status.Ready);
@@ -158,6 +159,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const createFn = async () => {
+    if(helper == null ) { return; }
     const name = newResourceName();
     const description = " ";
     setStatus(S3Status.CreatePending);
@@ -171,6 +173,7 @@ export const UseS3 = (s3helperOpts: IS3ResourceHelperOpts) => {
   };
 
   const deleteFn = async () => {
+    if(helper == null ) { return; }
     if(s3Resource) {
       setStatus(S3Status.DeletePending);
       const deleted = await helper.s3Delete(s3Resource);

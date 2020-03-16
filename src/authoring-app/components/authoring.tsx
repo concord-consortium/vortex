@@ -17,8 +17,8 @@ export const AuthoringComponent = (props : IProps) => {
   // State related to token service and S3 interactions:
   const {
     stagingDescription, stagingName, setStagingDescription, setStagingName,
-    s3Resource, resources, resourceUrl, resourceObject, resourceContent, status, statusMsg,
-    refreshList, selectFn, deleteFn, createFn, stageContentFn, setResourceContent, saveFn, dirty
+    s3Resource, resources, resourceUrl, resourceObject, resourceContent, status,
+    setStatusMsg, statusMsg, refreshList, selectFn, deleteFn, createFn, stageContentFn, setResourceContent, saveFn, dirty
   } = UseS3(GetS3Config());
 
   // State related to the the editor & validation:
@@ -42,6 +42,7 @@ export const AuthoringComponent = (props : IProps) => {
     catch(e) {
       // tslint:disable-next-line
       console.error(e);
+      setStatusMsg(e);
     }
   }
 
@@ -53,6 +54,7 @@ export const AuthoringComponent = (props : IProps) => {
       } catch (e) {
         // tslint:disable-next-line
         console.error(e);
+        setStatusMsg(e);
       }
     }
   };
@@ -92,8 +94,8 @@ export const AuthoringComponent = (props : IProps) => {
   // Invoked when a user clicks on "new"
   const create = async () => {
     const warningMessage = `
-    You will loose changes to ${stagingName} if create a new resource now.
-    Click cancel to avoid loosing your work.
+    You will lose changes to ${stagingName} if you create a new resource now.
+    Click cancel to avoid losing your work.
     `;
     confirmDirtyAction(warningMessage, () => createFn());
   };
@@ -111,7 +113,7 @@ export const AuthoringComponent = (props : IProps) => {
     const _name = e.currentTarget.value;
     const {metadata} = resourceObject;
     setStagingName(_name);
-    if(metadata && metadata) {
+    if(metadata) {
       metadata.name = _name;
       if (s3Resource && s3Resource.id) {
         metadata.uuid = s3Resource.id;

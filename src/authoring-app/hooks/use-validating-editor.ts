@@ -48,7 +48,7 @@ class JSonParseError extends Error {
 */
 const lintJson = (json: string) => {
 	try {
-		JSON.parse(json);
+    JSON.parse(json);
   } catch (e) {
     const error = new JSonParseError(e, json);
     return [error.errorRecord];
@@ -91,7 +91,7 @@ export const UseValidatingEditor = (
 
     const [originalValue, setOriginalValue] = useState(initialValue);
     const [editorValue, setEditorValue] = useState(initialValue);
-    const [errors, setErrors] = useState([] as IErrorNotation[]);
+    const [errors, setErrors] = useState<IErrorNotation[]>([]);
 
     const updateEditorValue = (newValue: string) => {
       setEditorValue(newValue);
