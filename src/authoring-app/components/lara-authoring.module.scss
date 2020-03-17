@@ -3,8 +3,11 @@
 }
 
 .header {
-  margin: 10px 0;
-  font-weight: bold
+  margin: 10px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
 }
 
 .note {
@@ -13,10 +16,17 @@
 }
 
 .selectedName {
-  color: hsl(34, 100%, 40%);
+  color:white;
+  background-color: hsl(34, 100%, 69%);
   font-weight: bold;
-  font-size: 14pt;
+  padding: 0.2em;
+  border-radius: 0.1em;
+  font-size: 16pt;
 };
+.selectedLabel {
+  font-size: 9pt;
+  margin-left: 1em;
+}
 
 .invalidExperiment {
   color: hsl(0, 100%, 30%);

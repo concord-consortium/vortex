@@ -57,6 +57,7 @@ export const LaraAuthoringComponent = (props : IProps) => {
         return(
           <div className={css.selectedName}>
             {resourceObject?.metadata?.name}
+            <span className={css.selectedLabel}>(selected)</span>
           </div>
         );
       }
@@ -76,7 +77,10 @@ export const LaraAuthoringComponent = (props : IProps) => {
   return (
     <div className={css.authoring}>
       <RenderSelected />
-      <div className={css.header}>Choose Experiment</div>
+      <div className={css.header}>
+        <span>Choose Experiment</span>
+        <span><a href="../authoring-app/index.html" target="_blank">Edit experiments ↗</a></span>
+      </div>
         <ResourceListing
           disabled={disabled}
           resources={resources}
