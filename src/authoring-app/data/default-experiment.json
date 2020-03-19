@@ -1,0 +1,69 @@
+{
+  "version": "1.0.0",
+  "metadata": {
+    "uuid": "jdpmrc1YKPH3Xq43uXaQ",
+    "name": "Untitled Experiment",
+    "initials": "UX"
+  },
+  "schema": {
+    "titleField": "label",
+    "sections": [
+      {
+        "title": "Label",
+        "icon": "assignment",
+        "formFields": [
+          "studySite",
+          "label",
+          "groupMembers"
+        ],
+        "components": [
+          "metadata"
+        ]
+      }
+    ],
+    "dataSchema": {
+      "type": "object",
+      "required": [
+        "studySite",
+        "label"
+      ],
+      "properties": {
+        "studySite": {
+          "title": "Study Site",
+          "type": "string",
+          "enum": [
+            "Study Site #1",
+            "Study Site #2"
+          ],
+          "enumNames": [
+            "Study Site #1",
+            "Study Site #2"
+          ]
+        },
+        "label": {
+          "title": "Label",
+          "type": "string"
+        },
+        "groupMembers": {
+          "title": "Group Members",
+          "type": "string"
+        }
+      }
+    },
+    "formUiSchema": {
+      "studySite": {
+        "ui:icon": "assignment",
+        "ui:placeholder": "Study Site"
+      },
+      "label": {
+        "ui:icon": "label",
+        "ui:placeholder": "My Experiment 1"
+      },
+      "groupMembers": {
+        "ui:icon": "group",
+        "ui:placeholder": "Group Team Members"
+      }
+    }
+  },
+  "data": {}
+}

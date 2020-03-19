@@ -1,0 +1,28 @@
+.button {
+  display: inline-block;
+  margin-top: 5px;
+  background:  hsl(34, 70%, 69%);
+  border-radius: 6px;
+  padding: 5px;
+  cursor: pointer;
+  .icon {
+    margin-right: 5px;
+  }
+  .label {
+    display: inline-block;
+    vertical-align: middle;
+  }
+  &:hover {
+    background: hsl(34, 100%, 69%);
+  }
+
+  & + & {
+    margin-left: 20px;
+  }
+
+  &.disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.3;
+  }
+}

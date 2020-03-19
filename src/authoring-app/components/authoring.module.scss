@@ -1,0 +1,90 @@
+
+.status {
+  background-color: black;
+  color: white;
+  font-family: monospace;
+  font-size: 12pt;
+  padding: 0.25em;
+  position: fixed;
+  top: 0px;
+  left: 0px;
+  right: 0px;
+  &.error {
+    color: red;
+  }
+}
+
+.twoEditorContainer {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: stretch;
+  >div {
+    margin-right: 1em;
+  }
+}
+.editorAndPreview {
+  display: flex;
+  flex-direction: row;
+  justify-content: stretch;
+  align-items: stretch;
+  >div {
+    margin-right: 1em;
+  }
+}
+
+.metaFields{
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  .formField {
+    display: flex;
+    flex-direction: column;
+    margin: 0.5em;
+    label {
+      font-size: 10pt;
+      margin-bottom: 0px;
+      color: hsl(191, 89%, 32%);
+    }
+    input {
+      font-size: 14pt;
+      margin-top: 0px;
+    }
+  }
+  .links {
+    align-self: flex-end;
+    justify-self: flex-end;
+    margin: 1em;
+    font-size: 0.8em;
+  }
+}
+
+.selectedName {
+  font-size: 14pt;
+  input {
+    font-size: 14pt;
+  }
+  .url {
+    font-size: 10pt;
+    font-family: monospace;
+  }
+}
+
+.buttons {
+  display: flex;
+  flex-direction: row;
+  background-color: hsl(0,10%,90%);
+  padding: 0.25em;
+  justify-content: space-between;
+  .button {
+    color: white;
+    margin: 0px;
+    border-radius: 0.2em;
+    padding: 0.5em;
+    background-color: hsl(0,10%,75%);
+    box-shadow:  2px 2px 5px  hsl(0,10%,65%);
+    &:hover {
+      background-color: hsl(0,10%,65%);
+    }
+  }
+}

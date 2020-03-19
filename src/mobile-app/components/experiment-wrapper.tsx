@@ -11,6 +11,7 @@ interface IProps {
   experiment: IExperiment;
   experimentIdx: number;
   data: IExperimentData;
+  embeddedPreview?: boolean;
   onDataChange: (data: IExperimentData) => void;
   onBackBtnClick: () => void;
   onUpload: () => void;
@@ -25,9 +26,10 @@ const experimentConfig: IExperimentConfig = {
   showCameraButton: true
 };
 
-export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload }) => {
+export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload, embeddedPreview}) => {
   const { metadata } = experiment;
   const { initials } = metadata;
+  const workSpaceClass = embeddedPreview ? `${css.workspace} ${css.embeddedPreview}`: css.workspace;
 
   const handleSave = () => {
     // blur the active input element if focused
@@ -54,7 +56,7 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
           </MenuComponent>
         </div>
       </div>
-      <div className={css.workspace}>
+      <div className={workSpaceClass}>
         <Experiment experiment={experiment} config={experimentConfig} data={data} onDataChange={onDataChange} />
       </div>
     </div>

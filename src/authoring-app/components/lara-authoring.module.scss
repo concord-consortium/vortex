@@ -1,0 +1,36 @@
+.authoring {
+  margin-top: 10em;
+}
+
+.header {
+  margin: 10px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.note {
+  margin: 10px 0;
+  font-style: italic;
+}
+
+.selectedName {
+  color:white;
+  background-color: hsl(34, 100%, 69%);
+  font-weight: bold;
+  padding: 0.2em;
+  border-radius: 0.1em;
+  font-size: 16pt;
+};
+.selectedLabel {
+  font-size: 9pt;
+  margin-left: 1em;
+}
+
+.invalidExperiment {
+  color: hsl(0, 100%, 30%);
+  font-weight: bold;
+  font-style: italic;
+  font-size: 12pt;
+};
