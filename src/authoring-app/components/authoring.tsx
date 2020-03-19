@@ -194,7 +194,7 @@ export const AuthoringComponent = (props : IProps) => {
 
                 <div className={css.links}>
                   <span className={css.exampleLink}>
-                    <a href="/shared/index.html?mockSensor" target="_blank">
+                    <a href="http://models-resources.concord.org/vortex/branch/manual-entry/shared/index.html?mockSensor" target="_blank">
                       Example Templates <span>&#8599;</span>
                     </a>
                   </span>
