@@ -1,6 +1,7 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import * as jwt from "jsonwebtoken";
+import { Base64 } from "js-base64";
 
 import { IExperiment } from "../../shared/experiment-types";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
@@ -11,11 +12,13 @@ import * as iframePhone from "iframe-phone";
 const experiments = require("../../data/experiments.json") as Experiments;
 
 // NOTE: this is only a partial description of the returned data, containing only the fields we are interested in
+type InitInteractiveMode = "authoring" | "runtime" | "report";
 export interface IInitInteractiveData {
-  mode: "authoring" | "runtime";
+  mode: InitInteractiveMode;
   authoredState: IAuthoredState | null;
   classInfoUrl: string;
   interactiveStateUrl: string;
+  interactiveState: string;
   interactive: {
     id: number
   };
@@ -37,6 +40,15 @@ export interface IFirebaseJWT {
   };
 }
 
+interface IInteractiveStateJSON {
+  runKey: string;
+  experimentId: string;
+}
+
+const findExperiment = (experimentId?: string) => {
+  return experiments.find(_experiment => _experiment.metadata.uuid === experimentId);
+};
+
 export const useInteractiveApi = (options: {setError: (error: any) => void}) => {
   const { setError } = options;
   const [phone, setPhone] = useState<any>();
@@ -44,6 +56,11 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   const [initInteractiveData, setInitInteractiveData] = useState<IInitInteractiveData | undefined>(undefined);
   const [experiment, setExperiment] = useState<IExperiment|undefined>();
   const [firebaseJWT, setFirebaseJWT] = useState<IFirebaseJWT|undefined>();
+
+  // use ref for runKey and experimentId values as they are used in iframe phone callback
+  // and the current state value is not available in that closure
+  const runKey = useRef<string|undefined>();
+  const experimentId = useRef<string|undefined>();
 
   useEffect(() => {
     if (inIframe()) {
@@ -55,14 +72,28 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
         setConnectedToLara(true);
 
         if (data.authoredState && (data.authoredState.version === "1.0")) {
-          const { experimentId } = data.authoredState;
-          setExperiment(experiments.find(_experiment => _experiment.metadata.uuid === experimentId));
+          experimentId.current = data.authoredState.experimentId;
+          setExperiment(findExperiment(data.authoredState.experimentId));
+        }
+
+        if (data.interactiveStateUrl) {
+          // runtime mode
+          runKey.current = Base64.encode(data.interactiveStateUrl);
+        } else if (data.interactiveState) {
+          // report mode
+          try {
+            const json = JSON.parse(data.interactiveState) as IInteractiveStateJSON | undefined;
+            runKey.current = json?.runKey;
+            experimentId.current = json?.experimentId;
+            setExperiment(findExperiment(experimentId.current));
+            // tslint:disable-next-line:no-empty
+          } catch (e) {}
         }
 
         setInitInteractiveData(data);
 
-        // connect to Firebase only if the interactive is being run
-        if (data.interactiveStateUrl) {
+        // connect to Firebase only if the interactive is being run or reported on
+        if (runKey.current) {
           _phone.addListener("firebaseJWT", (result: any) => {
             if (result.response_type === "ERROR") {
               setError(`Unable to get Firebase JWT: ${result.message}`);
@@ -98,17 +129,24 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
         }
       });
 
+      _phone.addListener('getInteractiveState', () => {
+        _phone.post('interactiveState', {
+          runKey: runKey.current,
+          experimentId: experimentId.current
+        } as IInteractiveStateJSON);
+      });
+
       _phone.initialize();
 
       _phone.post("supportedFeatures", {
         apiVersion: 1,
         features: {
-          interactiveState: false,
+          interactiveState: true,
           authoredState: true
         }
       });
     }
   }, []);
 
-  return {connectedToLara, initInteractiveData, experiment, firebaseJWT, phone};
+  return {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey: runKey.current, phone};
 };

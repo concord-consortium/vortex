@@ -1,6 +1,5 @@
 import React from "react";
 import { useState } from "react";
-import { Base64 } from "js-base64";
 import "firebase/firestore";
 import "firebase/auth";
 
@@ -19,7 +18,7 @@ interface IProps {
 
 export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
   const [error, setError] = useState<any>();
-  const {connectedToLara, initInteractiveData, experiment, firebaseJWT, phone} = useInteractiveApi({setError});
+  const {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey, phone} = useInteractiveApi({setError});
 
   const renderInIframe = () => {
     if (error) {
@@ -38,7 +37,7 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         phone={phone} />;
     }
 
-    if (!initInteractiveData.interactiveStateUrl) {
+    if (!runKey) {
       setError("No preview available ...");
       return;
     }
@@ -55,10 +54,11 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
     return (
       <RuntimeComponent
         experiment={experiment}
-        runKey={Base64.encode(initInteractiveData.interactiveStateUrl)}
+        runKey={runKey}
         firebaseJWT={firebaseJWT}
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
+        reportMode={initInteractiveData.mode === "report"}
       />
     );
   };
