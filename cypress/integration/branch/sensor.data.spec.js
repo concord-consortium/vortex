@@ -1,5 +1,5 @@
 import ExperimentSetup from "../../supports/elements/ExperimentSetup"
-import SensorData from "../../supports/elements/SensorData";
+import SensorData from "../../supports/elements/CollectTab";
 
 context("Testing Experiment Selection View", () => {
 
@@ -34,15 +34,18 @@ context("Testing Experiment Selection View", () => {
         it("verifies Collect tab is now highlighted", () => {
             sensorData.getTab('Collect').should('be.visible').click()
         })
+
         it("verifies experiment label is in header", () => {
             sensorData.getHeaderContent().should('contain', testLabel1A)
         })
+
         it("verifies no sensor is connected", () => {
             sensorData.getRecordButton().should('exist').and('be.visible')
             sensorData.getSensorConnectionStatus().contains('No Sensor Connected')
             sensorData.getDisconnectSensorStateIcon().should('exist')
             sensorData.getRecordButton().should('exist').and('be.visible')
         })
+
         it('verify no data being read', () => {
             sensorData.getDisconnectedSensorValue('Temperature').should('contain', '--')
             // Not able to get a second sensor value, 1 is enough for now
@@ -50,6 +53,7 @@ context("Testing Experiment Selection View", () => {
             // sensorData.getDisconnectedSensorValue('Relative Humidity').should('contain','--')
             // sensorData.getDisconnectedSensorValue('Light').should('contain','--')
         })
+
         it("verifies no data in data table", () => {
             const rows = 4;
             for (let i = 0; i < rows; i++) {
@@ -62,6 +66,7 @@ context("Testing Experiment Selection View", () => {
                 cy.get('input').should('be.empty')
             })
         })
+        
         it("verifies data collect button disabled when not connected to sensor", () => {
             sensorData.assertRecordButtonStatus('disabled')
         })
@@ -75,6 +80,7 @@ context("Testing Experiment Selection View", () => {
             sensorData.selectMenuOption('Connect')
             cy.wait(2000)
         })
+
         it("returning to experiments list should disconnect from sensor", () => {
             sensorData.getBackButton().click()
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
@@ -84,6 +90,7 @@ context("Testing Experiment Selection View", () => {
             sensorData.selectMenuOption('Connect')
             cy.wait(2000)
         })
+
         it("verifies enabled sensor connection UI", () => {
             sensorData.assertRecordButtonStatus('enabled')
             sensorData.getSensorConnectionStatus().contains(sensorLabels.mockSensorLabel)
@@ -93,6 +100,7 @@ context("Testing Experiment Selection View", () => {
             // sensorData.ConnectedSensorValue('Relative Humidity').should('not.contain','--')
             // sensorData.getConnectedSensorValue('Light').should('not.contain','--')
         })
+
         it("disconnects from mock sensor and verify UI", () => {
             sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Disconnect')
@@ -101,6 +109,7 @@ context("Testing Experiment Selection View", () => {
             sensorData.getDisconnectSensorStateIcon().should('exist')
             sensorData.getDisconnectedSensorValue('Temperature').should('contain', '--')
         })
+        
         it("collects data from (mock) sensor", () => {
             sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Connect')

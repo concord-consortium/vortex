@@ -1,4 +1,4 @@
-class SensorData {
+class CollectTab {
 
     // Header
 
@@ -83,4 +83,4 @@ class SensorData {
         }
     }
 
-} export default SensorData;
+} export default CollectTab;
