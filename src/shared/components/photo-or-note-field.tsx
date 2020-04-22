@@ -8,6 +8,7 @@ import { MenuComponent, MenuItemComponent } from "./menu";
 import { Camera } from "../../mobile-app/components/camera";
 import { alert } from "../utils/dialogs";
 import { IVortexFormContext } from "./form";
+import { getExperimentPhoto } from "../api";
 
 import css from "./photo-or-note-field.module.scss";
 
@@ -67,25 +68,9 @@ export const Image: React.FC<IImageProps> = ({src, height, width, marginLeft}) =
 
   useEffect(() => {
     if (isPhotoUrl) {
-      const fetchOptions: RequestInit = {
-        method: "GET",
-        mode: "cors",
-        cache: "no-cache",
-        headers: {
-          "Content-Type": "application/json"
-          // TODO: add jwt to request header once we setup React context to know we are in Lara
-        }
-      };
-      const url = `https://us-central1-vortex-e5d5d.cloudfunctions.net/getExperimentPhoto?src=${encodeURIComponent(src)}`;
-      fetch(url, fetchOptions)
-        .then(resp => resp.json())
-        .then(json => {
-          if (json.success) {
-            setResolvedSrc(json.result);
-          } else {
-            alert(json.result);
-          }
-        });
+      getExperimentPhoto(src)
+        .then(resolved => setResolvedSrc(resolved))
+        .catch(err => alert(err));
     }
   }, []);
 

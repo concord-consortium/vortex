@@ -52,6 +52,13 @@ $dialogMargin: 10px;
   font-size: 18px;
   font-weight: bold;
   color: $textBlack;
+  .okClose {
+    float: right;
+    font-size: 14px;
+    font-weight: bold;
+    text-transform: uppercase;
+    color: $ccTealDark2;
+  }
 }
 .initials{
   margin: 2px;
@@ -65,7 +72,7 @@ $dialogMargin: 10px;
 }
 
 .instructions {
-  margin: 20px;
+  margin: 10px 20px;
   font-size: 15px;
   line-height: 18px;
   color: $textBlack;
@@ -76,26 +83,10 @@ ol{
     padding: 5px;
   }
 }
-.resultText {
-  position: relative;
-  margin: 20px;
-  line-height: 1.2em;
-  text-align: center;
-  .okClose {
-    position: absolute;
-    top: 0px;
-    right: 0px;
-    text-align: right;
-    font-size: 14px;
-    font-weight: bold;
-    text-transform: uppercase;
-    color: $ccTealDark2;
-  }
-}
 
 .scanner {
   position: absolute;
-  margin: 20px 0px 0px 0px;
+  margin: 0;
   bottom: 0px;
   top: 250px;
   left: 0px;
@@ -117,5 +108,29 @@ ol{
   .camera{
     width: 100%;
     height: 100%;
+  }
+}
+
+.modePicker {
+  .modeChoice {
+    margin: 10px 20px;
+    display: inline-block;
+  }
+}
+
+.codeEntry {
+  margin: 20px;
+
+  input {
+    margin-right: 20px;
+    padding: 10px 20px;
+    font-size: 2em;
+    width: 100%;
+  }
+
+  button {
+    display: block;
+    margin-top: 10px;
+    width: 100%;
   }
 }
