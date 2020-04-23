@@ -70,7 +70,6 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
           {editing &&
             <div className={css.editing}>
               <input defaultValue={`${metadata.name}`} onChange={saveExperimentName} onBlur={handleRename} onKeyDown={handleEnter}/>
-              <div className={css.stopEditing} onClick={handleRename}>&#10003;</div>
             </div>
           }
           {!editing &&
