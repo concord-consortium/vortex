@@ -59,8 +59,8 @@ class ExperimentSetup {
 
     // App Header
 
-    getHeaderExperimentLabel(label) {
-        return cy.get('.experiment-wrapper-module-headerTitle-vortex').contains(label)
+    getSubheader(subheader) {
+        return cy.get('.experiment-wrapper-module-headerTitle-vortex').contains(subheader)
     }
 
 }
