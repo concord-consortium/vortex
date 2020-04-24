@@ -7,7 +7,7 @@
       "initials": "SI"
     },
     "schema": {
-      "titleField": "label",
+      "titleField": "studySite",
       "sections": [
         {
           "title": "Label",
@@ -40,7 +40,6 @@
         "type": "object",
         "required": [
           "studySite",
-          "label"
         ],
         "properties": {
           "studySite": {
@@ -54,10 +53,6 @@
               "Study Site #1",
               "Study Site #2"
             ]
-          },
-          "label": {
-            "title": "Label",
-            "type": "string"
           },
           "groupMembers": {
             "title": "Group Members",
@@ -80,19 +75,19 @@
                   "title": "Temperature (\u00B0C)",
                   "type": "number"
                 },
-                "illuminance": {
-                  "title": "Illuminance (lux)",
-                  "type": "number"
-                },
                 "humidity": {
                   "title": "Humidity (%)",
+                  "type": "number"
+                },
+                 "illuminance": {
+                  "title": "Illuminance (lux)",
                   "type": "number"
                 }
               }
             }
           },
           "photo": {
-            "title": "Photos and Notes",
+            "title": "Photos",
             "type": "array",
             "items": {
               "type": "object",
@@ -122,10 +117,6 @@
         "studySite": {
           "ui:icon": "assignment",
           "ui:placeholder": "Study Site"
-        },
-        "label": {
-          "ui:icon": "label",
-          "ui:placeholder": "My Experiment 1"
         },
         "groupMembers": {
           "ui:icon": "group",
