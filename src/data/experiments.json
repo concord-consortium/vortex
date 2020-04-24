@@ -39,7 +39,7 @@
       "dataSchema": {
         "type": "object",
         "required": [
-          "studySite",
+          "studySite"
         ],
         "properties": {
           "studySite": {
@@ -53,6 +53,10 @@
               "Study Site #1",
               "Study Site #2"
             ]
+          },
+          "label": {
+            "title": "Label",
+            "type": "string"
           },
           "groupMembers": {
             "title": "Group Members",
@@ -117,6 +121,10 @@
         "studySite": {
           "ui:icon": "assignment",
           "ui:placeholder": "Study Site"
+        },
+        "label": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Experiment 1"
         },
         "groupMembers": {
           "ui:icon": "group",
