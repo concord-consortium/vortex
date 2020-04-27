@@ -53,13 +53,17 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
   const saveExperimentName = (el: any) => {
     const newName = el.currentTarget.value;
     if (newName) {
-      experiment.metadata.name = newName;
+      data.customName = newName;
     }
   };
 
   let title = null;
   if (experiment.schema.titleField) {
     title = data[experiment.schema.titleField];
+  }
+  let name = metadata.name + ` #${experimentIdx}`;
+  if (data.customName) {
+    name = data.customName;
   }
   return (
     <div>
@@ -69,11 +73,11 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
         <div className={css.headerTitle}>
           {editing &&
             <div className={css.editing}>
-              <input defaultValue={`${metadata.name}`} onChange={saveExperimentName} onBlur={handleRename} onKeyDown={handleEnter}/>
+              <input defaultValue={`${name}`} onChange={saveExperimentName} onBlur={handleRename} onKeyDown={handleEnter}/>
             </div>
           }
           {!editing &&
-            <div><span onClick={handleRename}>{`${metadata.name} #${experimentIdx}`}</span></div>
+            <div><span onClick={handleRename}>{name}</span></div>
           }
           <div>{title}</div>
         </div>
