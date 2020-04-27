@@ -16,12 +16,13 @@ context("Testing Experiment Selection View", () => {
 
     let testLabel1A = "WATERS Label Testing"
     let testGroupMembers = "Ed, Edd, and Eddy"
+    let studySite1 = "Study Site #1"
 
     before(() => {
         cy.visit(url);
         cy.viewport(414, 896)
         experimentSetup.openNewExperiment('Schoolyard Investigation')
-        experimentSetup.getLabelTextBox().type(testLabel1A)
+        experimentSetup.getStudySiteDropDown().select(studySite1)
         experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
     });
 
@@ -35,7 +36,7 @@ context("Testing Experiment Selection View", () => {
             sensorData.getTab('Collect').should('be.visible').click()
         })
         it("verifies experiment label is in header", () => {
-            sensorData.getHeaderContent().should('contain', testLabel1A)
+            sensorData.getHeaderContent().should('contain', studySite1)
         })
         it("verifies no sensor is connected", () => {
             sensorData.getRecordButton().should('exist').and('be.visible')
@@ -104,7 +105,7 @@ context("Testing Experiment Selection View", () => {
         it("collects data from (mock) sensor", () => {
             sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Connect')
-            
+
             for (let i = 0; i <= 5; i++) {
                 sensorData.getDataRow(i).within(() => {
                     sensorData.getRecordButton().dblclick()

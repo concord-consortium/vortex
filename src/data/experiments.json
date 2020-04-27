@@ -7,7 +7,7 @@
       "initials": "SI"
     },
     "schema": {
-      "titleField": "label",
+      "titleField": "studySite",
       "sections": [
         {
           "title": "Label",
@@ -39,8 +39,7 @@
       "dataSchema": {
         "type": "object",
         "required": [
-          "studySite",
-          "label"
+          "studySite"
         ],
         "properties": {
           "studySite": {
@@ -80,19 +79,19 @@
                   "title": "Temperature (\u00B0C)",
                   "type": "number"
                 },
-                "illuminance": {
-                  "title": "Illuminance (lux)",
-                  "type": "number"
-                },
                 "humidity": {
                   "title": "Humidity (%)",
+                  "type": "number"
+                },
+                 "illuminance": {
+                  "title": "Illuminance (lux)",
                   "type": "number"
                 }
               }
             }
           },
           "photo": {
-            "title": "Photos and Notes",
+            "title": "Photos",
             "type": "array",
             "items": {
               "type": "object",

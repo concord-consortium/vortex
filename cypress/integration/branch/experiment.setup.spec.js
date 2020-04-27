@@ -11,6 +11,8 @@ context("Testing Experiment Selection View", () => {
     let testLabel2 = "WATERS Label Testing 3"
     let testGroupMembers = "Ed, Edd, and Eddy"
     let testDay = "Tue"
+    let studySite1 = "Study Site #1"
+    let studySite2 = "Study Site #2"
 
     before(() => {
         cy.visit(url);
@@ -41,11 +43,12 @@ context("Testing Experiment Selection View", () => {
         it("edit experiment and verify changes", () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             experimentSetup.getLabelTextBox().type(testLabel1A)
+            experimentSetup.getStudySiteDropDown().select(studySite1)
             experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
-            experimentSetup.getHeaderExperimentLabel(testLabel1A)
+            experimentSetup.getSubheader(studySite1)
             experimentSetup.getBackButton().click()
             experimentSetup.expandAllExperimentLabels()
-            experimentSetup.getExperimentLabel(testLabel1A).should('exist')
+            experimentSetup.getExperimentLabel(studySite1).should('exist')
         })
         it('verifies label changes/removal from experiement', () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
@@ -55,9 +58,18 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             experimentSetup.getLabelTextBox().type(testLabel1B)
             experimentSetup.getBackButton().click()
-            experimentSetup.expandAllExperimentLabels()
-            experimentSetup.getExperimentLabel(testLabel1B).should('be.visible')
+            experimentSetup.getExperimentLabel(testLabel1B).should('not.exist')
         })
+        it('verifies study site changes from experiement', () => {
+          experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
+          experimentSetup.getStudySiteDropDown().select(studySite1)
+          experimentSetup.getBackButton().click()
+          experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
+          experimentSetup.getStudySiteDropDown().select(studySite2)
+          experimentSetup.getBackButton().click()
+          experimentSetup.expandAllExperimentLabels()
+          experimentSetup.getExperimentLabel(studySite2).should('be.visible')
+      })
         it("delete Schooylard Investigation", () => {
             experimentSetup.deleteExperiment()
         })
@@ -77,7 +89,7 @@ context("Testing Experiment Selection View", () => {
             experimentSetup.getExperiment('Stream Study', 1).click()
             experimentSetup.getLabelTextBox().type(testLabel2)
             experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
-            experimentSetup.getHeaderExperimentLabel(testLabel2)
+            experimentSetup.getSubheader(testLabel2)
             experimentSetup.getBackButton().click()
             experimentSetup.expandAllExperimentLabels()
             experimentSetup.getExperimentLabel(testLabel2).should('be.visible')
