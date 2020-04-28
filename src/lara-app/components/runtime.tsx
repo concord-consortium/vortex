@@ -6,6 +6,7 @@ import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/ex
 import { IFirebaseJWT } from "../hooks/interactive-api";
 import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
+import { CODE_LENGTH } from "../../mobile-app/components/uploader";
 
 const QRCode = require("qrcode-svg");
 
@@ -40,6 +41,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [displayQr, setDisplayQr] = useState(false);
   const experimentRef = useRef<IRun|undefined>();
   const lastCodeGenTime = useRef<number|undefined>();
+  const displayingCode = useRef(false);
 
   const generateQRCode = () => {
     return createCodeForExperimentRun(runKey, firebaseJWT.claims).then(code => {
@@ -71,6 +73,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     } else {
       setDisplayQr(false);
     }
+    displayingCode.current = value;
   };
 
   // get experiment data when loaded
@@ -87,9 +90,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
         setExperimentData(newData);
 
         // if there is no data force an upload
-        if ((newData === undefined) && !reportMode) {
-          setDisplayQrAndMaybeRegenerateQR(true);
-        }
+        setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportMode);
       }, (err) => {
         setError(err);
       });
@@ -98,7 +99,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   // re-generate QR code if showing
   useEffect(() => {
     const interval = setInterval(() => {
-      if (displayQr && !reportMode) {
+      if (displayingCode.current && !reportMode) {
         generateQRCode();
       }
     }, UPDATE_QR_INTERVAL);
@@ -108,6 +109,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const handleUploadAgain = () => {
     setExperimentData(undefined);
     setDisplayQrAndMaybeRegenerateQR(true);
+    displayingCode.current = true;
   };
 
   const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
@@ -167,9 +169,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
                   <li>Tap the <b>UPLOAD</b> button on your experiment and follow the directions to upload your experiment from your device.</li>
                 </ol>
               </div>
-              {numericCode.length > 0 ? <div className={css.numericCode}>Code: {numericCode}</div> : undefined}
+              {numericCode.length > 0 ? <div className={css.numericCode}>{CODE_LENGTH} Digit Code: {numericCode}</div> : undefined}
               <div className={css.qrcode}>
-                {qrCode.length > 0 ? <div dangerouslySetInnerHTML={{ __html: qrCode }} /> : <div className={css.generatingCode}>Generating QR code...</div>}
+                {qrCode.length > 0 ? <div dangerouslySetInnerHTML={{ __html: qrCode }} /> : <div className={css.generatingCode}>Generating codes...</div>}
               </div>
             <div className={css.footer}><div className={css.closeDialog} onClick={toggleDisplayQr}>Cancel</div></div>
             </div>

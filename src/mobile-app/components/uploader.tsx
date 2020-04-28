@@ -9,8 +9,9 @@ import { getSaveExperimentRunUrlForCode } from "../../shared/api";
 import { IQRCodeContent } from "../../lara-app/components/runtime";
 
 import css from "./uploader.module.scss";
+import { Icon } from "../../shared/components/icon";
 
-const CODE_LENGTH = 6;
+export const CODE_LENGTH = 6;
 
 export enum UploadState {
   Scanning,
@@ -178,14 +179,17 @@ export const Uploader = (props: IProps) => {
     };
     return (
       <div className={css.codeEntry}>
-        <input type="number" value={code} onChange={handleChange} placeholder={`${CODE_LENGTH} digit code ...`}/>
-        <button disabled={!isValidCode()} onClick={handleUpload}>Upload Experiment</button>
+        <input type="number" value={code} onChange={handleChange} placeholder={`Enter ${CODE_LENGTH} digit code here`}/>
+        <div className={css.uploadButton} onClick={handleUpload}>
+          <div className={css.icon}><Icon name="upload" /></div>
+          <div className={css.text}>Upload Experiment</div>
+        </div>
       </div>
     );
   };
 
   const renderDataEntry = () => {
-    const handleClick = (callback: () => void) => (e: React.MouseEvent<HTMLButtonElement>) => {
+    const handleClick = (callback: () => void) => (e: React.MouseEvent<HTMLDivElement>) => {
       e.preventDefault();
       e.stopPropagation();
       callback();
@@ -194,32 +198,36 @@ export const Uploader = (props: IProps) => {
     const handleTryAgain = handleClick(() => {
       changeState(uploaderMode === UploaderMode.EnterCode ? UploadState.EnteringCode : UploadState.Scanning);
     });
-    const button = (label: string) => <button onClick={handleTryAgain} style={{marginTop: 10}}>{label}</button>;
 
     switch (uploadState) {
       case UploadState.EnteringCode:
         return renderCodeEntry();
 
       case UploadState.RetrievingUrl:
-        return <div>Checking code ...</div>;
+        return <div className={css.uploadInfo}>Checking code ...</div>;
 
       case UploadState.Scanning:
         return <Scanner onScanned={handleUploadExperiment} />;
 
       case UploadState.Uploading:
-        return <div>Uploading experiment ...</div>;
+        return <div className={css.uploadInfo}>Uploading experiment ...</div>;
 
       case UploadState.UploadFailed:
         return (
-          <>
-            <div className="error">Upload failed!</div>
+          <div className={css.uploadInfo}>
+            <div className={css.error}>Upload failed!</div>
             <div>{uploadError ? uploadError.toString() : "No error info available!"}</div>
-            {button("Try again...")}
-          </>
+            <div className={css.infoButton} onClick={handleTryAgain}>Try Again</div>
+          </div>
         );
 
       case UploadState.Uploaded:
-        return <div>Your experiment has been uploaded</div>;
+        return (
+          <div className={css.uploadInfo}>
+            <div>Upload successful!</div>
+            <div className={css.infoButton} onClick={props.onClose}>OK</div>
+          </div>
+        );
     }
   };
 
@@ -229,7 +237,7 @@ export const Uploader = (props: IProps) => {
         <ol>
           <li>In the activity, click the Import button.</li>
           <li>Point your camera at the QR code.</li>
-          <li>Tap the picture when the QR code is lined up within the green guides.</li>
+          <li><strong>Tap the picture</strong> when the QR code is lined up within the green guides.</li>
         </ol>
       </div>
       <div className={css.scanner}>
@@ -252,6 +260,10 @@ export const Uploader = (props: IProps) => {
     </>;
   };
 
+  const modeChoiceClassName = (mode: UploaderMode) => {
+    return `${css.modeChoice} ${mode === uploaderMode ? css.activeModeChoice : ""}`;
+  };
+
   return (
     <div className={css.uploader}>
       <div className={css.background} />
@@ -270,8 +282,8 @@ export const Uploader = (props: IProps) => {
             </div>
           </div>
           <div className={css.modePicker}>
-            <div className={css.modeChoice} onClick={handleSelectEnterCodeMode}>{`Enter ${CODE_LENGTH} Digit Code`}</div>
-            <div className={css.modeChoice} onClick={handleSelectScanQRMode}>Scan QR Code</div>
+            <div className={modeChoiceClassName(UploaderMode.EnterCode)} onClick={handleSelectEnterCodeMode}>{`Enter ${CODE_LENGTH} Digit Code`}</div>
+            <div className={modeChoiceClassName(UploaderMode.ScanQR)} onClick={handleSelectScanQRMode}>Or Scan QR Code</div>
           </div>
           {uploaderMode === UploaderMode.ScanQR ? renderScanQR() : renderEnterCode()}
         </div>
