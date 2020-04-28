@@ -8,6 +8,22 @@
   flex-wrap: nowrap;
   align-items: center;
   background-color: $ccTealDark2;
+  .editing{
+    display: flex;
+    input{
+      display: flex;
+      min-width: 400px;
+      background-color: $ccTealDark2;
+      color: white;
+      border: 1px solid #fff;
+      border-radius: 4px;
+      padding-left: 4px;
+      outline: none;
+      &:focus{
+        outline: none;
+      }
+    }
+  }
 }
 
 .headerBackIcon {

@@ -49,6 +49,8 @@ export interface IExperimentSchema {
   sections: ISection[];
   // Form data property name that will be echoed to the top of the app experiment screen as a title.
   titleField?: string;
+  // Form data property name that points to user-defined names for investigation experiments
+  customNameField?: string;
 }
 
 export const EXPERIMENT_VERSION_1 = "1.0.0";
