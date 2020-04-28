@@ -11,8 +11,8 @@ interface IProps {
 
 export const RunInfoComponent: React.FC<IProps> = ({ run, expanded }) => {
   let name = run.experiment.metadata.name + ` #${run.experimentIdx}`;
-  if (run.data && run.experiment.schema.customNameField && run.data[run.experiment.schema.customNameField]) {
-    name = run.data[run.experiment.schema.customNameField];
+  if (run.data.customName) {
+    name = run.data.customName;
   }
   return (
     <div className={css.runInfo}>
