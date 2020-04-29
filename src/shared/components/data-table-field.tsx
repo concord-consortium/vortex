@@ -173,7 +173,7 @@ const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
 const sensorCache: {[key: string]: MockSensor | DeviceSensor} = {};
 
 const getSensor = (sensorFields: string[]) => {
-  const useMockSensor = getURLParam("mockSensor") || false;
+  const useMockSensor = !!getURLParam("mockSensor");
   const capabilities: ISensorCapabilities = {};
   sensorFields.forEach(fieldName => capabilities[fieldName as SensorCapabilityKey] = true);
   const key = JSON.stringify(capabilities);
@@ -257,14 +257,13 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const [manualEntryMode, setManualEntryMode] = useState<boolean>(false);
   const showImportButton = !!formContext.experimentConfig?.callbacks?.onImport;
   const showEditSaveButton = !!formContext.experimentConfig?.showEditSaveButton;
+  const showShowSensorButton = !!formContext.experimentConfig?.showShowSensorButton;
+  const [showSensor, setShowSensor] = useState<boolean>(!!sensor && !showShowSensorButton); // auto show the sensor if defined and showSensorButton is false
 
   // listen for prop changes from uploads
   useEffect(() => {
     setFormData(props.formData);
   }, [props.formData]);
-
-  const connectSensor = () => sensor?.connect();
-  const disconnectSensor = () => sensor?.disconnect();
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
@@ -343,6 +342,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
   const handleImportButton = () => formContext.experimentConfig?.callbacks?.onImport();
+  const handleCollectButton = () => setShowSensor(!showSensor);
 
   const onSensorRecordClick = (rowIdx: number) => {
     if (!sensorOutput.connected) {
@@ -381,7 +381,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
     const basicCells = renderBasicCells(fieldKeys, row, rowIdx);
-    if (!sensor) {
+    if (!showSensor) {
       return basicCells;
     }
     // Render another column with sensor record button.
@@ -479,22 +479,29 @@ export const DataTableField: React.FC<FieldProps> = props => {
     });
   };
 
+  const buttonStyle = (enabled: boolean) => `${css.button}${enabled ? "" : ` ${css.buttonDisabled}`}`;
+  const editEnabled = !showSensor;
+  const editTitle = editEnabled ? undefined : "Disabled while using the sensor";
+  const showSensorEnabled = !manualEntryMode;
+  const showSensorTitle = showSensorEnabled ? undefined : "Disabled while editing";
+
   return (
     <div className={css.dataTable}>
       <div className={css.topBar}>
         <div className={css.topBarLeft}>
-          {sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={setManualEntryMode} /> : undefined}
+          {showSensor && sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode} /> : undefined}
           {title ? <div className={css.title}>{title}</div> : undefined}
         </div>
         <div className={css.topBarRight}>
-          {!sensor && showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
-          {!sensor && showEditSaveButton ? <div className={css.button} onClick={handleEditSaveButton}>{manualEntryMode ? "Save" : "Edit"}</div> : undefined}
+          {showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
+          {showEditSaveButton ? <div className={buttonStyle(editEnabled)} onClick={editEnabled ? handleEditSaveButton : undefined} title={editTitle}>{manualEntryMode ? "Save" : "Edit"}</div> : undefined}
+          {showShowSensorButton ? <div className={buttonStyle(showSensorEnabled)} onClick={showSensorEnabled ? handleCollectButton : undefined} title={showSensorTitle}>{showSensor ? "Hide Sensor" : "Use Sensor"}</div> : undefined}
         </div>
       </div>
       <table className={css.table} onKeyDown={tableKeyboardNav}>
-        <tbody className={!manualEntryMode && sensor && !sensorOutput.connected ? css.grayedOut : ""}>
+        <tbody className={showSensorEnabled && showSensor && !sensorOutput.connected ? css.grayedOut : ""}>
         <tr>
-          {sensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
+          {showSensor && <th key="refreshCol" className={css.refreshSensorReadingColumn}/>}
           {fieldKeys.map(name => <th key={name}>{fieldDefinition[name].title || name}</th>)}
         </tr>
         {

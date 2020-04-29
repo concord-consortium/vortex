@@ -90,6 +90,7 @@ export type SectionComponent = React.FC<ISectionComponentProps>;
 export interface IExperimentConfig {
   hideLabels: boolean;
   useSensors: boolean;
+  showShowSensorButton: boolean;
   showEditSaveButton: boolean;
   showCameraButton: boolean;
   callbacks?: {
