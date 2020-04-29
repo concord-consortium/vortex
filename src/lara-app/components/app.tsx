@@ -4,8 +4,8 @@ import "firebase/firestore";
 import "firebase/auth";
 
 // TODO: Discuss how / when to use the S3 authoring selection component.
-import { LaraAuthoringComponent } from "../../authoring-app/components/lara-authoring";
-// import { AuthoringComponent as LaraAuthoringComponent} from "./authoring";
+// import { LaraAuthoringComponent } from "../../authoring-app/components/lara-authoring";
+import { AuthoringComponent as LaraAuthoringComponent} from "./authoring";
 import { RuntimeComponent } from "./runtime";
 import { inIframe } from "../utils/in-iframe";
 import { useInteractiveApi } from "../hooks/interactive-api";
@@ -32,7 +32,7 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
     if (initInteractiveData.mode === "authoring") {
       return <LaraAuthoringComponent
         // TODO: Re-add authored state when S3 Authoring is ready.
-        authoredState={initInteractiveData.authoredState}
+        // authoredState={initInteractiveData.authoredState}
         experiment={experiment}
         phone={phone} />;
     }
