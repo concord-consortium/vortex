@@ -1,5 +1,8 @@
 @import "variables";
-
+@keyframes arrowBounce {
+  0%   { padding-left: 40px; }
+  100% { padding-left: 0;}
+}
 $headerBorder: #fff;
 
 .dataTable {
@@ -69,6 +72,9 @@ $headerBorder: #fff;
           border-top: 12px solid white;
           border-right: 24px solid $ccGray;
           border-bottom: 12px solid white;
+          animation-name: arrowBounce;
+          animation-duration: 2s;
+          animation-iteration-count: 1;
           .dataPrompt{
             position: absolute;
             font-size: 15px;
@@ -78,6 +84,9 @@ $headerBorder: #fff;
             width: 200px;
             color: $ccGrayLight1;
             z-index: 2;
+            animation-name: arrowBounce;
+            animation-duration: 2s;
+            animation-iteration-count: 1;
           }
         }
       }
@@ -149,6 +158,9 @@ $headerBorder: #fff;
       &.active {
         background-color: $sensorGreenLight1;
         &.refresh {
+          background-color: $sensorGreenLight1;
+        }
+        &.record {
           background-color: $sensorGreenLight1;
         }
         &:hover {

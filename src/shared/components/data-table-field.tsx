@@ -397,14 +397,19 @@ export const DataTableField: React.FC<FieldProps> = props => {
       {
         anyNonFunctionSensorValues &&
         <div
-          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : ""}`}
+          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : css.record}`}
           onClick={active ? onSensorRecordClick.bind(null, rowIdx) : null}
           data-test="record-sensor"
         >
           {
             // Show refresh/replay icon if some values are already present.
             !sensorFieldsBlank &&
-            <Icon name="replay" /> }
+            <Icon name="replay" />
+          }
+          {
+            sensorFieldsBlank &&
+            <Icon name="record" />
+          }
         </div>
       }
     </td>;
