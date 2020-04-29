@@ -142,7 +142,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       hideLabels: false,
       useSensors: false,
       showEditSaveButton: !reportMode,
-      showCameraButton: false,
+      showCameraButton: !reportMode,
       callbacks: reportMode ? undefined : {
         onImport: handleUploadAgain,
       }
