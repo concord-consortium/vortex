@@ -5,8 +5,12 @@ import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
 import { IFirebaseJWT } from "../hooks/interactive-api";
 import { IRun } from "../../mobile-app/hooks/use-runs";
+import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
+import { CODE_LENGTH } from "../../mobile-app/components/uploader";
 
 const QRCode = require("qrcode-svg");
+
+const UPDATE_QR_INTERVAL = 1000 * 60 * 60;  // 60 minutes
 
 import css from "./runtime.module.scss";
 
@@ -14,7 +18,11 @@ export interface IQRCodeContentV1 {
   version: "1.0.0";
   url: string;
 }
-export type IQRCodeContent = IQRCodeContentV1;
+export interface IQRCodeContentV11 {
+  version: "1.1.0";
+  code: string;
+}
+export type IQRCodeContent = IQRCodeContentV1 | IQRCodeContentV11;
 
 interface IProps {
   experiment: IExperiment;
@@ -29,14 +37,46 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
-  const [displayQr, setDisplayQr] = useState(!reportMode);
+  const [numericCode, setNumericCode] = useState("");
+  const [displayQr, setDisplayQr] = useState(false);
   const experimentRef = useRef<IRun|undefined>();
+  const lastCodeGenTime = useRef<number|undefined>();
+  const displayingCode = useRef(false);
 
-  const getSaveExperimentUrl = () => {
-    const runData = Base64.encode(JSON.stringify(firebaseJWT.claims));
-    return `https://us-central1-vortex-e5d5d.cloudfunctions.net/saveExperimentRun?runKey=${runKey}&runData=${runData}`;
+  const generateQRCode = () => {
+    return createCodeForExperimentRun(runKey, firebaseJWT.claims).then(code => {
+      const content = JSON.stringify({
+        version: "1.1.0",
+        code
+      } as IQRCodeContent);
+      setQRCode(new QRCode({
+        content,
+        ecl: "M", // default error correction level = M. Possible options are L, M, Q, H for low-high correction.
+        join: true,
+        container: "svg-viewbox",
+        padding: 2
+      }).svg());
+      setNumericCode(code);
+    });
   };
 
+  const setDisplayQrAndMaybeRegenerateQR = (value: boolean) => {
+    if (value) {
+      if ((lastCodeGenTime.current === undefined) || (Date.now() - lastCodeGenTime.current > UPDATE_QR_INTERVAL)) {
+        setQRCode("");
+        setNumericCode("");
+        setDisplayQr(true);
+        setTimeout(() => generateQRCode().then(() => lastCodeGenTime.current = Date.now()), 1);
+      } else {
+        setDisplayQr(true);
+      }
+    } else {
+      setDisplayQr(false);
+    }
+    displayingCode.current = value;
+  };
+
+  // get experiment data when loaded
   useEffect(() => {
     firebase
       .firestore()
@@ -48,29 +88,31 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
         experimentRef.current = snapshot.docs[0]?.data?.().experiment;
         const newData = experimentRef.current?.data as IExperimentData | undefined;
         setExperimentData(newData);
-        setDisplayQr(newData === undefined);
-        // generate QR code
-        const content = JSON.stringify({
-          version: "1.0.0",
-          url: getSaveExperimentUrl()
-        });
-        setQRCode(new QRCode({
-          content,
-          ecl: "M", // default error correction level = M. Possible options are L, M, Q, H for low-high correction.
-          join: true,
-          container: "svg-viewbox"
-        }).svg());
+
+        // if there is no data force an upload
+        setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportMode);
       }, (err) => {
         setError(err);
       });
   }, []);
 
+  // re-generate QR code if showing
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (displayingCode.current && !reportMode) {
+        generateQRCode();
+      }
+    }, UPDATE_QR_INTERVAL);
+    return () => clearInterval(interval);
+  }, []);
+
   const handleUploadAgain = () => {
     setExperimentData(undefined);
-    setDisplayQr(true);
+    setDisplayQrAndMaybeRegenerateQR(true);
+    displayingCode.current = true;
   };
 
-  const toggleDisplayQr = () => setDisplayQr(!displayQr);
+  const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
 
   const handleSaveData = (data: IExperimentData) => {
     // use the current run from Firestore or if there isn't one create a new one
@@ -80,7 +122,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       experimentIdx: 1,
       key: Date.now().toString()
     };
-    fetch(getSaveExperimentUrl(), {
+    fetch(getSaveExperimentRunUrl(runKey, firebaseJWT.claims), {
       method: "POST",
       mode: "cors",
       cache: "no-cache",
@@ -95,9 +137,6 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const renderData = () => {
     if (!queriedFirestore) {
       return <div>Looking for existing experiment data...</div>;
-    }
-    if (!qrCode) {
-      return <div>Generating QR code...</div>;
     }
     const config: IExperimentConfig = {
       hideLabels: false,
@@ -126,15 +165,14 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
               <div className={css.header}>Import experiment data from your mobile device</div>
               <div className={css.instructions}>
                 <ol>
-                  <li>Launch the <b>Concord Data Collector</b> app on your mobile device to view the <b>My Saved Experiments</b> section</li>
-                  <li>Tap the <b>UPLOAD</b> button on your experiment. A camera view will open on your mobile device</li>
-                  <li>Point your camera at the QR code below to begin importing. Once completed, your data will be displayed in this activity.</li>
+                  <li>Launch the <b>Concord Data Collector</b> app on your mobile device to view the <b>My Saved Experiments</b> section.</li>
+                  <li>Tap the <b>UPLOAD</b> button on your experiment and follow the directions to upload your experiment from your device.</li>
                 </ol>
               </div>
+              {numericCode.length > 0 ? <div className={css.numericCode}>{CODE_LENGTH} Digit Code: {numericCode}</div> : undefined}
               <div className={css.qrcode}>
-                <div dangerouslySetInnerHTML={{ __html: qrCode }} />
+                {qrCode.length > 0 ? <div dangerouslySetInnerHTML={{ __html: qrCode }} /> : <div className={css.generatingCode}>Generating codes...</div>}
               </div>
-              <div className={css.uploadResult}>[confirmation / error messaging]</div>
             <div className={css.footer}><div className={css.closeDialog} onClick={toggleDisplayQr}>Cancel</div></div>
             </div>
           </div>

@@ -14,7 +14,7 @@ enum UploadState {
 }
 
 interface IProps {
-  onScanned: (data: string) => void;
+  onScanned: (data: IQRCodeContent) => void;
 }
 
 export const Scanner = (props: IProps) => {
@@ -56,15 +56,16 @@ export const Scanner = (props: IProps) => {
         try {
           const json = JSON.parse(code.data) as IQRCodeContent;
           const hasUrl = json && (json.version === "1.0.0") && json.url;
-          const color = hasUrl ? "#0f0" : "#f00";
+          const hasCode = json && (json.version === "1.1.0") && json.code;
+          const color = hasUrl || hasCode ? "#0f0" : "#f00";
           drawLine(canvas, code.location.topLeftCorner, code.location.topRightCorner, color);
           drawLine(canvas, code.location.topRightCorner, code.location.bottomRightCorner, color);
           drawLine(canvas, code.location.bottomRightCorner, code.location.bottomLeftCorner, color);
           drawLine(canvas, code.location.bottomLeftCorner, code.location.topLeftCorner, color);
-          if (hasUrl) {
+          if (hasUrl || hasCode) {
             onFound?.();
             // call after next render
-            setTimeout(() => props.onScanned(json.url), 1);
+            setTimeout(() => props.onScanned(json), 1);
             foundQRCode = true;
           } else {
             drawLine(canvas, code.location.topLeftCorner, code.location.bottomRightCorner, color);
