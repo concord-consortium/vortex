@@ -77,7 +77,7 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
             </div>
           }
           {!editing &&
-            <div><span onClick={handleRename}>{name}</span></div>
+            <div><span className={css.nameDisplay} onClick={handleRename}>{name}</span></div>
           }
           <div>{title}</div>
         </div>

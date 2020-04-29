@@ -45,6 +45,18 @@ class ExperimentSetup {
         return cy.get('.experiment-wrapper-module-headerBackIcon-vortex')
     }
 
+    getNameInput() {
+      return cy.get('.experiment-wrapper-module-editing-vortex input').focus()
+    }
+
+    getExperimentNameSpan() {
+      return cy.get('.experiment-wrapper-module-nameDisplay-vortex')
+    }
+
+    getExperimentName(name) {
+      return cy.get('.experiment-wrapper-module-nameDisplay-vortex').contains(name)
+    }
+
     getStudySiteDropDown() {
         return cy.get('.form-control#root_studySite')
     }
