@@ -16,6 +16,7 @@ import Create from "../icons/create-24px.svg";
 import Sensor from "../icons/sensor.svg";
 import UploadCloud from "../icons/cloud_upload-24px.svg";
 import Delete from "../icons/delete-24px.svg";
+import Record from "../icons/record.svg";
 
 const Icons: {[key: string]: any} = {
   label: Label,
@@ -34,7 +35,8 @@ const Icons: {[key: string]: any} = {
   create: Create,
   sensor: Sensor,
   upload: UploadCloud,
-  delete: Delete
+  delete: Delete,
+  record: Record
 };
 
 interface IProps {
