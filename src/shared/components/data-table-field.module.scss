@@ -55,6 +55,32 @@ $headerBorder: #fff;
       input:focus {
         border: solid 2px $ccOrange;
       }
+      .valueCell{
+        .arrowOverlay{
+          position: absolute;
+          background-color: $ccGray;
+          height: 24px;
+          width: 100%;
+        }
+        .arrowOverlayFirst{
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-top: 12px solid white;
+          border-right: 24px solid $ccGray;
+          border-bottom: 12px solid white;
+          .dataPrompt{
+            position: absolute;
+            font-size: 15px;
+            font-weight: normal;
+            left: 0px;
+            top: -10px;
+            width: 200px;
+            color: $ccGrayLight1;
+            z-index: 2;
+          }
+        }
+      }
     }
     .function {
       color: $ccTealDark2;
@@ -115,15 +141,15 @@ $headerBorder: #fff;
       width: 40px;
       border-radius: 20px;
       border: 4px solid #fff;
-      background-color: $ccOrangeLight3;
+      background-color: $sensorGreenLight2;
       margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       &.active {
-        background-color: $ccOrange;
+        background-color: $sensorGreenLight1;
         &.refresh {
-          background-color: $ccOrangeLight1;
+          background-color: $sensorGreenLight1;
         }
         &:hover {
           cursor: pointer;
