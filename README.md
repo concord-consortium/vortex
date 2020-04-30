@@ -125,6 +125,12 @@ then run `npm run cordova -- prepare ios` and run again in Xcode to see the chan
 
 *TODO* Set up Travis Deployment
 
+## Updating Experiments
+
+Each time the mobile app launches it downloads a json file which is an array of experiments and saves them to local storage.  If the version number of the experiments json file is greater than the mobile apps known max supported version an upgrade message is shown in the mobile interface.
+
+By default the json is loaded from [https://models-resources.concord.org/vortex/data/experiments.json](https://models-resources.concord.org/vortex/data/experiments.json) which is the production version of the Vortex app.  For local testing you can override this url by setting the `updateUrl` localStorage variable.  During development you can set this to [https://localhost:8080/data/experiments.json](https://localhost:8080/data/experiments.json) to load the current version.  However, this is the same version that the app will build with so to test a true update you should update the json file outside the repo and host it there.
+
 ### Testing
 
 Run `npm test` to run jest tests. Run `npm run test:full` to run jest and Cypress tests.
