@@ -57,7 +57,7 @@ class SensorData {
     }
 
     getAverageDataRow() {
-        return cy.get('.data-table-field-module-readOnly-vortex').contains('Average').parent()
+        return cy.get('.data-table-field-module-readOnly-vortex').contains('Average').parent().parent()
     }
 
     getExperimentOptionsMenu() {
