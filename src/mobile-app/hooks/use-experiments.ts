@@ -1,7 +1,7 @@
 import * as semver from "semver";
 import { useState, useEffect } from "react";
 import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
-import { logError } from "../../shared/utils/log";
+import { logError, logInfo } from "../../shared/utils/log";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
 const getUpdateUrl = () => {
   const url = window.localStorage.getItem("updateUrl");
@@ -91,7 +91,7 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
 
   useEffect(() => {
     const updateUrl = getUpdateUrl();
-    console.log(`Updating experiments from ${updateUrl}`);
+    logInfo(`Updating experiments from ${updateUrl}`);
     fetch(updateUrl)
       .then(resp => resp.json())
       .then(remoteExperiments => {
