@@ -171,6 +171,10 @@ $headerBorder: #fff;
       button:hover {
         background-color: rgba(11, 128, 155, 0.12);
       }
+      .buttonDisabled {
+        border-color: #777;
+        color: #777;
+      }
     }
   }
 

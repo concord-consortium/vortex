@@ -17,11 +17,12 @@ interface IProps {
   onUpload: () => void;
 }
 
-// App specific config. Mobile app shouldn't show labels and it should use sensors.
+// App specific config. Mobile app shouldn't show labels and it should use sensors without having to use the collect button.
 // LARA app will have different config.
 const experimentConfig: IExperimentConfig = {
   hideLabels: true,
   useSensors: true,
+  showShowSensorButton: false,
   showEditSaveButton: false,
   showCameraButton: true
 };

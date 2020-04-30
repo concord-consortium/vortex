@@ -7,6 +7,7 @@ import { IFirebaseJWT } from "../hooks/interactive-api";
 import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
+import { getURLParam } from "../../shared/utils/get-url-param";
 
 const QRCode = require("qrcode-svg");
 
@@ -138,9 +139,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     if (!queriedFirestore) {
       return <div>Looking for existing experiment data...</div>;
     }
+    const enableSensor = !reportMode && !!getURLParam("enableSensor");
     const config: IExperimentConfig = {
       hideLabels: false,
-      useSensors: false,
+      useSensors: enableSensor,
+      showShowSensorButton: enableSensor,
       showEditSaveButton: !reportMode,
       showCameraButton: !reportMode,
       callbacks: reportMode ? undefined : {

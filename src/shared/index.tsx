@@ -9,6 +9,7 @@ import "./index.sass";
 const mobileAppConfig: IExperimentConfig = {
   hideLabels: true,
   useSensors: true,
+  showShowSensorButton: false,
   showEditSaveButton: false,
   showCameraButton: false
 };
