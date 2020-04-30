@@ -8,6 +8,9 @@
   flex-wrap: nowrap;
   align-items: center;
   background-color: $ccTealDark2;
+  .nameDisplay{
+    display: flex;
+  }
   .editing{
     display: flex;
     input{
