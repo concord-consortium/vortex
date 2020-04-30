@@ -1,5 +1,8 @@
 @import "variables";
-
+@keyframes arrowBounce {
+  0%   { padding-left: 40px; }
+  100% { padding-left: 0;}
+}
 $headerBorder: #fff;
 
 .dataTable {
@@ -54,6 +57,38 @@ $headerBorder: #fff;
       color: $ccOrange;
       input:focus {
         border: solid 2px $ccOrange;
+      }
+      .valueCell{
+        .arrowOverlay{
+          position: absolute;
+          background-color: $ccGray;
+          height: 24px;
+          width: 100%;
+        }
+        .arrowOverlayFirst{
+          position: absolute;
+          width: 0;
+          height: 0;
+          border-top: 12px solid white;
+          border-right: 24px solid $ccGray;
+          border-bottom: 12px solid white;
+          animation-name: arrowBounce;
+          animation-duration: 2s;
+          animation-iteration-count: 1;
+          .dataPrompt{
+            position: absolute;
+            font-size: 15px;
+            font-weight: normal;
+            left: 0px;
+            top: -10px;
+            width: 200px;
+            color: $ccGrayLight1;
+            z-index: 2;
+            animation-name: arrowBounce;
+            animation-duration: 2s;
+            animation-iteration-count: 1;
+          }
+        }
       }
     }
     .function {
@@ -115,15 +150,18 @@ $headerBorder: #fff;
       width: 40px;
       border-radius: 20px;
       border: 4px solid #fff;
-      background-color: $ccOrangeLight3;
+      background-color: $sensorGreenLight2;
       margin: 0 auto;
       display: flex;
       justify-content: center;
       align-items: center;
       &.active {
-        background-color: $ccOrange;
+        background-color: $sensorGreenLight1;
         &.refresh {
-          background-color: $ccOrangeLight1;
+          background-color: $sensorGreenLight1;
+        }
+        &.record {
+          background-color: $sensorGreenLight1;
         }
         &:hover {
           cursor: pointer;

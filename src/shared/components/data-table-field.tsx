@@ -397,14 +397,19 @@ export const DataTableField: React.FC<FieldProps> = props => {
       {
         anyNonFunctionSensorValues &&
         <div
-          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : ""}`}
+          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : css.record}`}
           onClick={active ? onSensorRecordClick.bind(null, rowIdx) : null}
           data-test="record-sensor"
         >
           {
             // Show refresh/replay icon if some values are already present.
             !sensorFieldsBlank &&
-            <Icon name="replay" /> }
+            <Icon name="replay" />
+          }
+          {
+            sensorFieldsBlank &&
+            <Icon name="record" />
+          }
         </div>
       }
     </td>;
@@ -441,6 +446,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
   };
 
   const renderBasicCells = (fieldNames: string[], row: { [k: string]: any }, rowIdx: number) => {
+    let sensorFieldsBlank = true;
+    sensorFields.forEach((name: string) => {
+      if (row[name] !== undefined) {
+        sensorFieldsBlank = false;
+      }
+    });
     return fieldNames.map(name => {
       let value = row[name] || "";
       const readOnly = fieldDefinition[name].readOnly;
@@ -456,7 +467,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
         // convert non-whole numbers (% 1 != 0) to have 2 decimal places
         value = value % 1 === 0 ? value : value.toFixed(2);
       }
-      const isSensorField = sensorFields.indexOf(name) !== -1;
+      const sensorFieldIdx = sensorFields.indexOf(name);
+      const isSensorField = sensorFieldIdx !== -1;
       const {valid, error} = isFunction ? {valid: true, error: undefined} : validateInput(name, String(value));
       let classNames = "";
       if (readOnly) classNames += " " + css.readOnly;
@@ -468,15 +480,30 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       let contents;
       if (readOnly) {
-        contents = value;
+        contents = <div className={css.valueCell}>{value}</div>;
       } else if (fieldDefinition[name].type === "array") {
         contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
       } else {
-        contents = renderInput({name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error});
+        const input = renderInput({ name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error });
+        contents =
+          <div className={css.valueCell}>
+            {sensorFieldsBlank && sensorOutput.connected && renderPromptForData(sensorFieldIdx === 0)}
+            {input}
+          </div>;
       }
 
       return <td key={name} className={classNames}>{contents}</td>;
     });
+  };
+  const renderPromptForData = (isFirst: boolean) => {
+    return (
+      <div>
+        <div className={css.arrowOverlay} />
+        {isFirst && <div className={css.arrowOverlayFirst}>
+          <span className={css.dataPrompt}>Record sensor data</span>
+        </div>}
+      </div>
+    );
   };
 
   const buttonStyle = (enabled: boolean) => `${css.button}${enabled ? "" : ` ${css.buttonDisabled}`}`;
