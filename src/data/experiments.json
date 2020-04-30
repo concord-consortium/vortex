@@ -14,6 +14,7 @@
           "title": "Label",
           "icon": "assignment",
           "formFields": [
+            "customName",
             "studySite",
             "groupMembers"
           ],
@@ -118,6 +119,10 @@
         }
       },
       "formUiSchema": {
+        "customName":{
+          "ui:icon": "label",
+          "ui:placeholder": "My Investigation"
+        },
         "studySite": {
           "ui:icon": "assignment",
           "ui:placeholder": "Study Site"
@@ -184,15 +189,15 @@
       "initials": "SS"
     },
     "schema": {
-      "titleField": "label",
+      "titleField": "studySite",
       "customNameField": "customName",
       "sections": [
         {
           "title": "Label",
           "icon": "assignment",
           "formFields": [
+            "customName",
             "studySite",
-            "label",
             "groupMembers"
           ],
           "components": [
@@ -217,8 +222,7 @@
       "dataSchema": {
         "type": "object",
         "required": [
-          "studySite",
-          "label"
+          "studySite"
         ],
         "properties": {
           "customName": {
@@ -236,10 +240,6 @@
               "Study Site #1",
               "Study Site #2"
             ]
-          },
-          "label": {
-            "title": "Label",
-            "type": "string"
           },
           "groupMembers": {
             "title": "Group Members",
@@ -317,13 +317,13 @@
         }
       },
       "formUiSchema": {
+        "customName":{
+          "ui:icon": "label",
+          "ui:placeholder": "My Investigation"
+        },
         "studySite": {
           "ui:icon": "assignment",
           "ui:placeholder": "Study Site"
-        },
-        "label": {
-          "ui:icon": "label",
-          "ui:placeholder": "My Experiment 1"
         },
         "groupMembers": {
           "ui:icon": "group",
