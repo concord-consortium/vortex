@@ -111,7 +111,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   );
 
   const renderDisconnected = () => (
-    <div className={css.connectionLabel}>
+    <div className={css.connectionLabel} onClick={connect}>
       {renderIcon("disconnected")}
       No Sensor Connected
     </div>
