@@ -52,16 +52,16 @@ context("Testing Experiment Selection View", () => {
             // sensorData.getDisconnectedSensorValue('Light').should('contain','--')
         })
         it("verifies no data in data table", () => {
-            // const rows = 4;
-            // for (let i = 0; i < rows; i++) {
-            //     sensorData.getDataRow(i).within(() => {
-            //         cy.get('input').should('be.empty', { multiple: true })
-            //     })
-            // }
+            const rows = 4;
+            for (let i = 0; i < rows; i++) {
+                sensorData.getDataRow(i).within(() => {
+                    cy.get('input').should('be.empty', { multiple: true })
+                })
+            }
 
-            // sensorData.getAverageDataRow().within(() => {
-            //     cy.get('input').should('be.empty')
-            // })
+            sensorData.getAverageDataRow().within(() => {
+              cy.get('input').should('have.value', '--')
+            })
         })
         it("verifies data collect button disabled when not connected to sensor", () => {
             sensorData.assertRecordButtonStatus('disabled')
