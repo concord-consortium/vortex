@@ -101,15 +101,19 @@
   .photo {
     position: relative;
     overflow: hidden;
-
     .photoMenu {
       position: absolute;
       top: 5px;
-
       svg {
         fill: #fff;
       }
+      div div{
+        svg{
+          fill: $ccTealDark2;
+        }
+      }
     }
+
   }
 
   .photoNote {

@@ -52,6 +52,11 @@
   svg {
     fill: #fff;
   }
+  div div{
+    svg{
+      fill: $ccTealDark2;
+    }
+  }
 }
 
 .workspace {

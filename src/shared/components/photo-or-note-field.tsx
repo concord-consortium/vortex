@@ -117,8 +117,8 @@ export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width
     <>
       <div className={css.photo}>
         <div className={css.photoMenu} style={{right: menuRight}}>
-          <MenuComponent>
-            <MenuItemComponent onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
+          <MenuComponent icon={"delete"}>
+            <MenuItemComponent icon={"delete"} onClick={handleDeletePhoto}>Delete Photo</MenuItemComponent>
           </MenuComponent>
         </div>
         <Image src={localPhotoUrl || remotePhotoUrl} width={imageWidth} height={imageHeight} marginLeft={imageMarginLeft} />
@@ -145,8 +145,8 @@ export const Note: React.FC<{note: IPhotoOrNote, deleteNote: (note: IPhotoOrNote
   return (
     <div className={css.note}>
       <div className={css.noteMenu}>
-        <MenuComponent>
-          <MenuItemComponent onClick={handleDeleteNote}>Delete Note</MenuItemComponent>
+        <MenuComponent icon={"delete"}>
+          <MenuItemComponent icon={"delete"} onClick={handleDeleteNote}>Delete Note</MenuItemComponent>
         </MenuComponent>
       </div>
       <div className={css.noteText}>{note.note}</div>
