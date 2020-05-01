@@ -255,7 +255,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const title = titleField && formContext.formData[titleField] || "";
   const [formData, setFormData] = useState<IDataTableData>(props.formData);
   const [manualEntryMode, setManualEntryMode] = useState<boolean>(false);
-  const showImportButton = !!formContext.experimentConfig?.callbacks?.onImport;
   const showEditSaveButton = !!formContext.experimentConfig?.showEditSaveButton;
   const showShowSensorButton = !!formContext.experimentConfig?.showShowSensorButton;
   const [showSensor, setShowSensor] = useState<boolean>(!!sensor && !showShowSensorButton); // auto show the sensor if defined and showSensorButton is false
@@ -341,7 +340,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
   };
 
   const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
-  const handleImportButton = () => formContext.experimentConfig?.callbacks?.onImport();
   const handleCollectButton = () => setShowSensor(!showSensor);
 
   const onSensorRecordClick = (rowIdx: number) => {
@@ -520,7 +518,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
           {title ? <div className={css.title}>{title}</div> : undefined}
         </div>
         <div className={css.topBarRight}>
-          {showImportButton ? <div className={css.button} onClick={handleImportButton}>Import</div> : undefined}
           {showEditSaveButton ? <div className={buttonStyle(editEnabled)} onClick={editEnabled ? handleEditSaveButton : undefined} title={editTitle}>{manualEntryMode ? "Save" : "Edit"}</div> : undefined}
           {showShowSensorButton ? <div className={buttonStyle(showSensorEnabled)} onClick={showSensorEnabled ? handleCollectButton : undefined} title={showSensorTitle}>{showSensor ? "Hide Sensor" : "Use Sensor"}</div> : undefined}
         </div>
