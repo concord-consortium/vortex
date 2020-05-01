@@ -60,7 +60,6 @@ export const MenuComponent: React.FC<IMenuProps> = (props) => {
     );
   };
   const menuIcon = props.icon ? props.icon : "menu";
-  console.log(menuIcon);
   return (
     <div className={css.menuIcon} onClick={handleMenuIcon}>
       <Icon name={menuIcon}/>
