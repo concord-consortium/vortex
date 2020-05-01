@@ -165,7 +165,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
   const addNoteRef = useRef<HTMLTextAreaElement|null>(null);
   const [formData, setFormData] = useState<IPhotoOrNoteData>(props.formData || []);
-  const [subTab, setSubTab] = useState<"note" | "photo">("note");
+  const [subTab, setSubTab] = useState<"note" | "photo">("photo");
   const [lastSaved, setLastSaved] = useState<Date | undefined>(undefined);
 
   const photos = () => formData.filter(item => item.isPhoto);
@@ -373,8 +373,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   return (
     <div className={css.photoOrNote}>
       <div className={css.subTabs}>
-        <div className={subTabClassName("note")} onClick={handleSelectNoteSubTab}><Icon name="comment" /></div>
         <div className={subTabClassName("photo")} onClick={handleSelectPhotoSubTab}><Icon name="photo" /></div>
+        <div className={subTabClassName("note")} onClick={handleSelectNoteSubTab}><Icon name="comment" /></div>
       </div>
       {subTab === "note" ? renderNoteSubTab() : renderPhotoSubTab() }
     </div>
