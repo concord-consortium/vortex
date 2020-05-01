@@ -143,6 +143,9 @@ module.exports = (env, argv) => {
       new CopyWebpackPlugin([
         {from: 'src/mobile-app/public', to: 'mobile-app/'}
       ]),
+      new CopyWebpackPlugin([
+        {from: 'src/data', to: 'data/'}
+      ]),
       new Dotenv()
     ]
   };

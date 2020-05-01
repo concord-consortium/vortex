@@ -1,9 +1,12 @@
-import semver from "semver";
+import * as semver from "semver";
 import { useState, useEffect } from "react";
 import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
-import { logError } from "../../shared/utils/log";
+import { logError, logInfo } from "../../shared/utils/log";
 const builtInExperiments = require("../../data/experiments.json") as Experiments;
-const updateUrl = "https://models-resources.concord.org/vortex/data/experiments.json";
+const getUpdateUrl = () => {
+  const url = window.localStorage.getItem("updateUrl");
+  return url || "https://models-resources.concord.org/vortex/data/experiments.json";
+};
 const localStorageKey = "experiments";
 
 export type Experiments = IExperiment[];
@@ -87,6 +90,8 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
   });
 
   useEffect(() => {
+    const updateUrl = getUpdateUrl();
+    logInfo(`Updating experiments from ${updateUrl}`);
     fetch(updateUrl)
       .then(resp => resp.json())
       .then(remoteExperiments => {
