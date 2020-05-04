@@ -20,11 +20,7 @@
     <allow-intent href="geo:*" />
     <platform name="android">
       <allow-intent href="market:*" />
-      <config-file target="AndroidManifest.xml" parent="/manifest">
-        <uses-permission android:name="android.permission.BLUETOOTH" />
-        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-        <!--
+       <!--
             ldpi    : 36x36 px
             mdpi    : 48x48 px
             hdpi    : 72x72 px
@@ -38,6 +34,10 @@
         <icon src="app_icons/android/icon-96.png" density="xhdpi" />
         <icon src="app_icons/android/icon-144.png" density="xxhdpi" />
         <icon src="app_icons/android/icon-192.png" density="xxxhdpi" />
+      <config-file target="AndroidManifest.xml" parent="/manifest">
+        <uses-permission android:name="android.permission.BLUETOOTH" />
+        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
       </config-file>
     </platform>
     <platform name="ios">
