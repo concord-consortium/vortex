@@ -7,6 +7,7 @@
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
     </author>
+
     <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
@@ -18,17 +19,49 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <platform name="android">
-        <allow-intent href="market:*" />
-		<config-file target="AndroidManifest.xml" parent="/manifest">
-			<uses-permission android:name="android.permission.BLUETOOTH" />
-			<uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-			<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-		</config-file>
+      <allow-intent href="market:*" />
+       <!--
+            ldpi    : 36x36 px
+            mdpi    : 48x48 px
+            hdpi    : 72x72 px
+            xhdpi   : 96x96 px
+            xxhdpi  : 144x144 px
+            xxxhdpi : 192x192 px
+        -->
+        <icon src="app_icons/android/icon-36.png" density="ldpi" />
+        <icon src="app_icons/android/icon-48.png" density="mdpi" />
+        <icon src="app_icons/android/icon-72.png" density="hdpi" />
+        <icon src="app_icons/android/icon-96.png" density="xhdpi" />
+        <icon src="app_icons/android/icon-144.png" density="xxhdpi" />
+        <icon src="app_icons/android/icon-192.png" density="xxxhdpi" />
+      <config-file target="AndroidManifest.xml" parent="/manifest">
+        <uses-permission android:name="android.permission.BLUETOOTH" />
+        <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+        <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+      </config-file>
     </platform>
     <platform name="ios">
-        <allow-intent href="itms:*" />
-        <allow-intent href="itms-apps:*" />
-        <preference name="WKWebViewOnly" value="true" />
-        <preference name="EnableViewportScale" value="false"/>
+      <allow-intent href="itms:*" />
+      <allow-intent href="itms-apps:*" />
+      <preference name="WKWebViewOnly" value="true" />
+      <preference name="EnableViewportScale" value="false"/>
+      <!-- iOS 8.0+ -->
+        <!-- iPhone 6 Plus  -->
+        <icon src="app_icons/ios/icon-60@3x.png" width="180" height="180" />
+        <!-- iOS 7.0+ -->
+        <!-- iPhone / iPod Touch  -->
+        <icon src="app_icons/ios/icon-60@2x.png" width="120" height="120" />
+        <!-- iPad -->
+        <icon src="app_icons/ios/icon-76.png" width="76" height="76" />
+        <icon src="app_icons/ios/icon-76@2x.png" width="152" height="152" />
+        <!-- Spotlight Icon -->
+        <icon src="app_icons/ios/icon-40.png" width="40" height="40" />
+        <icon src="app_icons/ios/icon-40@2x.png" width="80" height="80" />
+        <!-- iPhone Spotlight and Settings Icon -->
+        <icon src="app_icons/ios/icon-small.png" width="29" height="29" />
+        <icon src="app_icons/ios/icon-small@2x.png" width="58" height="58" />
+        <icon src="app_icons/ios/icon-small@3x.png" width="87" height="87" />
+        <!-- iPad Pro -->
+        <icon src="app_icons/ios/icon-83.5@2x.png" width="167" height="167" />
     </platform>
 </widget>
