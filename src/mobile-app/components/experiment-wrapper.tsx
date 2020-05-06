@@ -84,9 +84,9 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
         </div>
         <div className={css.headerMenu}>
           <MenuComponent>
-            <MenuItemComponent onClick={handleSave}>Save</MenuItemComponent>
-            <MenuItemComponent onClick={onUpload}>Upload</MenuItemComponent>
-            <MenuItemComponent onClick={handleRename}>Rename</MenuItemComponent>
+            <MenuItemComponent icon={"label"} onClick={handleSave}>Save</MenuItemComponent>
+            <MenuItemComponent icon={"upload"} onClick={onUpload}>Upload</MenuItemComponent>
+            <MenuItemComponent icon={"create"} onClick={handleRename}>Rename</MenuItemComponent>
           </MenuComponent>
         </div>
       </div>

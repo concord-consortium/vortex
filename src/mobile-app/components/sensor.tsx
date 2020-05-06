@@ -111,7 +111,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   );
 
   const renderDisconnected = () => (
-    <div className={css.connectionLabel}>
+    <div className={css.connectionLabel} onClick={connect}>
       {renderIcon("disconnected")}
       No Sensor Connected
     </div>
@@ -141,7 +141,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
         {manualEntryMode && canSwitchModes
           ? <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent>
           : <>
-              {connected ? <MenuItemComponent onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent onClick={connect}>Connect</MenuItemComponent>}
+              {connected ? <MenuItemComponent onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent icon="settings_input_antenna" onClick={connect}>Connect</MenuItemComponent>}
               {canSwitchModes ? <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent> : undefined}
             </>}
       </MenuComponent>

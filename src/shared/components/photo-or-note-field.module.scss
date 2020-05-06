@@ -67,6 +67,7 @@
       position: relative;
       display: flex;
       flex-wrap: nowrap;
+      background: #fff;
 
       .thumbnail {
         width: 80px;
@@ -101,15 +102,19 @@
   .photo {
     position: relative;
     overflow: hidden;
-
     .photoMenu {
       position: absolute;
       top: 5px;
-
       svg {
         fill: #fff;
       }
+      div div{
+        svg{
+          fill: $ccTealDark2;
+        }
+      }
     }
+
   }
 
   .photoNote {

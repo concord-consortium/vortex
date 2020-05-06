@@ -6,7 +6,9 @@ interface IMenuItemProps {
   onClick: () => void;
   icon?: string;
 }
-
+interface IMenuProps {
+  icon?: string;
+}
 export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, children}) => {
   return (
     <div className={css.menuItem} onClick={onClick}>
@@ -16,7 +18,7 @@ export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, chil
   );
 };
 
-export const MenuComponent: React.FC = (props) => {
+export const MenuComponent: React.FC<IMenuProps> = (props) => {
   // need to use both a state variable and a ref variable to hold showing status
   // the state variable change triggers the re-render and the ref variable
   // is available in the global handleClick() handler (the state variable would
@@ -57,10 +59,10 @@ export const MenuComponent: React.FC = (props) => {
       </div>
     );
   };
-
+  const menuIcon = props.icon ? props.icon : "menu";
   return (
     <div className={css.menuIcon} onClick={handleMenuIcon}>
-      <Icon name="menu"/>
+      <Icon name={menuIcon}/>
       {showMenu ? renderMenu() : undefined}
     </div>
   );
