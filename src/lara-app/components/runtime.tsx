@@ -145,14 +145,14 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       useSensors: enableSensor,
       showShowSensorButton: enableSensor,
       showEditSaveButton: !reportMode,
-      showCameraButton: !reportMode,
-      callbacks: reportMode ? undefined : {
-        onImport: handleUploadAgain,
-      }
+      showCameraButton: !reportMode
     };
 
     return (
       <div className={`${css.experimentContainer}`}>
+        <div className={css.topBar}>
+          <div className={css.button} onClick={handleUploadAgain}>Import</div>
+        </div>
         <div className={css.runtimeExperiment}>
           <Experiment
             experiment={experiment}
