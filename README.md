@@ -114,6 +114,15 @@ You may need to do this a few times to set both `Debug` and `Release` signing mo
 If you make any changes to the `cordova-app` code you run `npm run build:cordova-app` in the project root,
 then run `npm run cordova -- prepare ios` and run again in Xcode to see the change.
 
+#### Cordova: Updating plugins and packages
+
+Cordova can be quite sticky with plugins and packages, and updates to which plugins you are using may not show up. To clean up the
+Cordova installation and start fresh (preserving project configuration settings for XCode etc.) run the following script:
+
+1. `cd src/cordova-wrapper`
+2. `./clean.sh`
+
+This will backup configuration, then remove all the Cordova target platforms, re-prepare each of them, and restore configuration.
 
 ### Notes
 
