@@ -1,11 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="org.concord.vortex" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-    <name>Vortex</name>
+    <name>Concord Data Collector</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        An application to capture data on a mobile device either manually, or by connecting to a Bluetooth sensor. This application is designed to handle remote
+        capture, when students are unable to submit data reliably to a server, and does not require user authentication.
+        Students can capture images of data collection sites, and upload to an activity page on a laptop when they return to the classroom.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="help@concord.org" href="https://concord.org">
+        The Concord Consortium
     </author>
 
     <content src="index.html" />
