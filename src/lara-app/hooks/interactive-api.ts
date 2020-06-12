@@ -62,6 +62,10 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   const runKey = useRef<string|undefined>();
   const experimentId = useRef<string|undefined>();
 
+  const setHeight = (height: number) => {
+    phone?.post("height", height);
+  };
+
   useEffect(() => {
     if (inIframe()) {
         // create iframephone and wait for initInteractive
@@ -148,5 +152,5 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
     }
   }, []);
 
-  return {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey: runKey.current, phone};
+  return {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey: runKey.current, phone, setHeight};
 };

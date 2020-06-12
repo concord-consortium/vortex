@@ -8,6 +8,7 @@ import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
 import { getURLParam } from "../../shared/utils/get-url-param";
+import ResizeObserver from "resize-observer-polyfill";
 
 const QRCode = require("qrcode-svg");
 
@@ -33,9 +34,10 @@ interface IProps {
   defaultSectionIndex?: number;
   reportMode?: boolean;
   previewMode?: boolean;
+  setHeight: (height: number) => void;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode} : IProps) => {
+export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
@@ -45,6 +47,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const lastCodeGenTime = useRef<number|undefined>();
   const displayingCode = useRef(false);
   const reportOrPreviewMode = reportMode || previewMode;
+  const containerRef = useRef<HTMLDivElement|null>(null);
 
   const generateQRCode = (options: {runKey: string, firebaseJWT: IFirebaseJWT}) => {
     return createCodeForExperimentRun(options.runKey, options.firebaseJWT.claims).then(code => {
@@ -111,6 +114,20 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    if (containerRef.current) {
+      const checkHeight = () => {
+        const {height} = containerRef.current ? containerRef.current.getBoundingClientRect() : { height: 0 };
+        if (height > 0) {
+          setHeight(height);
+        }
+      };
+
+      const ro = new ResizeObserver(checkHeight);
+      ro.observe(containerRef.current);
+    }
+  }, [containerRef.current]);
+
   const handleUploadAgain = () => {
     setExperimentData(undefined);
     setDisplayQrAndMaybeRegenerateQR(true);
@@ -154,11 +171,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       useSensors: enableSensor,
       showShowSensorButton: enableSensor,
       showEditSaveButton: !reportMode,
-      showCameraButton: !reportMode
+      showCameraButton: !reportOrPreviewMode
     };
 
     return (
-      <div className={`${css.experimentContainer}`}>
+      <div>
         {reportOrPreviewMode ? undefined :
           <div className={css.topBar}>
             <div className={css.button} onClick={handleUploadAgain}>Import</div>
@@ -195,7 +212,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   };
 
   return (
-    <div className={css.runtime}>
+    <div className={css.runtime} ref={containerRef}>
       {renderData()}
     </div>
   );
