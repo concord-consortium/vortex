@@ -171,7 +171,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
       useSensors: enableSensor,
       showShowSensorButton: enableSensor,
       showEditSaveButton: !reportMode,
-      showCameraButton: !reportOrPreviewMode
+      showCameraButton: !reportMode,
+      minCameraWidth: 300,
+      minCameraHeight: 300
     };
 
     return (

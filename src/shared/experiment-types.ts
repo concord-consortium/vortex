@@ -93,4 +93,6 @@ export interface IExperimentConfig {
   showShowSensorButton: boolean;
   showEditSaveButton: boolean;
   showCameraButton: boolean;
+  minCameraWidth?: number;
+  minCameraHeight?: number;
 }

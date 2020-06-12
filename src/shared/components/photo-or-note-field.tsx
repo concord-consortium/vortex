@@ -182,6 +182,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
   const formContext: IVortexFormContext = props.formContext || {};
   const showCameraButton = !!formContext.experimentConfig?.showCameraButton;
+  const minCameraWidth = formContext.experimentConfig?.minCameraWidth || 0;
+  const minCameraHeight = formContext.experimentConfig?.minCameraHeight || 0;
 
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
@@ -274,10 +276,11 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   };
 
   const renderCameraOrPhoto = () => {
+    const width = Math.max(windowInfo.width, minCameraWidth);
+    const height = Math.max(windowInfo.height - photoSubTabTop - 100, minCameraHeight); // 100 is thumbnail height with padding
+
     if (selectedPhoto) {
       const selectedPhotoKey = selectedPhoto ? formData.indexOf(selectedPhoto) : -1;
-      const photoHeight = windowInfo.height - photoSubTabTop - 100; // 100 is thumbnail height with padding
-      const photoWidth = windowInfo.width;
       return (
         <>
           <Photo
@@ -285,18 +288,15 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
             photo={selectedPhoto}
             deletePhoto={handleDeletePhotoOrNote}
             saveAll={handleSaveAll}
-            width={photoWidth}
-            height={photoHeight}
+            width={width}
+            height={height}
           />
         </>
       );
     }
 
     if (showCameraButton) {
-      const cameraHeight = windowInfo.height - photoSubTabTop - 100; // 15 is the margin
-      const cameraWidth = windowInfo.width;
-
-      return <Camera onPhoto={handleCameraPhoto} width={cameraWidth} height={cameraHeight} />;
+      return <Camera onPhoto={handleCameraPhoto} width={width} height={height} />;
     }
 
     return (
