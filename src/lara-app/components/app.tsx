@@ -37,18 +37,16 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         phone={phone} />;
     }
 
-    if (!runKey) {
-      setError("No preview available ...");
-      return;
-    }
-
     if (!experiment) {
       setError("No experiment set yet.  Please select an experiment in the authoring form.");
       return;
     }
 
-    if (!firebaseJWT) {
-      return <div>Waiting to connect to Firebase ...</div>;
+    const previewMode = !runKey;
+    if (!previewMode) {
+      if (!firebaseJWT) {
+        return <div>Waiting to connect to Firebase ...</div>;
+      }
     }
 
     return (
@@ -59,6 +57,7 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
         reportMode={initInteractiveData.mode === "report"}
+        previewMode={previewMode}
       />
     );
   };
