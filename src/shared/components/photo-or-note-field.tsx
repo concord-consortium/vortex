@@ -299,11 +299,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
       return <Camera onPhoto={handleCameraPhoto} width={width} height={height} />;
     }
 
-    return (
-      <div className={css.photosNotAvailable}>
-        Photos not available in preview mode.
-      </div>
-    );
+    return undefined;
   };
 
   const renderThumbnails = () => {
