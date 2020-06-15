@@ -1,7 +1,8 @@
 sudo: false
 dist: trusty
 language: node_js
-node_js: lts/*
+node_js:
+  - 12
 cache:
   bundler: true
   pip: true
