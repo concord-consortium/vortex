@@ -82,7 +82,9 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     displayingCode.current = value;
   };
 
-  // get experiment data when loaded
+  // get experiment data when loaded.  This is only run once when the component mounts and
+  // does not depend on a changing runKey (it will either be set or not set when this component
+  // is initially loaded)
   useEffect(() => {
     if (runKey) {
       firebase
@@ -115,6 +117,8 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   }, []);
 
   useEffect(() => {
+    let ro: ResizeObserver;
+
     if (containerRef.current) {
       const checkHeight = () => {
         const {height} = containerRef.current ? containerRef.current.getBoundingClientRect() : { height: 0 };
@@ -123,9 +127,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
         }
       };
 
-      const ro = new ResizeObserver(checkHeight);
+      ro = new ResizeObserver(checkHeight);
       ro.observe(containerRef.current);
     }
+
+    return () => ro?.disconnect();
   }, [containerRef.current]);
 
   const handleUploadAgain = () => {
