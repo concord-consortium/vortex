@@ -82,9 +82,10 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     displayingCode.current = value;
   };
 
-  // get experiment data when loaded.  This is only run once when the component mounts and
+  // Get experiment data when loaded.  This is only run once when the component mounts and
   // does not depend on a changing runKey (it will either be set or not set when this component
-  // is initially loaded)
+  // is initially loaded).  However in case the component is loaded in a different way in the
+  // future a dependency on runKey was added.
   useEffect(() => {
     if (runKey) {
       firebase
@@ -104,7 +105,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
           setError(err);
         });
     }
-  }, []);
+  }, [runKey]);
 
   // re-generate QR code if showing
   useEffect(() => {
