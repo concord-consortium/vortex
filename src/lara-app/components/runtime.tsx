@@ -185,6 +185,10 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
 
     return (
       <div>
+        {!previewMode ? undefined :
+          <div className={css.previewModeNotice}>
+            You are viewing a preview of the activity. <strong>NO DATA IS BEING SAVED!</strong>
+          </div>}
         {reportOrPreviewMode ? undefined :
           <div className={css.topBar}>
             <div className={css.button} onClick={handleUploadAgain}>Import</div>

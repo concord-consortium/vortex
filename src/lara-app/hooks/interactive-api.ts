@@ -80,10 +80,15 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
           setExperiment(findExperiment(data.authoredState.experimentId));
         }
 
-        if (data.interactiveStateUrl) {
-          // runtime mode
-          runKey.current = Base64.encode(data.interactiveStateUrl);
-        } else if (data.interactiveState) {
+        if (data.mode === "runtime") {
+          if (data.classInfoUrl && data.interactiveStateUrl) {
+            // learner runtime mode
+            runKey.current = Base64.encode(data.interactiveStateUrl);
+          } else {
+            // activity preview or authoring preview mode
+            runKey.current = undefined;
+          }
+        } else if (data.mode === "report") {
           // report mode
           try {
             const json = JSON.parse(data.interactiveState) as IInteractiveStateJSON | undefined;
