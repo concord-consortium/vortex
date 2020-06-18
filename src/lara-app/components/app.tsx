@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useEffect, useRef, useCallback } from "react";
 import { useState } from "react";
 import "firebase/firestore";
 import "firebase/auth";
+import ResizeObserver from "resize-observer-polyfill";
 
 // TODO: Discuss how / when to use the S3 authoring selection component.
 // import { LaraAuthoringComponent } from "../../authoring-app/components/lara-authoring";
@@ -18,15 +19,17 @@ interface IProps {
 
 export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
   const [error, setError] = useState<any>();
-  const {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey, phone} = useInteractiveApi({setError});
+  const {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey, phone, setHeight} = useInteractiveApi({setError});
+
+  const renderMessage = (message: string) => <div className={css.message}>{message}</div>;
 
   const renderInIframe = () => {
     if (error) {
-      return <div className={css.error}>{error.toString()}</div>;
+      return renderMessage(error.toString());
     }
 
     if (!connectedToLara || !initInteractiveData) {
-      return <div>Waiting to connect to LARA ...</div>;
+      return renderMessage("Waiting to connect to LARA ...");
     }
 
     if (initInteractiveData.mode === "authoring") {
@@ -37,18 +40,16 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         phone={phone} />;
     }
 
-    if (!runKey) {
-      setError("No preview available ...");
-      return;
-    }
-
     if (!experiment) {
       setError("No experiment set yet.  Please select an experiment in the authoring form.");
       return;
     }
 
-    if (!firebaseJWT) {
-      return <div>Waiting to connect to Firebase ...</div>;
+    const previewMode = !runKey;
+    if (!previewMode) {
+      if (!firebaseJWT) {
+        return renderMessage("Waiting to connect to Firebase ...");
+      }
     }
 
     return (
@@ -59,18 +60,14 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
         reportMode={initInteractiveData.mode === "report"}
+        previewMode={previewMode}
+        setHeight={setHeight}
       />
     );
   };
 
   const renderOutsideIframe = () => {
-    return (
-      <>
-        <div className={css.note}>
-          This application must be run within LARA.
-        </div>
-      </>
-    );
+    return renderMessage("This application must be run within LARA.");
   };
 
   return (

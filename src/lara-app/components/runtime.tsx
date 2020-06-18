@@ -8,6 +8,7 @@ import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
 import { getURLParam } from "../../shared/utils/get-url-param";
+import ResizeObserver from "resize-observer-polyfill";
 
 const QRCode = require("qrcode-svg");
 
@@ -27,14 +28,16 @@ export type IQRCodeContent = IQRCodeContentV1 | IQRCodeContentV11;
 
 interface IProps {
   experiment: IExperiment;
-  runKey: string;
-  firebaseJWT: IFirebaseJWT;
+  runKey?: string;
+  firebaseJWT?: IFirebaseJWT;
   setError: (error: any) => void;
   defaultSectionIndex?: number;
   reportMode?: boolean;
+  previewMode?: boolean;
+  setHeight: (height: number) => void;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode} : IProps) => {
+export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
@@ -43,9 +46,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const experimentRef = useRef<IRun|undefined>();
   const lastCodeGenTime = useRef<number|undefined>();
   const displayingCode = useRef(false);
+  const reportOrPreviewMode = reportMode || previewMode;
+  const containerRef = useRef<HTMLDivElement|null>(null);
 
-  const generateQRCode = () => {
-    return createCodeForExperimentRun(runKey, firebaseJWT.claims).then(code => {
+  const generateQRCode = (options: {runKey: string, firebaseJWT: IFirebaseJWT}) => {
+    return createCodeForExperimentRun(options.runKey, options.firebaseJWT.claims).then(code => {
       const content = JSON.stringify({
         version: "1.1.0",
         code
@@ -62,12 +67,12 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   };
 
   const setDisplayQrAndMaybeRegenerateQR = (value: boolean) => {
-    if (value) {
+    if (value && runKey && firebaseJWT) {
       if ((lastCodeGenTime.current === undefined) || (Date.now() - lastCodeGenTime.current > UPDATE_QR_INTERVAL)) {
         setQRCode("");
         setNumericCode("");
         setDisplayQr(true);
-        setTimeout(() => generateQRCode().then(() => lastCodeGenTime.current = Date.now()), 1);
+        setTimeout(() => generateQRCode({runKey, firebaseJWT}).then(() => lastCodeGenTime.current = Date.now()), 1);
       } else {
         setDisplayQr(true);
       }
@@ -77,35 +82,58 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
     displayingCode.current = value;
   };
 
-  // get experiment data when loaded
+  // Get experiment data when loaded.  This is only run once when the component mounts and
+  // does not depend on a changing runKey (it will either be set or not set when this component
+  // is initially loaded).  However in case the component is loaded in a different way in the
+  // future a dependency on runKey was added.
   useEffect(() => {
-    firebase
-      .firestore()
-      .collection(`runs/${runKey}/experiments`)
-      .orderBy("createdAt", "desc")
-      .limit(1)
-      .onSnapshot(snapshot => {
-        setQueriedFirestore(true);
-        experimentRef.current = snapshot.docs[0]?.data?.().experiment;
-        const newData = experimentRef.current?.data as IExperimentData | undefined;
-        setExperimentData(newData);
+    if (runKey) {
+      firebase
+        .firestore()
+        .collection(`runs/${runKey}/experiments`)
+        .orderBy("createdAt", "desc")
+        .limit(1)
+        .onSnapshot(snapshot => {
+          setQueriedFirestore(true);
+          experimentRef.current = snapshot.docs[0]?.data?.().experiment;
+          const newData = experimentRef.current?.data as IExperimentData | undefined;
+          setExperimentData(newData);
 
-        // if there is no data force an upload
-        setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportMode);
-      }, (err) => {
-        setError(err);
-      });
-  }, []);
+          // if there is no data force an upload
+          setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportOrPreviewMode);
+        }, (err) => {
+          setError(err);
+        });
+    }
+  }, [runKey]);
 
   // re-generate QR code if showing
   useEffect(() => {
     const interval = setInterval(() => {
-      if (displayingCode.current && !reportMode) {
-        generateQRCode();
+      if (displayingCode.current && !reportOrPreviewMode && runKey && firebaseJWT) {
+        generateQRCode({runKey, firebaseJWT});
       }
     }, UPDATE_QR_INTERVAL);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    let ro: ResizeObserver;
+
+    if (containerRef.current) {
+      const checkHeight = () => {
+        const {height} = containerRef.current ? containerRef.current.getBoundingClientRect() : { height: 0 };
+        if (height > 0) {
+          setHeight(height);
+        }
+      };
+
+      ro = new ResizeObserver(checkHeight);
+      ro.observe(containerRef.current);
+    }
+
+    return () => ro?.disconnect();
+  }, [containerRef.current]);
 
   const handleUploadAgain = () => {
     setExperimentData(undefined);
@@ -116,6 +144,11 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
 
   const handleSaveData = (data: IExperimentData) => {
+    // no runKey or firebaseJWT in preview mode - need to check these explicitly to make typescript happy
+    if (!runKey || !firebaseJWT) {
+      return;
+    }
+
     // use the current run from Firestore or if there isn't one create a new one
     const experimentRun = experimentRef.current ? Object.assign({}, experimentRef.current, {data}) : {
       data,
@@ -136,30 +169,33 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   };
 
   const renderData = () => {
-    if (!queriedFirestore) {
+    if (!previewMode && !queriedFirestore) {
       return <div>Looking for existing experiment data...</div>;
     }
-    const enableSensor = !reportMode && !!getURLParam("enableSensor");
+    const enableSensor = (!reportMode && !!getURLParam("enableSensor")) || !!previewMode;
     const config: IExperimentConfig = {
       hideLabels: false,
       useSensors: enableSensor,
       showShowSensorButton: enableSensor,
       showEditSaveButton: !reportMode,
-      showCameraButton: !reportMode
+      showCameraButton: !reportMode,
+      minCameraWidth: 300,
+      minCameraHeight: 300
     };
 
     return (
-      <div className={`${css.experimentContainer}`}>
-        <div className={css.topBar}>
-          <div className={css.button} onClick={handleUploadAgain}>Import</div>
-        </div>
+      <div>
+        {reportOrPreviewMode ? undefined :
+          <div className={css.topBar}>
+            <div className={css.button} onClick={handleUploadAgain}>Import</div>
+          </div>}
         <div className={css.runtimeExperiment}>
           <Experiment
             experiment={experiment}
             data={experimentData}
             config={config}
             defaultSectionIndex={defaultSectionIndex}
-            onDataChange={reportMode ? undefined : handleSaveData}
+            onDataChange={reportOrPreviewMode ? undefined : handleSaveData}
           />
         </div>
         {(displayQr && experimentData === undefined) &&
@@ -185,7 +221,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   };
 
   return (
-    <div className={css.runtime}>
+    <div className={css.runtime} ref={containerRef}>
       {renderData()}
     </div>
   );
