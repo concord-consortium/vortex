@@ -208,7 +208,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
               <div className={css.header}>Import experiment data from your mobile device</div>
               <div className={css.instructions}>
                 <ol>
-                  <li>Launch the <b>Concord Data Collector</b> app on your mobile device to view the <b>My Saved Experiments</b> section.</li>
+                  <li>Launch the <b>Monitor Your World</b> app on your mobile device to view the <b>My Saved Experiments</b> section.</li>
                   <li>Tap the <b>UPLOAD</b> button on your experiment and follow the directions to upload your experiment from your device.</li>
                 </ol>
               </div>
