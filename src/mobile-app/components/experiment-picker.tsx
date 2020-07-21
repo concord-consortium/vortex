@@ -17,7 +17,7 @@ export const ExperimentPicker: React.FC<IProps> = ({setExperiment}) => {
       <div className={css.header}>
         <div className={css.headerIcon}/>
         <div className={css.headerTitle}>
-          Concord Consortium's<br/>Data Collector
+          Monitor Your World
         </div>
       </div>
       <div className={css.workspace}>

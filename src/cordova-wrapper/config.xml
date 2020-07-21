@@ -1,11 +1,13 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="org.concord.vortex" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:android="http://schemas.android.com/apk/res/android">
-    <name>Vortex</name>
+    <name>Monitor Your World</name>
     <description>
-        A sample Apache Cordova application that responds to the deviceready event.
+        An application to capture data on a mobile device either manually, or by connecting to a Bluetooth sensor. This application is designed to handle remote
+        capture, when students are unable to submit data reliably to a server, and does not require user authentication.
+        Students can capture images of data collection sites, and upload to an activity page on a laptop when they return to the classroom.
     </description>
-    <author email="dev@cordova.apache.org" href="http://cordova.io">
-        Apache Cordova Team
+    <author email="help@concord.org" href="https://concord.org">
+        The Concord Consortium
     </author>
 
     <content src="index.html" />
@@ -43,9 +45,30 @@
     <platform name="ios">
       <allow-intent href="itms:*" />
       <allow-intent href="itms-apps:*" />
+      <config-file target="*-Info.plist" parent="CFBundleDisplayName">
+            <string>Monitor Your World</string>
+      </config-file>
+      <config-file target="*-Info.plist" parent="NSBluetoothAlwaysUsageDescription">
+            <string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
+      </config-file>
+       <config-file target="*-Info.plist" parent="NSBluetoothPeripheralUsageDescription">
+            <string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
+      </config-file>
+      <config-file target="*-Info.plist" parent="NSCameraUsageDescription">
+            <string>This application needs camera access to capture photographs and to scan barcodes to upload data</string>
+      </config-file>
       <preference name="WKWebViewOnly" value="true" />
       <preference name="EnableViewportScale" value="false"/>
-      <!-- iOS 8.0+ -->
+        <icon src="app_icons/ios/icon-20.png" width="20" height="20" />
+        <icon src="app_icons/ios/icon-20@2x.png" width="40" height="40" />
+        <icon src="app_icons/ios/icon-20@3x.png" width="60" height="60" />
+
+        <icon src="app_icons/ios/icon-50.png" width="50" height="50" />
+        <icon src="app_icons/ios/icon-50@2x.png" width="100" height="100" />
+
+        <icon src="app_icons/ios/icon-57.png" width="57" height="57" />
+        <icon src="app_icons/ios/icon-57@2x.png" width="114" height="114" />
+
         <!-- iPhone 6 Plus  -->
         <icon src="app_icons/ios/icon-60@3x.png" width="180" height="180" />
         <!-- iOS 7.0+ -->
@@ -57,11 +80,14 @@
         <!-- Spotlight Icon -->
         <icon src="app_icons/ios/icon-40.png" width="40" height="40" />
         <icon src="app_icons/ios/icon-40@2x.png" width="80" height="80" />
+        <icon src="app_icons/ios/icon-40@3x.png" width="120" height="120" />
         <!-- iPhone Spotlight and Settings Icon -->
         <icon src="app_icons/ios/icon-small.png" width="29" height="29" />
         <icon src="app_icons/ios/icon-small@2x.png" width="58" height="58" />
         <icon src="app_icons/ios/icon-small@3x.png" width="87" height="87" />
         <!-- iPad Pro -->
         <icon src="app_icons/ios/icon-83.5@2x.png" width="167" height="167" />
+        <!-- App Store -->
+        <icon src="app_icons/ios/icon-1024.png" width="1024" height="1024" />
     </platform>
 </widget>

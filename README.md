@@ -87,25 +87,13 @@ To test `cordova-wrapper` on iOS:
 
 1. If needed, run `npm run build:cordova-app` in the project root to create the latest build.  You will need to do this whenever
    you make a change at the app in step 6 copies code when it starts and does not pickup changes to the code.
-2. Open `src/cordova-wrapper/platforms/ios/HelloWorld.xcworkspace` from XCode
-3. Edit `ios/Vortex/Vortex-Info.plist` in VSCode (easier than in XCode editor
-4. Add the following to allow access to Bluetooth and Camera (insert both key-string pairs near the end of the file before the closing `</dict></plist>`)
-
-```xml
-  <key>NSBluetoothAlwaysUsageDescription</key>
-  <string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
-  <key>NSCameraUsageDescription</key>
-  <string>This application needs camera access to capture photographs and to scan barcodes to upload data</string>
-</dict>
-</plist>
-```
-
+2. Open `src/cordova-wrapper/platforms/ios/Monitor Your World.xcworkspace` from XCode
 5. In Xcode, the left hand side of the page gives you different views on the project. The folder icon gives a tree view.
    Select the folder icon and select the root Vortex node.
 6. As long as you are logged in with a developer account that has permissions with the Apple developer account, you can go to
    the `Signing & Capabilities` section in the center of the screen (the text link near the top-center).
 7. Check the box to `Automatically Manage Signing` and select the `Concord Consortium Inc.` team.
-You may need to do this a few times to set both `Debug` and `Release` signing modes, then go back to All for the selection to "work".
+You should do this for both `Debug` and `Release` signing modes, then toggle off and on the "Automatically manage signing" to resolve any lingering error messages.
 8. If this is the first time a device has been selected, you should be given the option to add the device to the list of approved devices.
    We have up to 100 devices - once we run out we need to remove old devices to add new.
 9. Select your device from the top bar of the window, and you should be able to click the `Play` button to run with the Xcode debugger attached.
@@ -123,6 +111,32 @@ Cordova installation and start fresh (preserving project configuration settings 
 2. `./clean.sh`
 
 This will backup configuration, then remove all the Cordova target platforms, re-prepare each of them, and restore configuration.
+
+#### Troubleshooting iOS Build Issues
+After a time, the build process for iOS can break. The `/cordova-wrapper/clean.sh` script will clean out old plugins and packages
+and do a complete rebuild. If Xcode complains about duplicate declarations for some files, you may need to remove temporary files by deleting the `Monitor Your World-###` directory in:
+
+`Macintosh HD/Users/[username]/Library/Developer/Xcode/DerivedData`
+
+Then repeat the clean build process.
+
+#### iOS plist file additions
+
+There are additions defined in the config.xml for Cordova that modify the `Monitor Your World-Info.plist` file to add required descriptions about how we use Bluetooth and Camera.
+If these settings are missing, you can add them manually as follows:
+1. Edit `ios/Monitor Your World/Monitor Your World-Info.plist` in VSCode (easier than in XCode editor
+2. Add the following to allow access to Bluetooth and Camera (insert both key-string pairs near the end of the file before the closing `</dict></plist>`)
+
+```xml
+  <key>NSBluetoothAlwaysUsageDescription</key>
+  <string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
+  <key>NSBluetoothPeripheralUsageDescription</key>
+	<string>This application uses bluetooth to find, connect and transfer data from Sensor Tag bluetooth devices</string>
+  <key>NSCameraUsageDescription</key>
+  <string>This application needs camera access to capture photographs and to scan barcodes to upload data</string>
+</dict>
+</plist>
+```
 
 ### Notes
 
