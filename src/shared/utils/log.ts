@@ -26,7 +26,19 @@ let loggers: ILoggers = {
   [LogLevel.Debug]: console.debug,
 };
 
-const savedLogLevel = parseInt(window.localStorage?.getItem("logLevel") || "", 10);
+const getSavedLogLevel = () => {
+  // Note that accessing window.localStorage in an iframe might cause following error:
+  // Failed to read the 'localStorage' property from 'Window': Access is denied for this document.
+  // This depends on Chrome security settings:
+  // Settings > Privacy > Content settings, "Block sites from setting any data"
+  try {
+    return parseInt(window.localStorage?.getItem("logLevel") || "", 10);
+  } catch {
+    return NaN;
+  }
+};
+
+const savedLogLevel = getSavedLogLevel();
 let _logLevel: LogLevel = !isNaN(savedLogLevel) ? savedLogLevel : LogLevel.Error;
 
 export const logLevel = () => _logLevel;
