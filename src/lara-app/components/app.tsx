@@ -19,7 +19,7 @@ interface IProps {
 
 export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
   const [error, setError] = useState<any>();
-  const {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey, phone, setHeight} = useInteractiveApi({setError});
+  const {connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey, phone, setHeight} = useInteractiveApi({setError});
 
   const renderMessage = (message: string) => <div className={css.message}>{message}</div>;
 
@@ -45,7 +45,6 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
       return;
     }
 
-    const previewMode = !runKey;
     if (!previewMode) {
       if (!firebaseJWT) {
         return renderMessage("Waiting to connect to Firebase ...");

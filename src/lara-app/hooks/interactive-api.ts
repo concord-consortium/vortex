@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import * as jwt from "jsonwebtoken";
-import { Base64 } from "js-base64";
-
+import { v4 as uuidv4 } from "uuid";
 import { IExperiment } from "../../shared/experiment-types";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
 import { inIframe } from "../utils/in-iframe";
@@ -18,7 +17,7 @@ export interface IInitInteractiveData {
   authoredState: IAuthoredState | null;
   classInfoUrl: string;
   interactiveStateUrl: string;
-  interactiveState: string;
+  interactiveState: string | object | undefined;
   interactive: {
     id: number
   };
@@ -56,6 +55,8 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   const [initInteractiveData, setInitInteractiveData] = useState<IInitInteractiveData | undefined>(undefined);
   const [experiment, setExperiment] = useState<IExperiment|undefined>();
   const [firebaseJWT, setFirebaseJWT] = useState<IFirebaseJWT|undefined>();
+  // previewMode is disabled by default. It'll be turned on when firebaseJWT cannot be obtained.
+  const [previewMode, setPreviewMode] = useState<boolean>(false);
 
   // use ref for runKey and experimentId values as they are used in iframe phone callback
   // and the current state value is not available in that closure
@@ -72,6 +73,13 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
       const _phone = iframePhone.getIFrameEndpoint();
       setPhone(_phone);
 
+      const sendCurrentInteractiveState = () => {
+        _phone.post('interactiveState', {
+          runKey: runKey.current,
+          experimentId: experimentId.current
+        });
+      };
+
       _phone.addListener("initInteractive", (data: IInitInteractiveData) => {
         setConnectedToLara(true);
 
@@ -80,70 +88,73 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
           setExperiment(findExperiment(data.authoredState.experimentId));
         }
 
+        let interactiveState: IInteractiveStateJSON | undefined = undefined;
+        try {
+          interactiveState = typeof data.interactiveState === "string" ?
+            JSON.parse(data.interactiveState) : data.interactiveState;
+        } catch (e) {
+          // JSON.parse has failed. That's fine, just empty or malformed interactive state.
+        }
+
         if (data.mode === "runtime") {
-          if (data.classInfoUrl && data.interactiveStateUrl) {
-            // learner runtime mode
-            runKey.current = Base64.encode(data.interactiveStateUrl);
-          } else {
-            // activity preview or authoring preview mode
-            runKey.current = undefined;
-          }
+          // Generate new run key if it's not available in the interactive state (for example when vortex is run for
+          // the first time).
+          runKey.current = interactiveState?.runKey || uuidv4();
+          // Once runKey and experimentId are set, make sure they're saved back in LARA or ActivityPlayer.
+          // This is especially important in ActivityPlayer which is not polling interactive state,
+          // so this data would lost without this call.
+          sendCurrentInteractiveState();
         } else if (data.mode === "report") {
-          // report mode
-          try {
-            const json = JSON.parse(data.interactiveState) as IInteractiveStateJSON | undefined;
-            runKey.current = json?.runKey;
-            experimentId.current = json?.experimentId;
+          runKey.current = interactiveState?.runKey;
+          // Restore experiment from interactive state instead of the authored state. That ensures that
+          // report is still valid even if the author changes experiment after student's run.
+          experimentId.current = interactiveState?.experimentId;
+          if (experimentId.current) {
             setExperiment(findExperiment(experimentId.current));
-            // tslint:disable-next-line:no-empty
-          } catch (e) {}
+          }
         }
 
         setInitInteractiveData(data);
 
-        // connect to Firebase only if the interactive is being run or reported on
-        if (runKey.current) {
-          _phone.addListener("firebaseJWT", (result: any) => {
-            if (result.response_type === "ERROR") {
-              setError(`Unable to get Firebase JWT: ${result.message}`);
-              return;
-            }
-            const { token } = result;
-            if (!token) {
-              setError("No token available for Firebase");
-              return;
-            }
+        _phone.addListener("firebaseJWT", (result: any) => {
+          if (result.response_type === "ERROR") {
+            // Switch to preview mode. Most likely it means that user is not logged in (anonymous), a teacher,
+            // or a student running the activity not from the Portal. In all that cases API will return
+            // an error saying that runRemoteEndpoint is not available.
+            setPreviewMode(true);
+            return;
+          }
 
-            if (firebase.apps.length === 0) {
-              firebase.initializeApp({
-                apiKey: "AIzaSyDySxCrKaGmcqoPf2o6VnEJfB1lVzHf-rI",
-                authDomain: "vortex-e5d5d.firebaseapp.com",
-                databaseURL: "https://vortex-e5d5d.firebaseio.com",
-                projectId: "vortex-e5d5d",
-                storageBucket: "vortex-e5d5d.appspot.com",
-                messagingSenderId: "850850394401",
-                appId: "1:850850394401:web:0286d473a1343877b48e60",
-                measurementId: "G-SVQ2GPYWQK"
-              });
-            }
+          const { token } = result;
+          if (!token) {
+            setError("No token available for Firebase");
+            return;
+          }
 
-            const auth = firebase.auth();
-            auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
-              .then(() => auth.signOut())
-              .then(() => auth.signInWithCustomToken(token))
-              .then(() => setFirebaseJWT(jwt.decode(token) as IFirebaseJWT))
-              .catch((err) => setError(err));
-          });
-          _phone.post("getFirebaseJWT", {firebase_app: "vortex"});
-        }
+          if (firebase.apps.length === 0) {
+            firebase.initializeApp({
+              apiKey: "AIzaSyDySxCrKaGmcqoPf2o6VnEJfB1lVzHf-rI",
+              authDomain: "vortex-e5d5d.firebaseapp.com",
+              databaseURL: "https://vortex-e5d5d.firebaseio.com",
+              projectId: "vortex-e5d5d",
+              storageBucket: "vortex-e5d5d.appspot.com",
+              messagingSenderId: "850850394401",
+              appId: "1:850850394401:web:0286d473a1343877b48e60",
+              measurementId: "G-SVQ2GPYWQK"
+            });
+          }
+
+          const auth = firebase.auth();
+          auth.setPersistence(firebase.auth.Auth.Persistence.NONE)
+            .then(() => auth.signOut())
+            .then(() => auth.signInWithCustomToken(token))
+            .then(() => setFirebaseJWT(jwt.decode(token) as IFirebaseJWT))
+            .catch((err) => setError(err));
+        });
+        _phone.post("getFirebaseJWT", {firebase_app: "vortex"});
       });
 
-      _phone.addListener('getInteractiveState', () => {
-        _phone.post('interactiveState', {
-          runKey: runKey.current,
-          experimentId: experimentId.current
-        } as IInteractiveStateJSON);
-      });
+      _phone.addListener('getInteractiveState', sendCurrentInteractiveState);
 
       _phone.initialize();
 
@@ -157,5 +168,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
     }
   }, []);
 
-  return {connectedToLara, initInteractiveData, experiment, firebaseJWT, runKey: runKey.current, phone, setHeight};
+  return {
+    connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey: runKey.current, phone, setHeight
+  };
 };
