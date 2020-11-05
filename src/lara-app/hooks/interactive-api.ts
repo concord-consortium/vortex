@@ -88,7 +88,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
           setExperiment(findExperiment(data.authoredState.experimentId));
         }
 
-        let interactiveState: IInteractiveStateJSON | undefined = undefined;
+        let interactiveState: IInteractiveStateJSON | undefined;
         try {
           interactiveState = typeof data.interactiveState === "string" ?
             JSON.parse(data.interactiveState) : data.interactiveState;
