@@ -87,7 +87,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   // is initially loaded).  However in case the component is loaded in a different way in the
   // future a dependency on runKey was added.
   useEffect(() => {
-    if (runKey) {
+    if (runKey && !previewMode) {
       firebase
         .firestore()
         .collection(`runs/${runKey}/experiments`)
@@ -105,7 +105,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
           setError(err);
         });
     }
-  }, [runKey]);
+  }, [runKey, previewMode]);
 
   // re-generate QR code if showing
   useEffect(() => {
