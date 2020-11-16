@@ -1,8 +1,7 @@
-import React, { useEffect, useRef, useCallback } from "react";
+import React from "react";
 import { useState } from "react";
 import "firebase/firestore";
 import "firebase/auth";
-import ResizeObserver from "resize-observer-polyfill";
 
 // TODO: Discuss how / when to use the S3 authoring selection component.
 // import { LaraAuthoringComponent } from "../../authoring-app/components/lara-authoring";
@@ -19,7 +18,9 @@ interface IProps {
 
 export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
   const [error, setError] = useState<any>();
-  const {connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey, phone, setHeight} = useInteractiveApi({setError});
+  const {
+    connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey, phone, setHeight, setDataset
+  } = useInteractiveApi({setError});
 
   const renderMessage = (message: string) => <div className={css.message}>{message}</div>;
 
@@ -56,6 +57,7 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
         experiment={experiment}
         runKey={runKey}
         firebaseJWT={firebaseJWT}
+        setDataset={setDataset}
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
         reportMode={initInteractiveData.mode === "report"}

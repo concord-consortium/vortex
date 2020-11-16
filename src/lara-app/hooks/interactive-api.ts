@@ -39,6 +39,15 @@ export interface IFirebaseJWT {
   };
 }
 
+// TODO: move this interface to lara-interactive-api?
+export interface IDataset {
+  type: "dataset";
+  version: "1";
+  properties: string[];
+  xAxisProp: string;
+  rows: (number | string)[][]
+}
+
 interface IInteractiveStateJSON {
   runKey: string;
   experimentId: string;
@@ -50,13 +59,14 @@ const findExperiment = (experimentId?: string) => {
 
 export const useInteractiveApi = (options: {setError: (error: any) => void}) => {
   const { setError } = options;
-  const [phone, setPhone] = useState<any>();
+  const phone = useRef<any>();
   const [connectedToLara, setConnectedToLara] = useState(false);
   const [initInteractiveData, setInitInteractiveData] = useState<IInitInteractiveData | undefined>(undefined);
   const [experiment, setExperiment] = useState<IExperiment|undefined>();
   const [firebaseJWT, setFirebaseJWT] = useState<IFirebaseJWT|undefined>();
   // previewMode is disabled by default. It'll be turned on when firebaseJWT cannot be obtained.
   const [previewMode, setPreviewMode] = useState<boolean>(false);
+  const dataset = useRef<IDataset | null>(null);
 
   // use ref for runKey and experimentId values as they are used in iframe phone callback
   // and the current state value is not available in that closure
@@ -64,21 +74,27 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   const experimentId = useRef<string|undefined>();
 
   const setHeight = (height: number) => {
-    phone?.post("height", height);
+    phone.current?.post("height", height);
+  };
+
+  const sendCurrentInteractiveState = () => {
+    phone.current?.post('interactiveState', {
+      runKey: runKey.current,
+      experimentId: experimentId.current,
+      dataset: dataset.current
+    });
+  };
+
+  const setDataset = (newDataset: IDataset | null) => {
+    dataset.current = newDataset;
+    sendCurrentInteractiveState();
   };
 
   useEffect(() => {
     if (inIframe()) {
         // create iframephone and wait for initInteractive
       const _phone = iframePhone.getIFrameEndpoint();
-      setPhone(_phone);
-
-      const sendCurrentInteractiveState = () => {
-        _phone.post('interactiveState', {
-          runKey: runKey.current,
-          experimentId: experimentId.current
-        });
-      };
+      phone.current = _phone;
 
       _phone.addListener("initInteractive", (data: IInitInteractiveData) => {
         setConnectedToLara(true);
@@ -169,6 +185,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   }, []);
 
   return {
-    connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey: runKey.current, phone, setHeight
+    connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey: runKey.current,
+    phone: phone.current, setHeight, setDataset
   };
 };
