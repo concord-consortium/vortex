@@ -89,7 +89,7 @@ export const fieldFunction: {[key: string]: (name: string, formData: IDataTableD
       // even numbered list, use average of two around center
       result = (values[midPoint - 1] + values[midPoint]) / 2;
     } else {
-      // odd numbered list, use cendle-ter
+      // odd numbered list, use center
       result = values[midPoint];
     }
     return Number(result.toFixed(defPrecision));
