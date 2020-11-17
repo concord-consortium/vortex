@@ -45,7 +45,7 @@ export interface IDataset {
   version: "1";
   properties: string[];
   xAxisProp: string;
-  rows: (number | string)[][]
+  rows: (number | string)[][];
 }
 
 interface IInteractiveStateJSON {

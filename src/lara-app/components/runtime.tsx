@@ -45,7 +45,7 @@ export const generateDataset = (data: IExperimentData, experiment: IExperiment):
     return null;
   }
   const propTitles = propNames.map(n => dataProps[n].title);
-  const rows = data.experimentData.map(row => propNames.map(name => row[name]));
+  const rows = data.experimentData.map((row: Record<string, number | string>) => propNames.map(name => row[name]));
   if (!rows || rows.length === 0) {
     return null;
   }
