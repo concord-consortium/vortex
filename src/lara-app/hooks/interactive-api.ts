@@ -7,6 +7,7 @@ import { Experiments } from "../../mobile-app/hooks/use-experiments";
 import { inIframe } from "../utils/in-iframe";
 import { IAuthoredState } from "../../authoring-app/components/lara-authoring";
 import * as iframePhone from "iframe-phone";
+import { IDataset, IInteractiveStateWithDataset } from "@concord-consortium/lara-interactive-api";
 
 const experiments = require("../../data/experiments.json") as Experiments;
 
@@ -39,18 +40,9 @@ export interface IFirebaseJWT {
   };
 }
 
-// TODO: move this interface to lara-interactive-api?
-export interface IDataset {
-  type: "dataset";
-  version: "1";
-  properties: string[];
-  xAxisProp: string;
-  rows: (number | string)[][];
-}
-
-interface IInteractiveStateJSON {
-  runKey: string;
-  experimentId: string;
+interface IInteractiveStateJSON extends IInteractiveStateWithDataset {
+  runKey: string | undefined;
+  experimentId: string | undefined;
 }
 
 const findExperiment = (experimentId?: string) => {
@@ -78,11 +70,12 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   };
 
   const sendCurrentInteractiveState = () => {
-    phone.current?.post('interactiveState', {
+    const intState: IInteractiveStateJSON = {
       runKey: runKey.current,
       experimentId: experimentId.current,
       dataset: dataset.current
-    });
+    };
+    phone.current?.post('interactiveState', intState);
   };
 
   const setDataset = (newDataset: IDataset | null) => {
