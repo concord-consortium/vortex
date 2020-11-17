@@ -3,7 +3,7 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
-import { IFirebaseJWT } from "../hooks/interactive-api";
+import { IDataset, IFirebaseJWT } from "../hooks/interactive-api";
 import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
@@ -28,6 +28,7 @@ export type IQRCodeContent = IQRCodeContentV1 | IQRCodeContentV11;
 
 interface IProps {
   experiment: IExperiment;
+  setDataset: (dataset: IDataset | null) => void;
   runKey?: string;
   firebaseJWT?: IFirebaseJWT;
   setError: (error: any) => void;
@@ -37,7 +38,31 @@ interface IProps {
   setHeight: (height: number) => void;
 }
 
-export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight} : IProps) => {
+export const generateDataset = (data: IExperimentData, experiment: IExperiment): IDataset | null => {
+  const dataProps = experiment.schema.dataSchema.properties.experimentData?.items?.properties || {};
+  const propNames = Object.keys(dataProps);
+  if (propNames.length === 0) {
+    return null;
+  }
+  const propTitles = propNames.map(n => dataProps[n].title);
+  const rows = data.experimentData.map((row: Record<string, number | string>) => propNames.map(name => row[name]));
+  if (!rows || rows.length === 0) {
+    return null;
+  }
+  return {
+    type: "dataset",
+    version: "1",
+    properties: propTitles,
+    // Always use first property as X axis. It might be necessary to customize that in the future, but it doesn't
+    // seem useful now.
+    xAxisProp: propTitles[0],
+    rows
+  };
+};
+
+export const RuntimeComponent = ({
+  experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight, setDataset
+} : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
   const [qrCode, setQRCode] = useState("");
@@ -144,8 +169,10 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
   const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
 
   const handleSaveData = (data: IExperimentData) => {
+    // Always set/save dataset, even in preview mode. It lets graph interactive get access to it and render itself.
+    setDataset(generateDataset(data, experiment));
     // no runKey or firebaseJWT in preview mode - need to check these explicitly to make typescript happy
-    if (!runKey || !firebaseJWT) {
+    if (reportOrPreviewMode || !runKey || !firebaseJWT) {
       return;
     }
 
@@ -199,7 +226,7 @@ export const RuntimeComponent = ({experiment, runKey, firebaseJWT, setError, def
             data={experimentData}
             config={config}
             defaultSectionIndex={defaultSectionIndex}
-            onDataChange={reportOrPreviewMode ? undefined : handleSaveData}
+            onDataChange={handleSaveData}
           />
         </div>
         {(displayQr && experimentData === undefined) &&
