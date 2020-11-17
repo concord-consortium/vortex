@@ -51,7 +51,7 @@ export const generateDataset = (data: IExperimentData, experiment: IExperiment):
   const rows = experimentData.map((row: IDataTableRow) =>
     propNames.map(name =>
       // Handle values like <AVG>, <STDDEV>, <SUM>, etc.
-      handleSpecialValue(row[name], name, experimentData)
+      handleSpecialValue(row[name], name, experimentData) || null
     )
   );
   if (!rows || rows.length === 0) {
