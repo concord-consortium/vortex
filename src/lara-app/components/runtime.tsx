@@ -3,7 +3,6 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
-import { IFirebaseJWT } from "../hooks/interactive-api";
 import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
@@ -13,6 +12,7 @@ import { IDataset } from "@concord-consortium/lara-interactive-api";
 const QRCode = require("qrcode-svg");
 import { generateDataset } from "../utils/generate-dataset";
 import css from "./runtime.module.scss";
+import { IJwtClaims } from "@concord-consortium/lara-plugin-api";
 
 const UPDATE_QR_INTERVAL = 1000 * 60 * 60;  // 60 minutes
 
@@ -30,7 +30,7 @@ interface IProps {
   experiment: IExperiment;
   setDataset: (dataset: IDataset | null) => void;
   runKey?: string;
-  firebaseJWT?: IFirebaseJWT;
+  firebaseJWT?: IJwtClaims;
   setError: (error: any) => void;
   defaultSectionIndex?: number;
   reportMode?: boolean;
@@ -52,7 +52,7 @@ export const RuntimeComponent = ({
   const reportOrPreviewMode = reportMode || previewMode;
   const containerRef = useRef<HTMLDivElement|null>(null);
 
-  const generateQRCode = (options: {runKey: string, firebaseJWT: IFirebaseJWT}) => {
+  const generateQRCode = (options: {runKey: string, firebaseJWT: IJwtClaims}) => {
     return createCodeForExperimentRun(options.runKey, options.firebaseJWT.claims).then(code => {
       const content = JSON.stringify({
         version: "1.1.0",
