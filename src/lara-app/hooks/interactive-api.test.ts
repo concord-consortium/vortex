@@ -20,4 +20,4 @@ describe("isGetFirebaseJwtSupported", () => {
       { mode: "runtime", hostFeatures: {} } as unknown as IInitInteractive
     )).toEqual(false);
   });
-})
+});
