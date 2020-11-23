@@ -1,4 +1,4 @@
-import { generateDataset } from "./runtime";
+import { generateDataset } from "./generate-dataset";
 import { IExperiment } from "../../shared/experiment-types";
 
 describe("generateDataset helper", () => {

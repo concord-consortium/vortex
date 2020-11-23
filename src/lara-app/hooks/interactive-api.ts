@@ -8,6 +8,7 @@ import { inIframe } from "../utils/in-iframe";
 import { IAuthoredState } from "../../authoring-app/components/lara-authoring";
 import * as iframePhone from "iframe-phone";
 import { IDataset, IInteractiveStateWithDataset } from "@concord-consortium/lara-interactive-api";
+import { generateDataset } from "../utils/generate-dataset";
 
 const experiments = require("../../data/experiments.json") as Experiments;
 
@@ -92,9 +93,11 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
       _phone.addListener("initInteractive", (data: IInitInteractiveData) => {
         setConnectedToLara(true);
 
+        let _experiment;
         if (data.authoredState && (data.authoredState.version === "1.0")) {
           experimentId.current = data.authoredState.experimentId;
-          setExperiment(findExperiment(data.authoredState.experimentId));
+          _experiment = findExperiment(data.authoredState.experimentId);
+          setExperiment(_experiment);
         }
 
         let interactiveState: IInteractiveStateJSON | undefined;
@@ -109,7 +112,12 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
           // Generate new run key if it's not available in the interactive state (for example when vortex is run for
           // the first time).
           runKey.current = interactiveState?.runKey || uuidv4();
-          // Once runKey and experimentId are set, make sure they're saved back in LARA or ActivityPlayer.
+          // There's no data available yet, but generate an empty dataset.
+          // It should include properties list and will let graph interactive render empty graphs.
+          if (_experiment) {
+            dataset.current = generateDataset({ experimentData: [] }, _experiment);
+          }
+          // Once runKey, experimentId and dataset are set, make sure they're saved back in LARA or ActivityPlayer.
           // This is especially important in ActivityPlayer which is not polling interactive state,
           // so this data would lost without this call.
           sendCurrentInteractiveState();
