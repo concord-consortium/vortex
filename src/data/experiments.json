@@ -85,7 +85,7 @@
                   "type": "number"
                 },
                  "illuminance": {
-                  "title": "Illuminance (lux)",
+                  "title": "Light (lux)",
                   "type": "number"
                 }
               }
@@ -249,25 +249,17 @@
             "type": "array",
             "items": {
               "type": "object",
-              "required": [
-                "teamlabel"
-              ],
               "properties": {
-                "teamlabel": {
-                  "title": "Team",
-                  "type": "string",
-                  "readOnly": true
-                },
                 "ph": {
                   "title": "pH (SU)",
                   "type": "number"
                 },
                 "airtemp": {
-                  "title": "Air Temp (\u00B0C)",
+                  "title": "Air Temperature (\u00B0C)",
                   "type": "number"
                 },
                 "watertemp": {
-                  "title": "Water Temp (\u00B0C)",
+                  "title": "Water Temperature (\u00B0C)",
                   "type": "number"
                 },
                 "nitrate": {
@@ -337,9 +329,7 @@
         "experimentData": {
           "ui:field": "dataTable",
           "ui:dataTableOptions": {
-            "sensorFields": [
-            ],
-            "titleField": "teamlabel"
+            "sensorFields": []
           }
         },
         "photo": {
@@ -349,12 +339,7 @@
     },
     "data": {
       "experimentData": [
-        {
-          "teamlabel": "1"
-        },
-        {
-          "teamlabel": "2"
-        }
+        {}
       ],
       "photo": []
     }
