@@ -1,9 +1,14 @@
-import { generateDataset } from "./generate-dataset";
+import { generateDataset, xAxisPropertyForExperiment } from "./generate-dataset";
 import { IExperiment } from "../../shared/experiment-types";
+import { Experiments } from "../../mobile-app/hooks/use-experiments";
+const experiments = require("../../data/experiments.json") as Experiments;
 
 describe("generateDataset helper", () => {
   it("generates dataset following IDataset interface from experiment definition and experiment data", () => {
     const experiment = {
+      metadata: {
+        uuid: "e431af00-5ef9-44f8-a887-c76caa6ddde1"
+      },
       schema: {
         dataSchema: {
           properties: {
@@ -47,7 +52,7 @@ describe("generateDataset helper", () => {
       type: "dataset",
       version: 1,
       properties: ["Location", "Temperature (\u00B0C)", "Humidity (%)", "Illuminance (lux)"],
-      xAxisProp: "Location", // 1st prop
+      xAxisProp: "Location",
       rows: [
         ["corner1", 1, 10, 100],
         ["corner2", 2, 11, 110],
@@ -55,4 +60,14 @@ describe("generateDataset helper", () => {
       ]
     });
   });
+
+  // This test should ensure that when new epxeriment is added, developer won't miss xAxisPropertyForExperiment hash.
+  it("has defined xAxisPropertyForExperiment for each experiment", () => {
+    const supportedExperiments = Object.keys(xAxisPropertyForExperiment);
+    experiments.forEach(experiment => {
+      // Note that simple xAxisPropertyForExperiment[experiment.metadata.uuid] won't work here,
+      // as `undefined` is a valid value in this hash.
+      expect(supportedExperiments.indexOf(experiment.metadata.uuid)).not.toEqual(-1);
+    });
+  })
 });
