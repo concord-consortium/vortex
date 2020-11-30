@@ -120,7 +120,7 @@
     "webpack-dev-server": "^3.10.1"
   },
   "dependencies": {
-    "@concord-consortium/lara-interactive-api": "^0.7.0",
+    "@concord-consortium/lara-interactive-api": "^0.7.1",
     "@concord-consortium/lara-plugin-api": "^3.1.2",
     "@concord-consortium/token-service": "^1.2.0",
     "ace-builds": "^1.4.8",
