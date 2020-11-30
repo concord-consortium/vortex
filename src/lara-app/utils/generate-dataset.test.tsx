@@ -69,5 +69,5 @@ describe("generateDataset helper", () => {
       // as `undefined` is a valid value in this hash.
       expect(supportedExperiments.indexOf(experiment.metadata.uuid)).not.toEqual(-1);
     });
-  })
+  });
 });
