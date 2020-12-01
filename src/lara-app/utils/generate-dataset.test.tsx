@@ -61,7 +61,7 @@ describe("generateDataset helper", () => {
     });
   });
 
-  // This test should ensure that when new epxeriment is added, developer won't miss xAxisPropertyForExperiment hash.
+  // This test should ensure that when new experiment is added, developer won't miss xAxisPropertyForExperiment hash.
   it("has defined xAxisPropertyForExperiment for each experiment", () => {
     const supportedExperiments = Object.keys(xAxisPropertyForExperiment);
     experiments.forEach(experiment => {
