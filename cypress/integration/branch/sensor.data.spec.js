@@ -1,7 +1,7 @@
 import ExperimentSetup from "../../supports/elements/ExperimentSetup"
 import SensorData from "../../supports/elements/SensorData";
 
-context("Testing Experiment Selection View", () => {
+context.skip("Testing Experiment Selection View", () => {
 
     //const branch = "master"
 
