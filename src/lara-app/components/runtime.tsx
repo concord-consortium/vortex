@@ -188,8 +188,18 @@ export const RuntimeComponent = ({
       minCameraHeight: 300
     };
 
+    const showQrContainer = displayQr && experimentData === undefined;
+
+    // NOTE: this is a bit of a hack.  The QR container is absolutely positioned so when
+    // it is displayed it does not alter the height of its parent element.  I tried adding
+    // a ref on the QR container along with a resize observer on that ref but it also did
+    // not return the correct height.  The 675 pixel height leaves room at the bottom of the
+    // display in case the app name (which is displayed) gets longer and increases the height
+    // of the container changes
+    const height = showQrContainer ? 675 : "auto";
+
     return (
-      <div>
+      <div style={{height}}>
         {!previewMode ? undefined :
           <div className={css.previewModeNotice}>
             You are viewing a preview of the activity. <strong>NO DATA IS BEING SAVED!</strong>
@@ -207,9 +217,10 @@ export const RuntimeComponent = ({
             onDataChange={handleSaveData}
           />
         </div>
-        {(displayQr && experimentData === undefined) &&
+        {showQrContainer &&
           <div className={css.qrContainer}>
             <div className={css.displayBox}>
+              { false && "NOTE TO DEVS: if you change the text in this container you may need to change the height const and check it in the Activity Player / Lara"}
               <div className={css.header}>Import experiment data from your mobile device</div>
               <div className={css.instructions}>
                 <ol>
