@@ -102,8 +102,8 @@ export const RuntimeComponent = ({
           const newData = experimentRef.current?.data as IExperimentData | undefined;
           setExperimentData(newData);
 
-          // if there is no data force an upload
-          setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportOrPreviewMode);
+          // if there is no data force an upload - DISABLED FOR NOW
+          // setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportOrPreviewMode);
         }, (err) => {
           setError(err);
         });
