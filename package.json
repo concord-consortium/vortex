@@ -1,6 +1,6 @@
 {
   "name": "vortex",
-  "version": "0.0.1",
+  "version": "1.3.1",
   "description": "Vortex: the data capture system where all your data disappears into a black hole",
   "main": "index.js",
   "jest": {
