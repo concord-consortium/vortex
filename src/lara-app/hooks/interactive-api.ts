@@ -91,18 +91,20 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
         }
 
         if (data.mode === "runtime") {
-          // Generate new run key if it's not available in the interactive state (for example when vortex is run for
-          // the first time).
-          runKey.current = interactiveState?.runKey || uuidv4();
-          // There's no data available yet, but generate an empty dataset.
+          const existingRunKey = interactiveState?.runKey;
+          // Generate new run key if it's not available in the interactive state (when vortex is run for the first time).
+          runKey.current = existingRunKey || uuidv4();
+          // If there's no data available yet, generate an empty dataset.
           // It should include properties list and will let graph interactive render empty graphs.
           if (_experiment) {
-            dataset.current = generateDataset({ experimentData: [] }, _experiment);
+            dataset.current = interactiveState?.dataset || generateDataset({ experimentData: [] }, _experiment);
           }
-          // Once runKey, experimentId and dataset are set, make sure they're saved back in LARA or ActivityPlayer.
-          // This is especially important in ActivityPlayer which is not polling interactive state,
-          // so this data would lost without this call.
-          sendCurrentInteractiveState();
+          if (!existingRunKey) {
+            // Once runKey, experimentId and dataset are set for the **first time**, make sure they're saved back
+            // in LARA or ActivityPlayer. This is especially important in ActivityPlayer which is not polling
+            // interactive state, so this data would lost without this call.
+            sendCurrentInteractiveState();
+          }
         } else if (data.mode === "report") {
           runKey.current = interactiveState?.runKey;
           // Restore experiment from interactive state instead of the authored state. That ensures that
