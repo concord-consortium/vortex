@@ -101,6 +101,13 @@ export const RuntimeComponent = ({
           experimentRef.current = snapshot.docs[0]?.data?.().experiment;
           const newData = experimentRef.current?.data as IExperimentData | undefined;
           setExperimentData(newData);
+          if (newData) {
+            // This will generate dataset and send it to parent window using LARA Interactive API. Dataset is used
+            // by the graph interactive. Note that the mobile app import saves data directly in Firestore, so this
+            // listener is the only place where we have a chance to catch this data update, generate dataset,
+            // and finally send it to ActivityPlayer.
+            setDataset(generateDataset(newData, experiment));
+          }
 
           // if there is no data force an upload - DISABLED FOR NOW
           // setDisplayQrAndMaybeRegenerateQR((newData === undefined) && !reportOrPreviewMode);
@@ -147,10 +154,11 @@ export const RuntimeComponent = ({
   const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
 
   const handleSaveData = (data: IExperimentData) => {
-    // Always set/save dataset, even in preview mode. It lets graph interactive get access to it and render itself.
-    setDataset(generateDataset(data, experiment));
     // no runKey or firebaseJWT in preview mode - need to check these explicitly to make typescript happy
     if (reportOrPreviewMode || !runKey || !firebaseJWT) {
+      // Dataset is usually generated in the Firestore #onSnapshot handler, but the preview mode doesn't use Firestore.
+      // Generate it manually, so authors can see the connection between Vortex and the graph interactive.
+      setDataset(generateDataset(data, experiment));
       return;
     }
 
