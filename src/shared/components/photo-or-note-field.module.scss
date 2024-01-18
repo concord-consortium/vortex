@@ -85,8 +85,8 @@
 
         .hasCaption {
           position: absolute;
-          top: (80px - 24px) / 2;
-          left: (80px - 24px) / 2;
+          top: calc((80px - 24px) / 2);
+          left: calc((80px - 24px) / 2);
 
           svg {
             fill: #fff;
