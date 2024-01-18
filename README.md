@@ -150,7 +150,28 @@ If these settings are missing, you can add them manually as follows:
 
 ## Deployment
 
-*TODO* Set up Travis Deployment
+Deployments are based on the contents of the /dist folder and are built automatically by GitHub Actions for each branch and tag pushed to GitHub.
+
+Branches are deployed to `https://models-resources.concord.org/vortex/branch/<name>/`.
+
+Tags are deployed to `https://models-resources.concord.org/vortex/version/<name>/`
+
+You can view the status of all the branch and tag deploys [here](https://github.com/concord-consortium/vortex/actions).
+
+The production release is available at `https://models-resources.concord.org/vortex/.
+
+Production releases are done using a manual GitHub Actions workflow. You specify which tag you want to release to production and the workflow copies that tag's `index-top.html` to `https://models-resources.concord.org/vortex/index.html`.
+
+See the CLUE [docs/deploy.md](https://github.com/concord-consortium/collaborative-learning/blob/master/docs/deploy.md) for more details (it uses the same process).
+
+To deploy a production release:
+
+1. Create `release-<version>` branch and commit changes, push to GitHub, create PR and merge
+1. Test the master build at: https://models-resources.concord.org/vortex/index-master.html
+1. Push a version tag to GitHub and/or use https://github.com/concord-consortium/vortex/releases to create a new GitHub release
+1. Stage the release by running the [Release Staging Workflow](https://github.com/concord-consortium/vortex/actions/workflows/release-staging.yml) and entering the version tag you just pushed.
+1. Test the staged release at https://models-resources.concord.org/vortex/index-staging.html
+1. Update production by running the [Release Workflow](https://github.com/concord-consortium/vortex/actions/workflows/release.yml) and entering the release version tag.
 
 ## Updating Experiments
 
