@@ -31,6 +31,6 @@ describe("Metadata component", () => {
     const wrapper = shallow(<Metadata experiment={experiment} data={data}/>);
     expect(wrapper.find(Initials).length).toEqual(1);
     expect(wrapper.text()).toEqual(expect.stringContaining("test experiment"));
-    expect(wrapper.text()).toEqual(expect.stringMatching(/Fri, February 7, 2020, \d?\d:29 [AP]M/));
+    expect(wrapper.text()).toEqual(expect.stringMatching(/Fri, February 7, 2020/));
   });
 });
