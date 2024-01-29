@@ -13,10 +13,9 @@ import { useInteractiveApi } from "../hooks/interactive-api";
 import css from "./app.module.scss";
 
 interface IProps {
-  defaultSectionIndex?: number;
 }
 
-export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
+export const AppComponent:React.FC<IProps> = () => {
   const [error, setError] = useState<any>();
   const {
     connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey, phone, setHeight, setDataset
@@ -50,6 +49,12 @@ export const AppComponent:React.FC<IProps> = ({defaultSectionIndex}) => {
       if (!firebaseJWT) {
         return renderMessage("Waiting to connect to Firebase ...");
       }
+    }
+
+    let defaultSectionIndex = experiment.schema.sections.findIndex(section => section.icon === "collect");
+    if (defaultSectionIndex === -1) {
+      // default to the second section (which was the previous default) is the the data collection section can't be found
+      defaultSectionIndex = 1;
     }
 
     return (
