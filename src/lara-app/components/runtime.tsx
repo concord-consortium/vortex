@@ -185,7 +185,7 @@ export const RuntimeComponent = ({
     if (!previewMode && !queriedFirestore) {
       return <div>Looking for existing experiment data...</div>;
     }
-    const enableSensor = (!reportMode && !!getURLParam("enableSensor")) || !!previewMode;
+    const enableSensor = (!reportMode && !!getURLParam("enableSensor"));
     const config: IExperimentConfig = {
       hideLabels: false,
       useSensors: enableSensor,
