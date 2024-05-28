@@ -135,7 +135,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
 
             if (firebase.apps.length === 0) {
               firebase.initializeApp({
-                apiKey: "AIzaSyDySxCrKaGmcqoPf2o6VnEJfB1lVzHf-rI",
+                apiKey: atob("QUl6YVN5RHlTeENyS2FHbWNxb1BmMm82Vm5FSmZCMWxWekhmLXJJ"),
                 authDomain: "vortex-e5d5d.firebaseapp.com",
                 databaseURL: "https://vortex-e5d5d.firebaseio.com",
                 projectId: "vortex-e5d5d",
