@@ -43,6 +43,10 @@ export class Device {
     return matches;
   }
 
+  public getFilters(): BluetoothRequestDeviceFilter[] {
+    return [{services: [this.serviceUUID]}];
+  }
+
   public get serviceUUID() {
     return this._serviceUUID;
   }
@@ -56,7 +60,7 @@ export class Device {
     return [];
   }
 
-  public setupRead(bluetoothServer: BluetoothRemoteGATTServer) {
+  public setupRead(bluetoothServer: BluetoothRemoteGATTServer, bluetoothDevice?: BluetoothDevice) {
     // required to be overridden in subclasses
     return new Promise<void>((resolve, reject) => {
       reject("setupRead() not overridden");

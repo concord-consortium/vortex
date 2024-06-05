@@ -4,6 +4,7 @@ import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
 import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
 import { MultiSensorDevice } from "./devices/multi-sensor";
+import { GDXSensorDevice } from "./devices/gdx-sensor";
 import { logInfo } from "../shared/utils/log";
 import { inCordova } from "../shared/utils/in-cordova";
 
@@ -25,7 +26,8 @@ export class DeviceSensor extends Sensor {
     this.devices = [
       new SensorTag2Device(options.capabilities),
       new SensorTagCC1350Device(options.capabilities),
-      new MultiSensorDevice(options.capabilities)
+      new MultiSensorDevice(options.capabilities),
+      new GDXSensorDevice(options.capabilities)
     ].filter(device => device.matchesCapabilities());
   }
 
@@ -88,7 +90,7 @@ export class DeviceSensor extends Sensor {
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
     return new Promise<ISensorValues>((resolve, reject) => {
-      const {device, bluetoothServer} = this;
+      const {device, bluetoothDevice, bluetoothServer} = this;
       if (!device) {
         return reject("No device found");
       }
@@ -96,7 +98,7 @@ export class DeviceSensor extends Sensor {
         return reject("No bluetoothServer found");
       }
       if (options.firstPoll) {
-        return device.setupRead(bluetoothServer).then(() => device.read()).then(resolve).catch(reject);
+        return device.setupRead(bluetoothServer, bluetoothDevice).then(() => device.read()).then(resolve).catch(reject);
       } else if (options.lastPoll) {
         return device.teardownRead().then(() => resolve({})).catch(reject);
       } else {
@@ -121,9 +123,11 @@ export class DeviceSensor extends Sensor {
   }
 
   private getFilters() {
-    return this.devices.map(device => {
-      return {services: [device.serviceUUID]};
+    let filters: BluetoothRequestDeviceFilter[] = [];
+    this.devices.forEach(device => {
+      filters = filters.concat(device.getFilters());
     });
+    return filters;
   }
 
   private getOptionalServiceUUIDs() {
