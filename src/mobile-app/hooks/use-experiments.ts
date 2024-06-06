@@ -89,6 +89,11 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
     upgradeApp: false
   });
 
+  /*
+
+  DISABLING AUTO UPDATE OF EXPERIMENTS DURING DEVELOPMENT
+
+
   useEffect(() => {
     const updateUrl = getUpdateUrl();
     logInfo(`Updating experiments from ${updateUrl}`);
@@ -107,7 +112,8 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
       .catch(err => {
         logError("Unable to load remote experiments:", err);
       });
-  }, [] /* load the external json file once */ );
+  }, []); // load the external json file once
+  */
 
   return useExperimentsResult;
 };
