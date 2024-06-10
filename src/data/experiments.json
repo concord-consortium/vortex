@@ -599,7 +599,10 @@
           "ui:dataTableOptions": {
             "sensorFields": [
               "timeSeries"
-            ]
+            ],
+            "filters": [{
+              "namePrefix": "GDX-"
+            }]
           }
         },
         "photo": {

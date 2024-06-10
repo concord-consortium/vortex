@@ -23,6 +23,8 @@ export interface IFormUiSchema extends UiSchema {
   "ui:dataTableOptions"?: {
     // List of properties that should be connected to sensor output.
     sensorFields?: string[];
+    // List of filters to use when selecting sensors
+    filters?: BluetoothRequestDeviceFilter[];
     // Reference to other form field that should be used as a table title.
     titleField?: string;
   };

@@ -14,7 +14,8 @@ describe("use-sensor hook", () => {
         illuminance: true,
         temperature: true,
         humidity: true
-      }
+      },
+      experimentFilters: []
     });
     autoConnectedSensor = new MockSensor({
       autoConnect: true,
@@ -23,7 +24,8 @@ describe("use-sensor hook", () => {
         illuminance: true,
         temperature: true,
         humidity: true
-      }
+      },
+      experimentFilters: []
     });
   });
 

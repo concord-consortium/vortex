@@ -45,7 +45,7 @@ export class GDXSensorDevice extends Device {
 
   public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {
     const name = bluetoothDevice.name ?? "";
-    return !!(goDirectDevicePrefixes.find(prefix => name.startsWith(prefix)));
+    return name.startsWith("GDX-");
   }
 
   public setupRead(bluetoothServer: BluetoothRemoteGATTServer, bluetoothDevice: BluetoothDevice) {
