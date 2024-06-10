@@ -23,12 +23,16 @@ export class DeviceSensor extends Sensor {
 
   constructor(options: ISensorOptions) {
     super(options);
-    this.devices = [
+    const allDevices = [
       new SensorTag2Device(options.capabilities),
       new SensorTagCC1350Device(options.capabilities),
       new MultiSensorDevice(options.capabilities),
       new GDXSensorDevice(options.capabilities)
-    ].filter(device => device.matchesCapabilities());
+    ];
+    // experiments can set filters explicity and not just by capabilities
+    this.devices = this.experimentFilters.length > 0
+      ? allDevices
+      : allDevices.filter(device => device.matchesCapabilities());
   }
 
   public connect(connectOptions: IConnectOptions): Promise<void> {
@@ -123,6 +127,11 @@ export class DeviceSensor extends Sensor {
   }
 
   private getFilters() {
+    // experiments can set filters explicity and not just by capabilities
+    if (this.experimentFilters.length > 0) {
+      return this.experimentFilters;
+    }
+
     let filters: BluetoothRequestDeviceFilter[] = [];
     this.devices.forEach(device => {
       filters = filters.concat(device.getFilters());

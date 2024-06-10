@@ -234,6 +234,7 @@ describe("DataTableField component", () => {
   it("uses sensor when useSensors is specified in formContext.experimentConfig object", async () => {
     const mockSensor = new MockSensor({
       capabilities: {temperature: true},
+      experimentFilters: [],
       pollInterval: 500,
       deviceName: "Mocked Sensor",
       minValues: {temperature: 10},
@@ -307,9 +308,99 @@ describe("DataTableField component", () => {
     expect(wrapper.find({name: "replay"}).length).toEqual(2);
   });
 
+  it("uses sensor when filters are specified in formContext.experimentConfig object", async () => {
+    const mockSensor = new MockSensor({
+      capabilities: {},
+      experimentFilters: [{
+        name: "Mocked Sensor"
+      }],
+      pollInterval: 500,
+      deviceName: "Mocked Sensor",
+      minValues: {temperature: 10},
+      maxValues: {temperature: 10}
+    });
+    const schema: JSONSchema7 = {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "readOnly": true
+          },
+          "temperature": {
+            "type": "number"
+          }
+        }
+      }
+    };
+    const uiSchema = {
+      "ui:dataTableOptions": {
+        "sensorFields": ["temperature"],
+        "filters": [{"name": "Mocked Sensor"}]
+      }
+    };
+    const formContext = {
+      experimentConfig: {
+        useSensors: true
+      },
+      sensor: mockSensor
+    };
+    const data = [
+      {location: "corner 1"},
+      {location: "corner 2"}
+    ];
+    const onChange = jest.fn();
+    // React JSONSchema Form types are a bit inconsistent. This library actually accepts JSONSchema7 schema, even though types specify only version 6.
+    const wrapper = mount(<DataTableField {...defProps} schema={schema as JSONSchema6} uiSchema={uiSchema} formContext={formContext} formData={data} onChange={onChange} />);
+
+    expect(wrapper.find(SensorComponent).length).toEqual(1);
+    // Headers should have one cell more for record button (record, "location", "temperature")
+    expect(wrapper.find("th").length).toEqual(3);
+    expect(wrapper.find("td").length).toEqual(6); // record button + two data cells x 2 rows
+    expect(wrapper.find(SensorComponent).length).toEqual(1);
+    // Two record sensor buttons are expected, as there are two predefined rows of data.
+    expect(wrapper.find("[data-test='record-sensor']").length).toEqual(2);
+    // No replay icons are expected at this point.
+    expect(wrapper.find({name: "replay"}).length).toEqual(0);
+
+    // Record sensor values. Sensor not connected yet, nothing should happen.
+    wrapper.find("[data-test='record-sensor']").at(0).simulate("click");
+    expect(onChange).not.toHaveBeenCalled();
+
+    expect(mockSensor.connected).toBe(false);
+
+    // Connect sensor.
+    await act(async () => {
+      await mockSensor.connect();
+    });
+
+    expect(mockSensor.connected).toBe(true);
+
+    /*
+
+    TODO: uncomment and update this test when the time series data saving PT story is implemented
+
+    wrapper.find("[data-test='record-sensor']").at(0).simulate("click");
+    expect(onChange).toHaveBeenCalledWith([
+      {location: "corner 1", temperature: 10},
+      {location: "corner 2"}
+    ]);
+    expect(wrapper.find({name: "replay"}).length).toEqual(1); // record button should change to refresh button
+
+    wrapper.find("[data-test='record-sensor']").at(1).simulate("click");
+    expect(onChange).toHaveBeenCalledWith([
+      {location: "corner 1", temperature: 10},
+      {location: "corner 2", temperature: 10}
+    ]);
+    expect(wrapper.find({name: "replay"}).length).toEqual(2);
+    */
+  });
+
   it("requires confirmation before sensor values are overwritten", async () => {
     const mockSensor = new MockSensor({
       capabilities: {temperature: true},
+      experimentFilters: [],
       pollInterval: 500,
       deviceName: "Mocked Sensor",
       minValues: {temperature: 10},

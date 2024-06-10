@@ -16,6 +16,7 @@ export interface ISensorValues {
 
 export interface ISensorOptions {
   capabilities: ISensorCapabilities;
+  experimentFilters: BluetoothRequestDeviceFilter[];
   pollInterval?: number;
 }
 
@@ -78,6 +79,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
   protected _deviceName: string | undefined;
   private _connected: boolean;
   private _values: ISensorValues;
+  private _experimentFilters: BluetoothRequestDeviceFilter[];
   private _capabilities: ISensorCapabilities;
   private pollTimeout: number;
   private pollInterval: number;
@@ -85,11 +87,16 @@ export class Sensor extends EventEmitter<SensorEvent> {
 
   constructor(options: ISensorOptions) {
     super();
+    this._experimentFilters = options.experimentFilters;
     this._capabilities = options.capabilities;
     this._connected = false;
     this._values = {};
     this.pollInterval = options.pollInterval || 1000;
     this.error = undefined;
+  }
+
+  public get experimentFilters() {
+    return this._experimentFilters;
   }
 
   public get capabilities() {

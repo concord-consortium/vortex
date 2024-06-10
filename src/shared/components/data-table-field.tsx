@@ -78,22 +78,24 @@ const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
 // handled by the same object
 const sensorCache: {[key: string]: MockSensor | DeviceSensor} = {};
 
-const getSensor = (sensorFields: string[]) => {
+const getSensor = (sensorFields: string[], experimentFilters: BluetoothRequestDeviceFilter[], ) => {
   const useMockSensor = !!getURLParam("mockSensor");
   const capabilities: ISensorCapabilities = {};
   sensorFields.forEach(fieldName => capabilities[fieldName as SensorCapabilityKey] = true);
-  const key = JSON.stringify(capabilities);
+  const key = experimentFilters.length > 0 ? JSON.stringify(experimentFilters) : JSON.stringify(capabilities);
   if (!sensorCache[key]) {
     if (useMockSensor) {
       sensorCache[key] = new MockSensor({
         capabilities,
+        experimentFilters,
         pollInterval: 500,
         deviceName: "Mocked Sensor",
         showDevicePicker: !!getURLParam("showDevicePicker") || false
       });
     } else {
       sensorCache[key] = new DeviceSensor({
-        capabilities
+        capabilities,
+        experimentFilters
       });
     }
   }
@@ -153,9 +155,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
   // Cast some types to Vortex-specific types so it's easier to work with them in the code below.
   const formContext: IVortexFormContext = props.formContext || {};
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
+  const experimentFilters = uiSchema["ui:dataTableOptions"]?.filters || [];
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
-  // Sensor instance can be provided in form context or it'll be created using sensorFields as capabilities.
-  const sensor = formContext.experimentConfig?.useSensors && sensorFields.length > 0 ? (formContext.sensor || getSensor(sensorFields)) : null;
+  // Sensor instance can be provided in form context or it'll be created using filters or sensorFields as capabilities.
+  const sensor = formContext.experimentConfig?.useSensors && sensorFields.length > 0 ? (formContext.sensor || getSensor(sensorFields, experimentFilters)) : null;
   const sensorOutput = useSensor(sensor);
   const titleField = uiSchema["ui:dataTableOptions"]?.titleField;
   const title = titleField && formContext.formData[titleField] || "";

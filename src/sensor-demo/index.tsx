@@ -10,6 +10,7 @@ import "./index.scss";
 
 const sensor1: DeviceSensor = new DeviceSensor({
   capabilities: AllCapabilities,
+  experimentFilters: [],
 });
 ReactDOM.render(
   <SensorComponent sensor={sensor1} />,
@@ -19,6 +20,7 @@ ReactDOM.render(
 const sensor2: MockSensor = new MockSensor({
   autoConnect: true,
   capabilities: AllCapabilities,
+  experimentFilters: [],
   pollInterval: 500,
   deviceName: "Mocked Sensor #1"
 });
@@ -29,6 +31,7 @@ ReactDOM.render(
 
 const sensor3: MockSensor = new MockSensor({
   capabilities: AllCapabilities,
+  experimentFilters: [],
   deviceName: "Mocked Sensor #2"
 });
 ReactDOM.render(
@@ -40,6 +43,7 @@ const sensor4: MockSensor = new MockSensor({
   capabilities: {
     temperature: true
   },
+  experimentFilters: [],
   deviceName: "Mocked Sensor #3"
 });
 ReactDOM.render(
