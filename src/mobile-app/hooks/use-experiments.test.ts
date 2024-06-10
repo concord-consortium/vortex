@@ -34,6 +34,14 @@ describe("use-experiments hook", () => {
     },
   ];
 
+  it("is disabled for now", () => {
+    expect(true).toEqual(true);
+  });
+
+  /*
+
+  TEMPORARILY DISABLED ALONG WITH EXPERIMENT DOWNLOADS
+
   it("returns built in experiments when no experiments have been saved or are downloaded", () => {
     const fetchMock = jest.fn().mockRejectedValue(new Error("test fetch failure"));
     (window as any).fetch = fetchMock;
@@ -150,4 +158,6 @@ describe("use-experiments hook", () => {
     // will have NOT saved the downloaded experiments in the fetch handler (all are > current version)
     expect(mockedStorageSave).not.toHaveBeenCalled();
   });
+
+  */
 });

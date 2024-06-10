@@ -509,5 +509,123 @@
       ],
       "photo": []
     }
+  },
+  {
+    "version": "1.0.0",
+    "metadata": {
+      "uuid": "aefb5299-c127-4d84-b7f0-78da389ebecd",
+      "name": "Record Data Trials",
+      "initials": "RD"
+    },
+    "schema": {
+      "sections": [
+        {
+          "title": "Collect",
+          "icon": "collect",
+          "formFields": [
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "experimentData": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "timeSeries"
+              ],
+              "properties": {
+                "timeSeries": {
+                  "title": "Readout",
+                  "type": "number"
+                },
+                "label": {
+                  "title": "Label",
+                  "type": "string"
+                }
+              }
+            }
+          },
+          "photo": {
+            "title": "Photos",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "customName": {
+          "ui:icon": "label",
+          "ui:placeholder": "Time Series Investigation"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": [
+              "timeSeries"
+            ]
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        }
+      ],
+      "photo": []
+    }
   }
 ]
