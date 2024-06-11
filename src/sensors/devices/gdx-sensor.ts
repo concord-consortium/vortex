@@ -1,6 +1,7 @@
 import { Device } from "./device";
 import godirect from "@vernier/godirect/dist/godirect.min.cjs";
-import { ISensorCapabilities, ISensorValues, SensorCapabilityKey } from "../sensor";
+import { ISensorCapabilities, ISensorValues, ITimeSeriesCapabilities } from "../sensor";
+import { IDataTableTimeData } from "../../shared/components/data-table-field";
 
 const goDirectServiceUUID = "d91714ef-28b9-4f91-ba16-f0d9a604f112";
 const measurementPeriod = 100;
@@ -11,14 +12,10 @@ const measurementPeriod = 100;
 // elsewhere then the map below should be updated.
 
 const goDirectDevicePrefixes = ["GDX-TMP"];
-const sensorNameToCapabilityMap: Record<string, Record<string, SensorCapabilityKey>> = {
-  "GDX-TMP": {
-    "Temperature": "temperature"
-  }
-};
 
 export class GDXSensorDevice extends Device {
   private gdxDevice: any;
+  private _timeSeriesCapabilities: ITimeSeriesCapabilities|undefined = undefined;
 
   constructor(requestedCapabilities: ISensorCapabilities) {
     super({
@@ -43,6 +40,38 @@ export class GDXSensorDevice extends Device {
     return [goDirectServiceUUID];
   }
 
+  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+    return this._timeSeriesCapabilities;
+  }
+
+  public collectTimeSeries(timeSeriesCapabilities: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+    const sensor = this.gdxDevice?.sensors.find((s: any) => s.enabled);
+
+    if (!this.gdxDevice || !sensor) {
+      return () => {
+        // noop
+      };
+    }
+
+    let time = 0;
+    const delta = timeSeriesCapabilities.measurementPeriod / 1000;
+    const values: IDataTableTimeData[] = [];
+
+    this.gdxDevice.stop();
+
+    const handleChange = () => {
+      values.push({time, value: sensor.value});
+      callback(values);
+      time += delta;
+    };
+    sensor.on("value-changed", handleChange);
+    this.gdxDevice.start(timeSeriesCapabilities.measurementPeriod);
+
+    return () => {
+      sensor.off("value-changed", handleChange);
+    };
+  }
+
   public matchesBluetoothDevice(bluetoothDevice: BluetoothDevice): boolean {
     const name = bluetoothDevice.name ?? "";
     return name.startsWith("GDX-");
@@ -64,6 +93,23 @@ export class GDXSensorDevice extends Device {
           return;
         }
 
+        const firstSensor = gdxDevice?.sensors[0];
+        if (firstSensor) {
+          const measurementInfo = firstSensor.specs?.measurementInfo;
+          const measurement: string = firstSensor.name;
+          const valueKey = measurement.toLowerCase();
+          this._timeSeriesCapabilities = {
+            measurementPeriod,
+            measurement,
+            valueKey,
+            units: firstSensor.unit,
+            minValue: measurementInfo.minValue ?? 0,
+            maxValue: measurementInfo.maxValue ?? 0
+          };
+        } else {
+          this._timeSeriesCapabilities = undefined;
+        }
+
         this.gdxDevice = gdxDevice;
         this.gdxDevice.start(measurementPeriod);
 
@@ -75,13 +121,11 @@ export class GDXSensorDevice extends Device {
   public read() {
     const values: ISensorValues = {};
     const enabledSensors = this.gdxDevice.sensors.filter((s: any) => s.enabled);
-    const capabilityMap = sensorNameToCapabilityMap[this.gdxDevice.orderCode];
-    this.forEachRequestedCapability(capability => {
-      enabledSensors.forEach((sensor: any) => {
-        if (sensor.value !== null && capabilityMap?.[sensor.name]) {
-          values[capabilityMap[sensor.name]] = sensor.value;
-        }
-      });
+    enabledSensors.forEach((sensor: {name: string|null, value: number|null}) => {
+      if (sensor.value !== null && sensor.name !== null) {
+        const key = sensor.name.toLowerCase() as keyof ISensorValues;
+        values[key] = sensor.value;
+      }
     });
     return Promise.resolve(values);
   }

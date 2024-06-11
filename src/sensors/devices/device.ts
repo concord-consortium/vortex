@@ -1,4 +1,5 @@
-import { ISensorCapabilities, ISensorValues, SensorCapabilityKey, AllCapabilityKeys } from "../sensor";
+import { IDataTableTimeData } from "../../shared/components/data-table-field";
+import { ISensorCapabilities, ISensorValues, SensorCapabilityKey, AllCapabilityKeys, ITimeSeriesCapabilities } from "../sensor";
 
 export interface IDeviceOptions {
   name: string;
@@ -33,6 +34,14 @@ export class Device {
 
   public get requestedCapabilities() {
     return this._requestedCapabilities;
+  }
+
+  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+    return undefined; // set in each device
+  }
+
+  public collectTimeSeries(options: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+    throw new Error("collectTimeSeries() method not overridden!");
   }
 
   public matchesCapabilities() {

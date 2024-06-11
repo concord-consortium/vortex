@@ -548,7 +548,7 @@
               "properties": {
                 "timeSeries": {
                   "title": "Readout",
-                  "type": "number"
+                  "type": "array"
                 },
                 "label": {
                   "title": "Label",

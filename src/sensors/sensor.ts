@@ -1,4 +1,5 @@
 import EventEmitter from "eventemitter3";
+import { IDataTableTimeData } from "../shared/components/data-table-field";
 
 export interface ISensorCapabilities {
   illuminance?: boolean;
@@ -12,6 +13,7 @@ export interface ISensorValues {
   illuminance?: number;
   temperature?: number;
   humidity?: number;
+  timeSeries?: number;
 }
 
 export interface ISensorOptions {
@@ -29,6 +31,7 @@ export const AllCapabilities: ISensorCapabilities = {
 export enum SensorEvent {
   Connecting = "connecting",
   Connection = "connection",
+  Disconnected = "disconnected",
   Values = "values",
   Error = "error",
 }
@@ -75,6 +78,17 @@ export interface IConnectOptions {
   onDevicesFound: OnDevicesFoundFn;
 }
 
+export interface ITimeSeriesCapabilities {
+  measurementPeriod: number;
+  measurement: string;
+  valueKey: string;
+  units: string;
+  minValue: number;
+  maxValue: number;
+}
+
+export const MaxNumberOfTimeSeriesValues = 1000;
+
 export class Sensor extends EventEmitter<SensorEvent> {
   protected _deviceName: string | undefined;
   private _connected: boolean;
@@ -101,6 +115,10 @@ export class Sensor extends EventEmitter<SensorEvent> {
 
   public get capabilities() {
     return this._capabilities;
+  }
+
+  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+    return undefined; // set in device
   }
 
   public get connected() {
@@ -133,6 +151,10 @@ export class Sensor extends EventEmitter<SensorEvent> {
       };
       this.emit(SensorEvent.Error, errorData);
     }
+  }
+
+  public collectTimeSeries(options: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+    throw new Error("collectTimeSeries() method not overridden!");
   }
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {

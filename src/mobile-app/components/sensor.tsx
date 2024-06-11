@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import { SensorValue } from "./sensor-value";
-import { Sensor, IConnectDevice, SelectDeviceFn } from "../../sensors/sensor";
+import { Sensor, IConnectDevice, SelectDeviceFn, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, ISensorValues } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import { inCordova } from "../../shared/utils/in-cordova";
 import { SensorStrength } from "./sensor-strength";
 import { Icon } from "../../shared/components/icon";
+import BarChart from "../../shared/components/data-table-barchart";
 
 import css from "./sensor.module.scss";
 
@@ -45,6 +46,8 @@ interface ISensorComponentProps {
   sensor: Sensor;
   manualEntryMode?: boolean;
   setManualEntryMode?: (flag: boolean) => void;
+  isTimeSeries: boolean;
+  timeSeriesCapabilities?: ITimeSeriesCapabilities;
 }
 
 const iconClass = {
@@ -59,7 +62,7 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
@@ -148,6 +151,39 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     );
   };
 
+  const renderTimeSeries = () => {
+    if (!timeSeriesCapabilities) {
+      return <div className={css.timeSeriesValue} />;
+    }
+
+    const {measurementPeriod, measurement, units, minValue, maxValue} = timeSeriesCapabilities;
+    const valueKey = timeSeriesCapabilities.valueKey as keyof ISensorValues;
+    const sampleRate = measurementPeriod / 1000;
+    const maxSamples = sampleRate * MaxNumberOfTimeSeriesValues;
+    const value = values[valueKey];
+    const displayValue = value !== undefined ? value.toFixed(1) : "--";
+
+    return (
+      <div className={css.timeSeriesValue}>
+        <div className={css.tsvInfo}>
+          <div className={css.tsvInfoLeft}>
+            <div className={css.tsvBar}>
+              <BarChart min={minValue} max={maxValue} value={value ?? 0} />
+            </div>
+            <div className={css.tsvValue}>{displayValue}</div>
+          </div>
+          <div>
+            <div>Samples: {sampleRate}/sec</div>
+            <div>Max Time: {maxSamples} secs</div>
+          </div>
+        </div>
+        <div className={css.tsvMeasurement}>
+          {measurement} ({units})
+        </div>
+      </div>
+    );
+  };
+
   const renderValues = () => {
     const fragments: JSX.Element[] = [];
     if (sensor.capabilities.temperature) {
@@ -208,7 +244,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
         {renderMenu()}
       </div>
       {showDeviceSelect ? <SensorSelectorComponent devices={devicesFound} selectDevice={handleSelectDevice} cancel={handleCancelSelectDevice} /> : undefined}
-      {renderValues()}
+      {isTimeSeries ? renderTimeSeries() : renderValues()}
     </div>
   );
 };
