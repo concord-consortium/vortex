@@ -79,6 +79,15 @@ export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments
 };
 
 export const useExperiments = (optionalStorage?: IExperimentStorage) => {
+  return {
+    experiments: builtInExperiments,
+    upgradeApp: false
+  };
+
+  /*
+
+  DISABLING AUTO UPDATE OF EXPERIMENTS DURING DEVELOPMENT
+
 
   // get the previously downloaded experiments (if any)
   const storage = optionalStorage || defaultStorage;
@@ -88,11 +97,6 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
     experiments: savedExperiments || builtInExperiments,
     upgradeApp: false
   });
-
-  /*
-
-  DISABLING AUTO UPDATE OF EXPERIMENTS DURING DEVELOPMENT
-
 
   useEffect(() => {
     const updateUrl = getUpdateUrl();
@@ -113,7 +117,7 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
         logError("Unable to load remote experiments:", err);
       });
   }, []); // load the external json file once
-  */
 
   return useExperimentsResult;
+  */
 };
