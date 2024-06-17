@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="24px" height="24px" viewBox="0 0 24 24" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <title>Re-record Data Trial Icon</title>
+    <g id="Monitor-Your-World" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Monitor-Your-World-App-Update" transform="translate(-1782, -173)">
+            <g id="Re-record-Data-Trial-Icon" transform="translate(1782, 173)">
+                <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
+                <path d="M12,5 L12,1 L7,6 L12,11 L12,7 C15.31,7 18,9.69 18,13 C18,16.31 15.31,19 12,19 C8.69,19 6,16.31 6,13 L4,13 C4,17.42 7.58,21 12,21 C16.42,21 20,17.42 20,13 C20,8.58 16.42,5 12,5 Z" id="Re-record" fill="#ffffff" fill-rule="nonzero"></path>
+            </g>
+        </g>
+    </g>
+</svg>

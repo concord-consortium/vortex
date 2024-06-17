@@ -119,9 +119,9 @@ export class DeviceSensor extends Sensor {
     });
   }
 
-  public collectTimeSeries(timeSeriesCapabilities: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
     if (this.device) {
-      return this.device.collectTimeSeries(timeSeriesCapabilities, callback);
+      return this.device.collectTimeSeries(measurementPeriod, callback);
     }
     return () => {
       // noop
