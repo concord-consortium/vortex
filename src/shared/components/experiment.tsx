@@ -4,7 +4,6 @@ import { SectionButton } from "./section-button";
 import { Section } from "./section";
 import { ISection, IExperimentData, IExperiment, IExperimentConfig, initNewFormData } from "../experiment-types";
 import css from "./experiment.module.scss";
-import { IconName } from "./icon";
 
 interface IProps {
   experiment: IExperiment;
@@ -43,7 +42,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
               key={s.title}
               active={s === section}
               title={s.title}
-              icon={s.icon as IconName}
+              icon={s.icon}
               onClick={setSection.bind(null, s)}
             />
           )

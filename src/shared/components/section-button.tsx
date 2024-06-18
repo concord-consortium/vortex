@@ -1,11 +1,11 @@
 import React from "react";
 import css from "./section-button.module.scss";
-import { Icon, IconName } from "./icon";
+import { Icon } from "./icon";
 
 interface IProps {
   title: string;
   active: boolean;
-  icon: IconName;
+  icon: string;
   onClick?: (event: React.MouseEvent) => void;
 }
 

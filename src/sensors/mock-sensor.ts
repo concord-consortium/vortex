@@ -45,13 +45,13 @@ export class MockSensor extends Sensor {
       illuminance: options.minValues?.illuminance || 0,
       temperature: options.minValues?.temperature || -18,
       humidity: options.minValues?.humidity || 0,
-      timeSeries: options.minValues?.timeSeries || -5,
+      timeSeries: options.minValues?.timeSeries || -50,
     };
     this.maxMockValues = {
       illuminance: options.maxValues?.illuminance || 10000,
       temperature: options.maxValues?.temperature || 38,
       humidity: options.maxValues?.humidity || 90,
-      timeSeries: options.maxValues?.timeSeries || 5,
+      timeSeries: options.maxValues?.timeSeries || 50,
     };
     this.mockValues = {
       illuminance: this.randomInRange("illuminance"),
@@ -132,31 +132,26 @@ export class MockSensor extends Sensor {
     return Promise.resolve(values);
   }
 
-  public get timeSeriesCapabilities(): ITimeSeriesCapabilities {
+  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
     return {
       measurementPeriod: 100,
       measurement: "Fake Value",
       valueKey: "timeSeries",
       units: "N/A",
-      minValue: -5,
-      maxValue: 5,
+      minValue: -50,
+      maxValue: 50,
     };
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries({measurementPeriod}: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
     let time = 0;
     const delta = measurementPeriod / 1000;
     const values: IDataTableTimeData[] = [];
-    const capabilities = {...this.timeSeriesCapabilities, measurementPeriod};
 
     const callCallback = () => {
       const value = this.mockValues.timeSeries;
-      this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.5});
-      if (values.length === 0) {
-        values.push({time, value, capabilities});
-      } else {
-        values.push({time, value});
-      }
+      this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.2});
+      values.push({time, value});
       callback(values);
       time += delta;
     };
