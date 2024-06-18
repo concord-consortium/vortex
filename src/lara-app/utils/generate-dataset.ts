@@ -1,6 +1,7 @@
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { IDataset } from "@concord-consortium/lara-interactive-api";
-import { handleSpecialValue, IDataTableData, IDataTableRow } from "../../shared/utils/handle-special-value";
+import { handleSpecialValue } from "../../shared/utils/handle-special-value";
+import { IDataTableData, IDataTableRow } from "../../shared/components/data-table-field";
 
 // Note that when new experiment is added, this hash should be updated.
 export const xAxisPropertyForExperiment: {[uuid: string]: string | undefined} = {
@@ -31,6 +32,6 @@ export const generateDataset = (data: IExperimentData, experiment: IExperiment):
     // Always use first property as X axis. It might be necessary to customize that in the future, but it doesn't
     // seem useful now.
     xAxisProp: experiment.metadata?.uuid ? xAxisPropertyForExperiment[experiment.metadata.uuid] : undefined,
-    rows
+    rows: rows as any // TBD: need to update LARA API to allow arrays of data
   };
 };

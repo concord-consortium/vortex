@@ -1,9 +1,4 @@
-// Form data accepted by this component.
-export interface IDataTableRow {
-  [propName: string]: string | number | undefined;
-}
-
-export type IDataTableData = IDataTableRow[];
+import { IDataTableData, IDataTableRowData } from "../components/data-table-field";
 
 const defPrecision = 2;
 
@@ -100,7 +95,7 @@ export const isFunctionSymbol = (value: string) => {
   return Object.keys(fieldFunction).indexOf(value) !== -1;
 };
 
-export const handleSpecialValue = (value: string | number | undefined, name: string, data: IDataTableData) => {
+export const handleSpecialValue = (value: IDataTableRowData, name: string, data: IDataTableData) => {
   if (typeof value === "string" && isFunctionSymbol(value)) {
     return fieldFunction[value](name, data);
   } else {

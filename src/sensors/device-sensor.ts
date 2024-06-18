@@ -1,4 +1,4 @@
-import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions } from "./sensor";
+import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
 
 import { Device } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
@@ -7,6 +7,7 @@ import { MultiSensorDevice } from "./devices/multi-sensor";
 import { GDXSensorDevice } from "./devices/gdx-sensor";
 import { logInfo } from "../shared/utils/log";
 import { inCordova } from "../shared/utils/in-cordova";
+import { IDataTableTimeData } from "../shared/components/data-table-field";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -92,6 +93,10 @@ export class DeviceSensor extends Sensor {
     return Promise.resolve();
   }
 
+  public get timeSeriesCapabilities() {
+    return this.device?.timeSeriesCapabilities;
+  }
+
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
     return new Promise<ISensorValues>((resolve, reject) => {
       const {device, bluetoothDevice, bluetoothServer} = this;
@@ -104,11 +109,23 @@ export class DeviceSensor extends Sensor {
       if (options.firstPoll) {
         return device.setupRead(bluetoothServer, bluetoothDevice).then(() => device.read()).then(resolve).catch(reject);
       } else if (options.lastPoll) {
-        return device.teardownRead().then(() => resolve({})).catch(reject);
+        return device.teardownRead().then(() => {
+          this.device = undefined;
+          resolve({});
+        }).catch(reject);
       } else {
         return device.read().then(resolve).catch(reject);
       }
     });
+  }
+
+  public collectTimeSeries(timeSeriesCapabilities: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+    if (this.device) {
+      return this.device.collectTimeSeries(timeSeriesCapabilities, callback);
+    }
+    return () => {
+      // noop
+    };
   }
 
   protected setConnected(options: ISetConnectedOptions) {

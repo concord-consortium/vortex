@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
 import { FieldProps } from "react-jsonschema-form";
 import { MockSensor } from "../../sensors/mock-sensor";
-import { ISensorCapabilities, SensorCapabilityKey } from "../../sensors/sensor";
+import { ISensorCapabilities, ISensorConnectionEventData, ITimeSeriesCapabilities, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
 import { SensorComponent } from "../../mobile-app/components/sensor";
 import { IVortexFormContext } from "./form";
 import { getURLParam } from "../utils/get-url-param";
@@ -52,12 +52,15 @@ interface IDataTableDataSchema {
   };
 }
 
+export type IDataTableTimeData = {time: number, value: string|number};
+export type IDataTableRowData = string | number | IDataTableTimeData[] | undefined;
+
 // Form data accepted by this component.
-interface IDataTableRow {
-  [propName: string]: string | number;
+export interface IDataTableRow {
+  [propName: string]: IDataTableRowData;
 }
 
-type IDataTableData = IDataTableRow[];
+export type IDataTableData = IDataTableRow[];
 
 // Validates if provided schema matches IDataTableDataSchema interface.
 const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
@@ -76,7 +79,7 @@ const validateSchema = (schema: JSONSchema7): IDataTableDataSchema => {
 
 // cache sensors so they are re-used on renders, otherwise, re-connects and disconnects aren't
 // handled by the same object
-const sensorCache: {[key: string]: MockSensor | DeviceSensor} = {};
+let sensorCache: {[key: string]: MockSensor | DeviceSensor} = {};
 
 const getSensor = (sensorFields: string[], experimentFilters: BluetoothRequestDeviceFilter[], ) => {
   const useMockSensor = !!getURLParam("mockSensor");
@@ -157,6 +160,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
   const experimentFilters = uiSchema["ui:dataTableOptions"]?.filters || [];
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
+  const isTimeSeries = sensorFields.indexOf("timeSeries") !== -1;
   // Sensor instance can be provided in form context or it'll be created using filters or sensorFields as capabilities.
   const sensor = formContext.experimentConfig?.useSensors && sensorFields.length > 0 ? (formContext.sensor || getSensor(sensorFields, experimentFilters)) : null;
   const sensorOutput = useSensor(sensor);
@@ -167,11 +171,51 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const showEditSaveButton = !!formContext.experimentConfig?.showEditSaveButton;
   const showShowSensorButton = !!formContext.experimentConfig?.showShowSensorButton;
   const [showSensor, setShowSensor] = useState<boolean>(!!sensor && !showShowSensorButton); // auto show the sensor if defined and showSensorButton is false
+  const [timeSeriesCapabilities, setTimeSeriesCapabilities] = useState<ITimeSeriesCapabilities|undefined>(undefined);
+  const waitForSensorIntervalRef = useRef(0);
+  const stopTimeSeriesFnRef = useRef<(() => void)|undefined>(undefined);
+  const timeSeriesRecordingRowRef = useRef<number|undefined>(undefined);
 
   // listen for prop changes from uploads
   useEffect(() => {
     setFormData(props.formData);
   }, [props.formData]);
+
+  // listen for sensor changes
+  useEffect(() => {
+    setTimeSeriesCapabilities(undefined);
+    clearInterval(waitForSensorIntervalRef.current);
+    if (sensor && sensorOutput.connected && isTimeSeries) {
+      // wait for sensor to come online and set its time series capabilities
+      waitForSensorIntervalRef.current = setInterval(() => {
+        const result = sensor.timeSeriesCapabilities;
+        if (result) {
+          setTimeSeriesCapabilities(result);
+          clearInterval(waitForSensorIntervalRef.current);
+        }
+      });
+    } else {
+      setTimeSeriesCapabilities(undefined);
+    }
+  }, [sensor, sensorOutput.connected, isTimeSeries, setTimeSeriesCapabilities]);
+
+  const sensorCanRecord = useMemo(() => {
+    return sensorOutput.connected && Object.values(sensorOutput.values).length > 0;
+  }, [sensorOutput]);
+
+  useEffect(() => {
+    // clear the sensor cache when disconnecting so the device isn't reused
+    const clearCacheOnDisconnect = (data: ISensorConnectionEventData) => {
+      if (!data.connected) {
+        sensorCache = {};
+      }
+    };
+
+    sensor?.on(SensorEvent.Connection, clearCacheOnDisconnect);
+    return () => {
+      sensor?.off(SensorEvent.Connection, clearCacheOnDisconnect);
+    };
+  }, []);
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
   const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
@@ -183,7 +227,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
 
     const propType = fieldDefinition[propName].type;
-    if ((propType === "number") || (propType === "integer")) {
+    if (propName === "timeSeries") {
+      // no validation on time series data
+    } else if ((propType === "number") || (propType === "integer")) {
       const {minimum, maximum} = fieldDefinition[propName] as IDataTableNumberInputField;
       let numericValue: number;
       if (propType === "integer") {
@@ -263,7 +309,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       }
     });
 
-    const recordData = () => {
+    const recordSingleDataPoint = () => {
       const values = sensorOutput.values;
       const result: { [k: string]: number } = {};
       sensorFields.forEach((name: SensorCapabilityKey) => {
@@ -279,11 +325,39 @@ export const DataTableField: React.FC<FieldProps> = props => {
       saveData(newData);
     };
 
-      if (previousValuesAvailable) {
-        confirm("Discard sensor values?\nThis will delete row's current values and allow you to record new values from your sensor.", recordData);
-      } else {
-        recordData();
+    const recordTimeSeries = () => {
+      if (!sensor || !timeSeriesCapabilities) {
+        return;
       }
+
+      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities, (values) => {
+        const newData = formData.slice();
+        newData[rowIdx] = {timeSeries: values};
+        setFormData(newData);
+      });
+      timeSeriesRecordingRowRef.current = rowIdx;
+    };
+
+    const record = () => {
+      if (isTimeSeries) {
+        recordTimeSeries();
+      } else {
+        recordSingleDataPoint();
+      }
+    };
+
+    if (previousValuesAvailable) {
+      confirm("Discard sensor values?\nThis will delete row's current values and allow you to record new values from your sensor.", record);
+    } else {
+      record();
+    }
+  };
+
+  const onSensorStopTimeSeries = () => {
+    stopTimeSeriesFnRef.current?.();
+    stopTimeSeriesFnRef.current = undefined;
+    timeSeriesRecordingRowRef.current = undefined;
+    saveData(formData);
   };
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
@@ -299,24 +373,19 @@ export const DataTableField: React.FC<FieldProps> = props => {
         sensorFieldsBlank = false;
       }
     });
-    const active = sensorOutput.connected;
+    const recordingTimeSeries = stopTimeSeriesFnRef.current !== undefined;
+    const rowActive = recordingTimeSeries ? (sensorCanRecord && timeSeriesRecordingRowRef.current === rowIdx) : sensorCanRecord;
+    const iconName = sensorFieldsBlank ? "record" : "replay";
+    const onClick = rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries : onSensorRecordClick.bind(null, rowIdx)) : null;
     const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {
         anyNonFunctionSensorValues &&
         <div
-          className={css.refreshSensorReading + ` ${active ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : css.record}`}
-          onClick={active ? onSensorRecordClick.bind(null, rowIdx) : null}
+          className={css.refreshSensorReading + ` ${rowActive ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : css.record}`}
+          onClick={onClick}
           data-test="record-sensor"
         >
-          {
-            // Show refresh/replay icon if some values are already present.
-            !sensorFieldsBlank &&
-            <Icon name="replay" />
-          }
-          {
-            sensorFieldsBlank &&
-            <Icon name="record" />
-          }
+          <Icon name={iconName} />
         </div>
       }
     </td>;
@@ -350,6 +419,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
         {error ? <div className={css.invalidError} >{error}</div> : undefined}
       </>
     );
+  };
+
+  const renderTimeSeries = (values: IDataTableTimeData[]) => {
+    if (values.length === 0) {
+      return null;
+    }
+
+    const lastValue = values[values.length - 1];
+    return <div>{lastValue.value} ({values.length})</div>;
   };
 
   const renderBasicCells = (fieldNames: string[], row: { [k: string]: any }, rowIdx: number) => {
@@ -388,13 +466,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
       let contents;
       if (readOnly) {
         contents = <div className={css.valueCell}>{value}</div>;
-      } else if (fieldDefinition[name].type === "array") {
+      } else if (name === "timeSeries") {
+        contents = renderTimeSeries(value);
+      }else if (fieldDefinition[name].type === "array") {
         contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
       } else {
         const input = renderInput({ name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error });
         contents =
           <div className={css.valueCell}>
-            {sensorFieldsBlank && sensorOutput.connected && renderPromptForData(sensorFieldIdx === 0)}
+            {sensorFieldsBlank && sensorCanRecord && renderPromptForData(sensorFieldIdx === 0)}
             {input}
           </div>;
       }
@@ -423,7 +503,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     <div className={css.dataTable}>
       <div className={css.topBar}>
         <div className={css.topBarLeft}>
-          {showSensor && sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode} /> : undefined}
+          {showSensor && sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode} isTimeSeries={isTimeSeries} timeSeriesCapabilities={timeSeriesCapabilities} /> : undefined}
           {title ? <div className={css.title}>{title}</div> : undefined}
         </div>
         <div className={css.topBarRight}>

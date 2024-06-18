@@ -1,16 +1,19 @@
-import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions } from "./sensor";
+import { IDataTableTimeData } from "../shared/components/data-table-field";
+import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
 
 type MockValueDirection = "up" | "down";
 interface IStartingSensorValues extends Required<ISensorValues> {
   illuminanceDirection?: MockValueDirection;
   temperatureDirection?: MockValueDirection;
   humidityDirection?: MockValueDirection;
+  timeSeriesDirection?: MockValueDirection;
 }
 type IMockValues = Required<ISensorValues>;
 interface IMockValueDirections {
   illuminance: MockValueDirection;
   temperature: MockValueDirection;
   humidity: MockValueDirection;
+  timeSeries: MockValueDirection;
 }
 type Measurement = keyof IMockValueDirections;
 
@@ -42,22 +45,26 @@ export class MockSensor extends Sensor {
       illuminance: options.minValues?.illuminance || 0,
       temperature: options.minValues?.temperature || -18,
       humidity: options.minValues?.humidity || 0,
+      timeSeries: options.minValues?.timeSeries || -50,
     };
     this.maxMockValues = {
       illuminance: options.maxValues?.illuminance || 10000,
       temperature: options.maxValues?.temperature || 38,
       humidity: options.maxValues?.humidity || 90,
+      timeSeries: options.maxValues?.timeSeries || 50,
     };
     this.mockValues = {
       illuminance: this.randomInRange("illuminance"),
       temperature: this.randomInRange("temperature"),
       humidity: this.randomInRange("humidity"),
+      timeSeries: this.randomInRange("timeSeries"),
       ...options.startingValues,
     };
     this.mockValueDirections = {
       illuminance: options.startingValues?.illuminanceDirection || this.randomDirection({pivot: 0.5}),
       temperature: options.startingValues?.temperatureDirection || this.randomDirection({pivot: 0.5}),
       humidity: options.startingValues?.humidityDirection || this.randomDirection({pivot: 0.5}),
+      timeSeries: options.startingValues?.timeSeriesDirection || this.randomDirection({pivot: 0.5}),
     };
     this.staticProbability = options.staticProbability || 0.5;
     this.reversalProbability = options.reversalProbability || 0.8;
@@ -118,7 +125,46 @@ export class MockSensor extends Sensor {
       values.temperature = this.mockValues.temperature;
       this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
     }
+
+    values.timeSeries = this.mockValues.timeSeries;
+    this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.2});
+
     return Promise.resolve(values);
+  }
+
+  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+    return {
+      measurementPeriod: 100,
+      measurement: "Fake Value",
+      valueKey: "timeSeries",
+      units: "N/A",
+      minValue: -50,
+      maxValue: 50,
+    };
+  }
+
+  public collectTimeSeries({measurementPeriod}: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+    let time = 0;
+    const delta = measurementPeriod / 1000;
+    const values: IDataTableTimeData[] = [];
+
+    const callCallback = () => {
+      const value = this.mockValues.timeSeries;
+      this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.2});
+      values.push({time, value});
+      callback(values);
+      time += delta;
+    };
+
+    callCallback();
+
+    const interval = setInterval(() => {
+      callCallback();
+    }, measurementPeriod);
+
+    return () => {
+      clearInterval(interval);
+    };
   }
 
   private minMax(measurement: Measurement) {

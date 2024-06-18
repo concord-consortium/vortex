@@ -85,6 +85,33 @@
 .disconnectedValues {
 }
 
+.timeSeriesValue {
+  height: 100px;
+  padding: 10px;
+
+  .tsvInfo {
+    display: flex;
+    justify-content: space-between;
+
+    .tsvInfoLeft {
+      display: flex;
+      gap: 5px;
+
+      .tsvBar {
+        display: flex;
+      }
+      .tsvValue {
+        color: $sensorGreenLight1;
+        font-size: 32px;
+      }
+    }
+  }
+  .tsvMeasurement {
+    color: $sensorGreen;
+    font-size: 18px;
+  }
+}
+
 .sensorSelector {
   padding: 20px;
   margin: 10px 0;
