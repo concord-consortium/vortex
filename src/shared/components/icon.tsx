@@ -17,8 +17,11 @@ import Sensor from "../icons/sensor.svg";
 import UploadCloud from "../icons/cloud_upload-24px.svg";
 import Delete from "../icons/delete-24px.svg";
 import Record from "../icons/record.svg";
+import RecordDataTrial from "../icons/record-data-trial.svg";
+import ReRecordDataTrial from "../icons/re-record-data-trial.svg";
+import StopDataTrial from "../icons/stop-data-trial.svg";
 
-const Icons: {[key: string]: any} = {
+const Icons = {
   label: Label,
   settings_input_antenna: SettingsInputAntenna,
   assignment: Assignment,
@@ -36,11 +39,15 @@ const Icons: {[key: string]: any} = {
   sensor: Sensor,
   upload: UploadCloud,
   delete: Delete,
-  record: Record
+  record: Record,
+  recordDataTrial: RecordDataTrial,
+  reRecordDataTrial: ReRecordDataTrial,
+  stopDataTrial: StopDataTrial,
 };
+export type IconName = keyof typeof Icons;
 
 interface IProps {
-  name: string;
+  name: IconName;
 }
 
 export const Icon: React.FC<IProps> = ({ name }) => {

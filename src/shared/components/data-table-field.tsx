@@ -1,19 +1,20 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import { FieldProps } from "react-jsonschema-form";
 import { MockSensor } from "../../sensors/mock-sensor";
-import { ISensorCapabilities, ISensorConnectionEventData, ITimeSeriesCapabilities, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
+import { ISensorCapabilities, ISensorConnectionEventData, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
 import { SensorComponent } from "../../mobile-app/components/sensor";
 import { IVortexFormContext } from "./form";
 import { getURLParam } from "../utils/get-url-param";
 import { DeviceSensor } from "../../sensors/device-sensor";
 import { JSONSchema7 } from "json-schema";
 import { IFormUiSchema } from "../experiment-types";
-import { Icon } from "./icon";
+import { Icon, IconName } from "./icon";
 import { useSensor } from "../../mobile-app/hooks/use-sensor";
 import { tableKeyboardNav } from "../utils/table-keyboard-nav";
 import { confirm, alert } from "../utils/dialogs";
 import { handleSpecialValue, isFunctionSymbol } from "../utils/handle-special-value";
 import css from "./data-table-field.module.scss";
+import DataTableSparkGraph from "./data-table-sparkgraph";
 
 const defPrecision = 2;
 
@@ -52,7 +53,7 @@ interface IDataTableDataSchema {
   };
 }
 
-export type IDataTableTimeData = {time: number, value: string|number};
+export type IDataTableTimeData = {time: number, value: number, capabilities?: ITimeSeriesCapabilities};
 export type IDataTableRowData = string | number | IDataTableTimeData[] | undefined;
 
 // Form data accepted by this component.
@@ -175,6 +176,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const waitForSensorIntervalRef = useRef(0);
   const stopTimeSeriesFnRef = useRef<(() => void)|undefined>(undefined);
   const timeSeriesRecordingRowRef = useRef<number|undefined>(undefined);
+  const maxNumTimeSeriesValues = useMemo(() => {
+    const result = isTimeSeries ? formData.reduce<number>((acc, {timeSeries}) => {
+      return Math.max(acc, Array.isArray(timeSeries) ? timeSeries.length : 0);
+    }, 0) : 0;
+    return result;
+  }, [isTimeSeries, formData]);
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -326,14 +333,19 @@ export const DataTableField: React.FC<FieldProps> = props => {
     };
 
     const recordTimeSeries = () => {
-      if (!sensor || !timeSeriesCapabilities) {
+      if (!sensor) {
         return;
       }
 
-      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities, (values) => {
+      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(100, (values) => {
         const newData = formData.slice();
         newData[rowIdx] = {timeSeries: values};
-        setFormData(newData);
+        if (values.length <= MaxNumberOfTimeSeriesValues) {
+          setFormData(newData);
+        }
+        if (values.length === MaxNumberOfTimeSeriesValues) {
+          onSensorStopTimeSeries(newData);
+        }
       });
       timeSeriesRecordingRowRef.current = rowIdx;
     };
@@ -353,11 +365,13 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const onSensorStopTimeSeries = () => {
-    stopTimeSeriesFnRef.current?.();
-    stopTimeSeriesFnRef.current = undefined;
-    timeSeriesRecordingRowRef.current = undefined;
-    saveData(formData);
+  const onSensorStopTimeSeries = (finalData: IDataTableRow[]) => {
+    if (stopTimeSeriesFnRef.current) {
+      stopTimeSeriesFnRef.current?.();
+      stopTimeSeriesFnRef.current = undefined;
+      timeSeriesRecordingRowRef.current = undefined;
+      saveData(finalData);
+    }
   };
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
@@ -375,8 +389,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
     });
     const recordingTimeSeries = stopTimeSeriesFnRef.current !== undefined;
     const rowActive = recordingTimeSeries ? (sensorCanRecord && timeSeriesRecordingRowRef.current === rowIdx) : sensorCanRecord;
-    const iconName = sensorFieldsBlank ? "record" : "replay";
-    const onClick = rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries : onSensorRecordClick.bind(null, rowIdx)) : null;
+    const showStopButton = recordingTimeSeries && timeSeriesRecordingRowRef.current === rowIdx;
+    const iconName: IconName = sensorFieldsBlank ? (isTimeSeries ? "recordDataTrial" : "record") : (isTimeSeries ? (showStopButton ? "stopDataTrial" : "reRecordDataTrial") : "replay");
+    const onClick = rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries.bind(null, formData) : onSensorRecordClick.bind(null, rowIdx)) : null;
     const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {
         anyNonFunctionSensorValues &&
@@ -421,15 +436,6 @@ export const DataTableField: React.FC<FieldProps> = props => {
     );
   };
 
-  const renderTimeSeries = (values: IDataTableTimeData[]) => {
-    if (values.length === 0) {
-      return null;
-    }
-
-    const lastValue = values[values.length - 1];
-    return <div>{lastValue.value} ({values.length})</div>;
-  };
-
   const renderBasicCells = (fieldNames: string[], row: { [k: string]: any }, rowIdx: number) => {
     let sensorFieldsBlank = true;
     sensorFields.forEach((name: string) => {
@@ -464,11 +470,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
       }
 
       let contents;
-      if (readOnly) {
+      if (name === "timeSeries") {
+        contents = <DataTableSparkGraph values={value || []} maxNumTimeSeriesValues={maxNumTimeSeriesValues} />;
+      } else if (readOnly) {
         contents = <div className={css.valueCell}>{value}</div>;
-      } else if (name === "timeSeries") {
-        contents = renderTimeSeries(value);
-      }else if (fieldDefinition[name].type === "array") {
+      } else if (fieldDefinition[name].type === "array") {
         contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
       } else {
         const input = renderInput({ name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error });

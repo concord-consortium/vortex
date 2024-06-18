@@ -4,7 +4,7 @@ import { ISensorCapabilities, ISensorValues, ITimeSeriesCapabilities } from "../
 import { IDataTableTimeData } from "../../shared/components/data-table-field";
 
 const goDirectServiceUUID = "d91714ef-28b9-4f91-ba16-f0d9a604f112";
-const measurementPeriod = 100;
+const defaultMeasurementPeriod = 100;
 
 // NOTE: to add a new sensor using the existing global capabilities add the prefix to the array
 // and update the mapping of the sensor name to the capability below.  More work will be
@@ -44,28 +44,31 @@ export class GDXSensorDevice extends Device {
     return this._timeSeriesCapabilities;
   }
 
-  public collectTimeSeries(timeSeriesCapabilities: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
     const sensor = this.gdxDevice?.sensors.find((s: any) => s.enabled);
 
-    if (!this.gdxDevice || !sensor) {
+    if (!this.gdxDevice || !sensor || !this.timeSeriesCapabilities) {
       return () => {
         // noop
       };
     }
 
     let time = 0;
-    const delta = timeSeriesCapabilities.measurementPeriod / 1000;
+    const delta = measurementPeriod / 1000;
     const values: IDataTableTimeData[] = [];
-
-    this.gdxDevice.stop();
+    const capabilities = {...this.timeSeriesCapabilities, measurementPeriod};
 
     const handleChange = () => {
-      values.push({time, value: sensor.value});
+      if (values.length === 0) {
+        values.push({time, value: sensor.value, capabilities});
+      } else {
+        values.push({time, value: sensor.value});
+      }
       callback(values);
       time += delta;
     };
     sensor.on("value-changed", handleChange);
-    this.gdxDevice.start(timeSeriesCapabilities.measurementPeriod);
+    this.gdxDevice.start(measurementPeriod);
 
     return () => {
       sensor.off("value-changed", handleChange);
@@ -99,7 +102,7 @@ export class GDXSensorDevice extends Device {
           const measurement: string = firstSensor.name;
           const valueKey = measurement.toLowerCase();
           this._timeSeriesCapabilities = {
-            measurementPeriod,
+            measurementPeriod: defaultMeasurementPeriod,
             measurement,
             valueKey,
             units: firstSensor.unit,
@@ -111,7 +114,7 @@ export class GDXSensorDevice extends Device {
         }
 
         this.gdxDevice = gdxDevice;
-        this.gdxDevice.start(measurementPeriod);
+        this.gdxDevice.start(defaultMeasurementPeriod);
 
         resolve();
       }).catch(reject);
