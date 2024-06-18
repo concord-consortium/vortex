@@ -153,7 +153,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     }
   }
 
-  public collectTimeSeries(options: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
     throw new Error("collectTimeSeries() method not overridden!");
   }
 
