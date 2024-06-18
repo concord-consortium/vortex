@@ -1,13 +1,13 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Icon, IconName } from "./icon";
+import { Icon } from "./icon";
 import css from "./menu.module.scss";
 
 interface IMenuItemProps {
   onClick: () => void;
-  icon?: IconName;
+  icon?: string;
 }
 interface IMenuProps {
-  icon?: IconName;
+  icon?: string;
 }
 export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, children}) => {
   return (

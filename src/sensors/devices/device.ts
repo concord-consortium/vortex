@@ -40,7 +40,7 @@ export class Device {
     return undefined; // set in each device
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(options: ITimeSeriesCapabilities, callback: (values: IDataTableTimeData[]) => void): () => void {
     throw new Error("collectTimeSeries() method not overridden!");
   }
 
