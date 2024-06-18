@@ -304,6 +304,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
   const handleCollectButton = () => setShowSensor(!showSensor);
 
+  const handleDeleteDataTrial = (rowIdx: number) => {
+    confirm("Delete Trial?\n\nThis will delete the trial.", () => {
+      const newData = formData.slice();
+      newData[rowIdx] = {};
+      setFormData(newData);
+      saveData(newData);
+    });
+  };
+
   const onSensorRecordClick = (rowIdx: number) => {
     if (!sensorOutput.connected) {
       alert("Sensor not connected");
@@ -388,10 +397,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
       }
     });
     const recordingTimeSeries = stopTimeSeriesFnRef.current !== undefined;
-    const rowActive = recordingTimeSeries ? (sensorCanRecord && timeSeriesRecordingRowRef.current === rowIdx) : sensorCanRecord;
+    let rowActive = recordingTimeSeries ? (sensorCanRecord && timeSeriesRecordingRowRef.current === rowIdx) : sensorCanRecord;
     const showStopButton = recordingTimeSeries && timeSeriesRecordingRowRef.current === rowIdx;
-    const iconName: IconName = sensorFieldsBlank ? (isTimeSeries ? "recordDataTrial" : "record") : (isTimeSeries ? (showStopButton ? "stopDataTrial" : "reRecordDataTrial") : "replay");
-    const onClick = rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries.bind(null, formData) : onSensorRecordClick.bind(null, rowIdx)) : null;
+    const iconName: IconName = sensorFieldsBlank ? (isTimeSeries ? "recordDataTrial" : "record") : (isTimeSeries ? (showStopButton ? "stopDataTrial" : "deleteDataTrial") : "replay");
+    const onClick = iconName === "deleteDataTrial" ? handleDeleteDataTrial.bind(null, rowIdx) : (rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries.bind(null, formData) : onSensorRecordClick.bind(null, rowIdx)) : null);
+    rowActive = iconName === "deleteDataTrial" ? true : rowActive;
     const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {
         anyNonFunctionSensorValues &&

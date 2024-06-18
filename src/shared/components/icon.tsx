@@ -20,6 +20,7 @@ import Record from "../icons/record.svg";
 import RecordDataTrial from "../icons/record-data-trial.svg";
 import ReRecordDataTrial from "../icons/re-record-data-trial.svg";
 import StopDataTrial from "../icons/stop-data-trial.svg";
+import DeleteDataTrial from "../icons/delete-data-trial.svg";
 
 const Icons = {
   label: Label,
@@ -43,6 +44,7 @@ const Icons = {
   recordDataTrial: RecordDataTrial,
   reRecordDataTrial: ReRecordDataTrial,
   stopDataTrial: StopDataTrial,
+  deleteDataTrial: DeleteDataTrial
 };
 export type IconName = keyof typeof Icons;
 

@@ -41,6 +41,8 @@ export default function DataTableSparkGraph({values, maxNumTimeSeriesValues}: IP
     if (capabilities) {
       const duration = Math.round((capabilities.measurementPeriod / 1000) * values.length);
       titleRef.current = `${duration} sec`;
+    } else {
+      titleRef.current = "";
     }
 
     const minValue = capabilities?.minValue ?? values.reduce((acc, cur) => Math.min(cur.value, acc), Infinity);
@@ -69,7 +71,7 @@ export default function DataTableSparkGraph({values, maxNumTimeSeriesValues}: IP
   }
 
   return (
-    <div title={titleRef.current} className={css.dataTableSparkgraph}>
+    <div className={css.dataTableSparkgraph}>
       <div>{titleRef.current}</div>
       <svg width="100%" height={outerHeight} viewBox={`0 0 ${outerWidth} ${outerHeight}`}>
         {polygonPoints.length > 0 && <polygon points={polygonPoints.join(" ")} />}
