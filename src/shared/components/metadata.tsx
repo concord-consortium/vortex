@@ -8,7 +8,7 @@ export const Metadata: SectionComponent = ({ experiment, data }) => {
   return (
     <div className={css.metadata}>
       <div className={css.main}>
-        <Initials text={experiment.metadata.initials}/>
+        <Initials metadata={experiment.metadata}/>
         <div className={css.text}>
           <div className={css.name}>{experiment.metadata.name}</div>
           <div className={css.timestamp}>{formatTime(data.timestamp)}</div>

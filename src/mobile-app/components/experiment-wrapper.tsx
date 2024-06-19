@@ -30,7 +30,6 @@ const experimentConfig: IExperimentConfig = {
 export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload, embeddedPreview }) => {
   const [editing, isEditing ] = useState(false);
   const { metadata } = experiment;
-  const { initials } = metadata;
   const workSpaceClass = embeddedPreview ? `${css.workspace} ${css.embeddedPreview}`: css.workspace;
 
   const handleSave = () => {
@@ -70,16 +69,14 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
     <div>
       <div className={css.header}>
         <div className={css.headerBackIcon} onClick={onBackBtnClick}><Icon name="arrow_back"/></div>
-        <Initials text={initials} active={true}/>
+        <Initials metadata={metadata} active={true}/>
         <div className={css.headerTitle}>
-          {editing &&
-            <div className={css.editing}>
-              <input defaultValue={`${name}`} onChange={saveExperimentName} onBlur={handleRename} onKeyDown={handleEnter}/>
-            </div>
-          }
-          {!editing &&
-            <div><span className={css.nameDisplay} onClick={handleRename}>{name}</span></div>
-          }
+          <div className={css.name}>
+            {editing
+              ? <input defaultValue={`${name}`} onChange={saveExperimentName} onBlur={handleRename} onKeyDown={handleEnter} autoFocus={true} />
+              : <div onClick={handleRename}>{name}</div>
+            }
+          </div>
           <div>{title}</div>
         </div>
         <div className={css.headerMenu}>

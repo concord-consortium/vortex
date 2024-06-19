@@ -276,7 +276,7 @@ export const Uploader = (props: IProps) => {
         </div>
         <div className={css.contents}>
           <div className={css.run}>
-            <div className={css.initials}><Initials text={props.run.experiment.metadata.initials}/></div>
+            <div className={css.initials}><Initials metadata={props.run.experiment.metadata}/></div>
             <div className={css.text}>
               <RunInfoComponent run={props.run} expanded={true} />
             </div>

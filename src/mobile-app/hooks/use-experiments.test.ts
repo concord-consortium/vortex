@@ -20,6 +20,8 @@ describe("use-experiments hook", () => {
         uuid: "first",
         name: "First Experiment",
         initials: "FE",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: emptySchema
     },
@@ -29,6 +31,8 @@ describe("use-experiments hook", () => {
         uuid: "second",
         name: "Second Experiment",
         initials: "SE",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: emptySchema
     },

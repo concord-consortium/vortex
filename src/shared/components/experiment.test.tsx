@@ -17,6 +17,8 @@ describe("Experiment component", () => {
       uuid: "123",
       name: "test",
       initials: "tt",
+      iconColor: "#000",
+      iconHoverColor: "#777"
     },
     schema: {
       sections: [{
@@ -61,6 +63,8 @@ describe("Experiment component", () => {
         uuid: "123",
         name: "test",
         initials: "tt",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: {
         sections: [{
@@ -99,6 +103,8 @@ describe("Experiment component", () => {
         uuid: "123",
         name: "test",
         initials: "tt",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: {
         sections: [{
@@ -143,6 +149,8 @@ describe("Experiment component", () => {
         uuid: "123",
         name: "test",
         initials: "tt",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: {
         sections: [{

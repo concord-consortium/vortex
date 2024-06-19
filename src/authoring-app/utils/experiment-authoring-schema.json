@@ -67,6 +67,26 @@
                     "examples": [
                         "SI"
                     ]
+                },
+                "iconColor": {
+                    "$id": "#/properties/metadata/properties/iconColor",
+                    "type": "string",
+                    "title": "The IconColor Schema",
+                    "description": "Icon color for this template.",
+                    "default": "",
+                    "examples": [
+                        "#0f73b8"
+                    ]
+                },
+                "iconHoverColor": {
+                    "$id": "#/properties/metadata/properties/iconHoverColor",
+                    "type": "string",
+                    "title": "The IconHoverColor Schema",
+                    "description": "Icon hover color for this template.",
+                    "default": "",
+                    "examples": [
+                        "#4b96ca"
+                    ]
                 }
             }
         },

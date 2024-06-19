@@ -1,4 +1,4 @@
-import React, { useMemo, useRef } from "react";
+import React, { useRef } from "react";
 import { IDataTableTimeData } from "./data-table-field";
 
 import css from "./data-table-sparkgraph.module.scss";
@@ -7,55 +7,57 @@ const leaderRadius = 3;
 const leaderStokeWidth = 1.5;
 const leaderMargin = leaderRadius + leaderStokeWidth;
 
-const outerWidth = 200;
-const outerHeight = 30;
-const innerWidth = outerWidth - (leaderMargin * 2);
-const innerHeight = outerHeight - (leaderMargin * 2);
-
 interface ISparkGraphPoint {
   x: number;
   y: number;
 }
 
 interface IProps {
+  width: number;
+  height: number;
   values: IDataTableTimeData[];
   maxNumTimeSeriesValues: number;
+  minNumTimeSeriesValues?: number;
+  showAxes?: boolean;
+  redrawSignal?: number;
 }
 
-export default function DataTableSparkGraph({values, maxNumTimeSeriesValues}: IProps) {
+export default function DataTableSparkGraph({width, height, values, maxNumTimeSeriesValues, minNumTimeSeriesValues, showAxes, redrawSignal}: IProps) {
+  const innerWidth = width - (leaderMargin * 2);
+  const innerHeight = height - (leaderMargin * 2);
+  const innerLeft = leaderMargin;
+  const innerRight = innerLeft + innerWidth;
+  const innerTop = leaderMargin;
+  const innerBottom = innerTop + innerHeight;
+
   const polyLinePointsRef = useRef<string[]>([]);
   const polygonPointsRef = useRef<string[]>([]);
   const leaderPointRef = useRef<ISparkGraphPoint|undefined>(undefined);
   const lastMaxNumTimeSeriesValuesRef = useRef(maxNumTimeSeriesValues);
-  const titleRef = useRef("");
+  const lastRedrawSignalRef = useRef(redrawSignal);
 
   let polyLinePoints = polyLinePointsRef.current;
   let polygonPoints = polygonPointsRef.current;
   let leaderPoint = leaderPointRef.current;
 
-  // instead of relying on the values changing just compare the last number of points displayed (the +2 is for the closing polygon points)
-  const graphChanged = (polyLinePoints.length !== values.length) || (maxNumTimeSeriesValues !== lastMaxNumTimeSeriesValuesRef.current);
+  // instead of relying on the values changing just compare the last number of points displayed or if we are signaled to redraw
+  const graphChanged = (polyLinePoints.length !== values.length)
+    || (maxNumTimeSeriesValues !== lastMaxNumTimeSeriesValuesRef.current)
+    || (redrawSignal !== lastRedrawSignalRef.current);
   if (graphChanged) {
     const capabilities = values[0]?.capabilities;
 
-    if (capabilities) {
-      const duration = Math.round((capabilities.measurementPeriod / 1000) * values.length);
-      titleRef.current = `${duration} sec`;
-    } else {
-      titleRef.current = "";
-    }
-
     const minValue = capabilities?.minValue ?? values.reduce((acc, cur) => Math.min(cur.value, acc), Infinity);
     const maxValue = capabilities?.maxValue ?? values.reduce((acc, cur) => Math.max(cur.value, acc), -Infinity);
-    const maxNumValues = Math.max(maxNumTimeSeriesValues, 100);
+    const maxNumValues = Math.max(maxNumTimeSeriesValues, (minNumTimeSeriesValues ?? 100));
 
     let x: number = 0;
     let y: number = 0;
 
     polyLinePoints = values.map(({value}, index) => {
       value = Math.max(minValue, Math.min(value, maxValue));
-      x = leaderMargin + (innerWidth * (index / maxNumValues));
-      y = leaderMargin + (innerHeight - (((value - minValue) / (maxValue - minValue)) * innerHeight));
+      x = innerLeft + (innerWidth * (index / maxNumValues));
+      y = innerLeft + (innerHeight - (((value - minValue) / (maxValue - minValue)) * innerHeight));
       return `${x},${y}`;
     });
 
@@ -63,21 +65,21 @@ export default function DataTableSparkGraph({values, maxNumTimeSeriesValues}: IP
     leaderPointRef.current = leaderPoint;
 
     // add closing polygon points
-    polygonPoints = values.length > 0 ? [...polyLinePoints, `${x}, ${innerHeight + leaderMargin}`, `${leaderMargin}, ${innerHeight + leaderMargin}`] : [];
+    polygonPoints = values.length > 0 ? [...polyLinePoints, `${x}, ${innerBottom}`, `${innerLeft}, ${innerBottom}`] : [];
 
     polyLinePointsRef.current = polyLinePoints;
     polygonPointsRef.current = polygonPoints;
     lastMaxNumTimeSeriesValuesRef.current = maxNumTimeSeriesValues;
+    lastRedrawSignalRef.current = redrawSignal;
   }
 
   return (
-    <div className={css.dataTableSparkgraph}>
-      <div>{titleRef.current}</div>
-      <svg width="100%" height={outerHeight} viewBox={`0 0 ${outerWidth} ${outerHeight}`}>
-        {polygonPoints.length > 0 && <polygon points={polygonPoints.join(" ")} />}
-        {polyLinePoints.length > 0 && <polyline points={polyLinePoints.join(" ")} />}
-        {leaderPoint && <circle cx={leaderPoint.x} cy={leaderPoint.y} r={leaderRadius} strokeWidth={leaderStokeWidth} />}
-      </svg>
-    </div>
+    <svg className={css.dataTableSparkgraph} width="100%" height={height} viewBox={`0 0 ${width} ${height}`}>
+      {polygonPoints.length > 0 && <polygon points={polygonPoints.join(" ")} />}
+      {polyLinePoints.length > 0 && <polyline points={polyLinePoints.join(" ")} />}
+      {showAxes && <line x1={innerLeft} y1={innerTop} x2={innerLeft} y2={innerBottom} stroke="#008a09" strokeWidth={2} />}
+      {showAxes && <line x1={innerLeft} y1={innerBottom} x2={innerRight} y2={innerBottom} stroke="#008a09" strokeWidth={2} />}
+      {leaderPoint && <circle cx={leaderPoint.x} cy={leaderPoint.y} r={leaderRadius} strokeWidth={leaderStokeWidth} />}
+    </svg>
   );
 }

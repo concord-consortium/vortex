@@ -80,35 +80,48 @@
   border-left: none;
 }
 
-.connectedValues {
-}
-.disconnectedValues {
-}
-
 .timeSeriesValue {
   height: 100px;
   padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
 
-  .tsvInfo {
+  .tsvLeft {
     display: flex;
-    justify-content: space-between;
+    flex-direction: column;
+    align-items: left;
+    gap: 5px;
 
-    .tsvInfoLeft {
+    .tsvGraph {
       display: flex;
-      gap: 5px;
+      gap: 7px;
+      align-items: center;
 
-      .tsvBar {
-        display: flex;
+      svg {
+        width: 25px;
       }
+
       .tsvValue {
-        color: $sensorGreenLight1;
-        font-size: 32px;
+        color: #008a09;
+        font-size: 22px;
+        font-weight: bold;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 5px;
       }
     }
+
+    .tsvMeasurement {
+      padding-left: 2px;
+    }
   }
-  .tsvMeasurement {
-    color: $sensorGreen;
-    font-size: 18px;
+
+  .tsvSeparator {
+    width: 2px;
+    border-right: 2px solid #bfe9c2;
+    margin: 0 5px;
   }
 }
 

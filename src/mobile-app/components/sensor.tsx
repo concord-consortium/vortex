@@ -6,7 +6,8 @@ import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import { inCordova } from "../../shared/utils/in-cordova";
 import { SensorStrength } from "./sensor-strength";
 import { Icon } from "../../shared/components/icon";
-import BarChart from "../../shared/components/data-table-barchart";
+import { IDataTableTimeData } from "../../shared/components/data-table-field";
+import DataTableSparkGraph from "../../shared/components/data-table-sparkgraph";
 
 import css from "./sensor.module.scss";
 
@@ -15,6 +16,8 @@ interface ISensorSelectorProps {
   selectDevice: SelectDeviceFn;
   cancel: () => void;
 }
+
+const maxTimeSeriesValues = 5;
 
 export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
   const sortedDevices = devices.sort((a, b) => a.id.localeCompare(b.id));
@@ -69,6 +72,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   const [showDeviceSelect, setShowDeviceSelect] = useState(false);
   const selectDevice = useRef<SelectDeviceFn|undefined>();
   const cancelSelectDevice = useRef<CancelDeviceFn|undefined>();
+  const latestValuesRef = useRef<IDataTableTimeData[]>([]);
 
   const clearSelectDevice = () => {
     selectDevice.current = undefined;
@@ -162,23 +166,38 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     const maxSamples = sampleRate * MaxNumberOfTimeSeriesValues;
     const value = values[valueKey];
     const displayValue = value !== undefined ? value.toFixed(1) : "--";
+    while (latestValuesRef.current.length > maxTimeSeriesValues) {
+      latestValuesRef.current.shift();
+    }
+    latestValuesRef.current.push({value: value ?? 0, time: 0});
+    latestValuesRef.current[0].capabilities = timeSeriesCapabilities;
 
     return (
       <div className={css.timeSeriesValue}>
-        <div className={css.tsvInfo}>
-          <div className={css.tsvInfoLeft}>
-            <div className={css.tsvBar}>
-              <BarChart min={minValue} max={maxValue} value={value ?? 0} />
+        <div className={css.tsvLeft}>
+          <div className={css.tsvGraph}>
+            <DataTableSparkGraph
+              width={25}
+              height={50}
+              values={latestValuesRef.current}
+              minNumTimeSeriesValues={maxTimeSeriesValues}
+              maxNumTimeSeriesValues={maxTimeSeriesValues}
+              showAxes={true}
+              redrawSignal={Date.now()}
+            />
+            <div className={css.tsvValue}>
+              <div>{displayValue}</div>
+              <div>{units}</div>
             </div>
-            <div className={css.tsvValue}>{displayValue}</div>
           </div>
-          <div>
-            <div>Samples: {sampleRate}/sec</div>
-            <div>Max Time: {maxSamples} secs</div>
+          <div className={css.tsvMeasurement}>
+            {measurement}
           </div>
         </div>
-        <div className={css.tsvMeasurement}>
-          {measurement} ({units})
+        <div className={css.tsvSeparator} />
+        <div>
+          <div>Samples: {sampleRate}/sec</div>
+          <div>Max Time: {maxSamples} secs</div>
         </div>
       </div>
     );

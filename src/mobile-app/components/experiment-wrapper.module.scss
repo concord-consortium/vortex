@@ -8,22 +8,33 @@
   flex-wrap: nowrap;
   align-items: center;
   background-color: $ccTealDark2;
-  .nameDisplay{
-    display: flex;
-  }
-  .editing{
-    display: flex;
-    input{
-      display: flex;
-      min-width: 400px;
-      background-color: $ccTealDark2;
+
+
+  .headerTitle {
+    margin: 0 10px 0 10px;
+    font-size: 18px;
+    color: #fff;
+    flex-grow: 1;
+
+    .name {
+      display: block;
       color: white;
-      border: 1px solid #fff;
+      border: 1px solid #D1D1D1;
       border-radius: 4px;
-      padding-left: 4px;
-      outline: none;
-      &:focus{
+      padding: 2px 4px;
+      width: 100%;
+
+      input{
+        padding: 0;
+        width: 100%;
+        font-size: 18px;
+        background-color: $ccTealDark2;
+        color: white;
+        border: none;
         outline: none;
+        &:focus{
+          outline: none;
+        }
       }
     }
   }
@@ -40,12 +51,6 @@
   }
 }
 
-.headerTitle {
-  margin: 0 10px 0 10px;
-  font-size: 18px;
-  color: #fff;
-  flex-grow: 1;
-}
 
 .headerMenu {
   margin-right: 15px;

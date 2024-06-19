@@ -12,6 +12,8 @@ describe("Metadata component", () => {
         uuid: "123",
         name: "test experiment",
         initials: "tt",
+        iconColor: "#000",
+        iconHoverColor: "#777"
       },
       schema: {
         sections: [],
