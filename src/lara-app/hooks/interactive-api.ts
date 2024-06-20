@@ -70,9 +70,19 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
         setConnectedToLara(true);
 
         let _experiment;
-        if (data.authoredState && (data.authoredState.version === "1.0")) {
-          experimentId.current = data.authoredState.experimentId;
-          _experiment = findExperiment(data.authoredState.experimentId);
+        let authoredState = data.authoredState;
+        // In authoring mode the authored state comes in as a string
+        // which causes the authoring preview to show an error
+        if (typeof authoredState === "string") {
+          try {
+            authoredState = JSON.parse(authoredState);
+          } catch (e) {
+            // noop
+          }
+        }
+        if (authoredState?.version === "1.0") {
+          experimentId.current = authoredState.experimentId;
+          _experiment = findExperiment(authoredState.experimentId);
           setExperiment(_experiment);
         }
 
