@@ -1,11 +1,14 @@
 import React from "react";
 import css from "./initials.module.scss";
+import { IExperimentMetadata } from "../experiment-types";
+import { useIconStyle } from "../../mobile-app/hooks/use-icon-style";
 
 interface IProps {
-  text: string;
+  metadata: IExperimentMetadata;
   active?: boolean;
 }
 
-export const Initials: React.FC<IProps> = ({ text, active }) => {
-  return <div className={css.initialsIcon + ` ${active ? css.active : ""}`}>{text}</div>;
+export const Initials: React.FC<IProps> = ({ metadata, active }) => {
+  const {style, handleMouseOut, handleMouseOver} = useIconStyle(metadata);
+  return <div className={css.initialsIcon + ` ${active ? css.active : ""}`} style={style} onMouseOver={handleMouseOver} onMouseOut={handleMouseOut}>{metadata.initials}</div>;
 };

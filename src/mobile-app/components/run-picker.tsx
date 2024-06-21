@@ -53,7 +53,7 @@ export const RunPicker: React.FC<IProps> = ({ runs, onRunSelect, onRunUpload, on
         runs.map(run =>
           <div key={run.key} className={css.runContainer}>
             <div key={run.key} className={css.run} onClick={onRunSelect.bind(null, run)}>
-              <Initials text={run.experiment.metadata.initials}/>
+              <Initials metadata={run.experiment.metadata}/>
               <div className={css.text}>
                 <RunInfoComponent run={run} expanded={run.key === expandedRunInfo} />
               </div>

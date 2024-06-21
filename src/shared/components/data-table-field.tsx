@@ -24,6 +24,7 @@ interface IDataTableStringInputField {
   type: "string";
   title?: string;
   readOnly?: boolean;
+  placeholder?: string;
 }
 interface IDataTableNumberInputField {
   type: "number" | "integer";
@@ -31,6 +32,7 @@ interface IDataTableNumberInputField {
   readOnly?: boolean;
   minimum?: number;
   maximum?: number;
+  placeholder?: string;
 }
 interface IDataTableArrayFieldItems {
   type: "string" | "number";
@@ -41,6 +43,7 @@ interface IDataTableArrayField {
   items: IDataTableArrayFieldItems;
   title?: string;
   readOnly?: boolean;
+  placeholder?: string;
 }
 
 interface IDataTableDataSchema {
@@ -429,8 +432,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
     );
   };
 
-  const renderInput = (options: {name: string, value: any, rowIdx: number, disabled: boolean, error?: string}) => {
+  const renderInput = (options: {name: string, value: any, placeholder?: string, rowIdx: number, disabled: boolean, error?: string}) => {
     const {name, value, rowIdx, disabled, error} = options;
+    const placeholder = (options.placeholder ?? "").replace("$N", String(rowIdx + 1));
     return (
       <>
         <input
@@ -439,6 +443,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
           disabled={disabled}
           onChange={handleInputChange.bind(null, rowIdx, name)}
           onBlur={handleInputBlur.bind(null, rowIdx, name)}
+          placeholder={placeholder}
         />
         {error ? <div className={css.invalidMarker} /> : undefined}
         {error ? <div className={css.invalidError} >{error}</div> : undefined}
@@ -456,6 +461,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return fieldNames.map(name => {
       let value = row[name] || "";
       const readOnly = fieldDefinition[name].readOnly;
+      const placeholder = fieldDefinition[name].placeholder;
       let isFunction = false;
       if (isFunctionSymbol(value)) {
         value = handleSpecialValue(value, name, formData);
@@ -481,13 +487,29 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       let contents;
       if (name === "timeSeries") {
-        contents = <DataTableSparkGraph values={value || []} maxNumTimeSeriesValues={maxNumTimeSeriesValues} />;
+        let graphTitle = "";
+        const values= value || [];
+        if (timeSeriesCapabilities) {
+          const duration = Math.round((timeSeriesCapabilities.measurementPeriod / 1000) * values.length);
+          graphTitle = `${duration} sec`;
+        }
+
+        contents =
+          <div className={css.sparkgraphContainer}>
+            <div>{graphTitle}</div>
+            <DataTableSparkGraph
+              width={200}
+              height={30}
+              values={value || []}
+              maxNumTimeSeriesValues={maxNumTimeSeriesValues}
+            />
+          </div>;
       } else if (readOnly) {
         contents = <div className={css.valueCell}>{value}</div>;
       } else if (fieldDefinition[name].type === "array") {
         contents = renderSelect({name, value, rowIdx, items: (fieldDefinition[name] as IDataTableArrayField).items});
       } else {
-        const input = renderInput({ name, value, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error });
+        const input = renderInput({ name, value, placeholder, rowIdx, disabled: isFunction || (isSensorField && !manualEntryMode), error });
         contents =
           <div className={css.valueCell}>
             {sensorFieldsBlank && sensorCanRecord && renderPromptForData(sensorFieldIdx === 0)}

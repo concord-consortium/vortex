@@ -64,12 +64,15 @@ export interface IExperimentV1 {
     uuid: string;
     name: string;
     initials: string;
+    iconColor: string;
+    iconHoverColor: string;
   };
   schema: IExperimentSchema;
   data?: IExperimentData;
 }
 
 export type IExperiment = IExperimentV1;
+export type IExperimentMetadata = IExperimentV1["metadata"];
 
 export interface IExperimentData {
   // This will be injected by ExperimentWrapper automatically on initial load.

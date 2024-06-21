@@ -6,7 +6,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .icon {
@@ -26,23 +26,6 @@
     background-color: $sensorGreenLight1;
     cursor: pointer;
   }
-
-  &.SS{
-    background-color: $streamBlue;
-    &:hover {
-      background-color: $streamBlueLight1;
-      cursor: pointer;
-    }
-
-  }
-  &.SI{
-    background-color: $sensorGreen;
-    &:hover {
-      background-color: $sensorGreenLight1;
-      cursor: pointer;
-    }
-  }
-
 }
 
 .title {

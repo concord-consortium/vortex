@@ -47,7 +47,9 @@ const experiment2 = {
   "metadata": {
     "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
     "name": "Data Table Example",
-    "initials": "DT"
+    "initials": "DT",
+    "iconColor": "#000",
+    "iconHoverColor": "#777"
   },
   "schema": {
     "sections": [
@@ -144,7 +146,9 @@ const experiment3 = {
   "metadata": {
     "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
     "name": "Data Table Example",
-    "initials": "DT"
+    "initials": "DT",
+    "iconColor": "#000",
+    "iconHoverColor": "#777"
   },
   "schema": {
     "sections": [
@@ -217,7 +221,9 @@ const experiment4 = {
   "metadata": {
     "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
     "name": "Data Table Example",
-    "initials": "DT"
+    "initials": "DT",
+    "iconColor": "#000",
+    "iconHoverColor": "#777"
   },
   "schema": {
     "sections": [
@@ -293,7 +299,9 @@ const experiment5 = {
   "metadata": {
     "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
     "name": "Data Table Example",
-    "initials": "DT"
+    "initials": "DT",
+    "iconColor": "#000",
+    "iconHoverColor": "#777"
   },
   "schema": {
     "sections": [

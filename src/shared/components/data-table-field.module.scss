@@ -130,13 +130,21 @@ $headerBorder: #fff;
       }
     }
     input, select {
-      border: none;
-      width: 100%;
+      // border: none;
+      border: solid 2px $ccGrayLight2;
+      width: calc(100% - 15px);
       height: 100%;
-      text-align: center;
+      text-align: left;
+      font-weight: normal;
+      font-size: 15px;
+      padding: 5px;
+      border-radius: 5px;
       &:focus {
         outline: none;
         border: solid 2px $ccTeal;
+      }
+      &:disabled {
+        border: none;
       }
     }
     input[disabled], select[disabled] {
@@ -222,5 +230,23 @@ $headerBorder: #fff;
     right: 10px;
     display: flex;
     flex-direction: row;
+  }
+
+  .sparkgraphContainer {
+    padding: 6px 6px 1.5px 6px; // bottom padding is handled in svg height margin
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    div {
+      font-size: 13px;
+      font-weight: normal;
+      color: $textBlack;
+    }
+
+    svg {
+      margin-top: -6px;
+    }
   }
 }
