@@ -76,10 +76,11 @@
   flex-wrap: nowrap;
   flex-direction: row;
   justify-content: flex-end;
+  margin: 10px;
+  gap: 10px;
 
   .button {
     display: inline-block;
-    margin: 10px;
     border: 1px solid $ccTealDark2;
     background-color: #fff;
     color: $ccTealDark2;

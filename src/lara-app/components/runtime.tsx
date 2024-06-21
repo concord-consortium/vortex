@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import "firebase/firestore";
+
 import { Experiment } from "../../shared/components/experiment";
 import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
 import { IRun } from "../../mobile-app/hooks/use-runs";
@@ -13,6 +14,7 @@ const QRCode = require("qrcode-svg");
 import { generateDataset } from "../utils/generate-dataset";
 import css from "./runtime.module.scss";
 import { IJwtClaims } from "@concord-consortium/lara-plugin-api";
+import { downloadCSV } from "../utils/download-csv";
 
 const UPDATE_QR_INTERVAL = 1000 * 60 * 60;  // 60 minutes
 
@@ -151,6 +153,13 @@ export const RuntimeComponent = ({
     displayingCode.current = true;
   };
 
+  const handleDownloadCSV = () => {
+    // not stuttering here...
+    if (experimentData?.experimentData) {
+      downloadCSV(experiment, experimentData);
+    }
+  };
+
   const toggleDisplayQr = () => setDisplayQrAndMaybeRegenerateQR(!displayQr);
 
   const handleSaveData = (data: IExperimentData) => {
@@ -215,6 +224,7 @@ export const RuntimeComponent = ({
         {reportOrPreviewMode ? undefined :
           <div className={css.topBar}>
             <div className={css.button} onClick={handleUploadAgain}>Import</div>
+            {experimentData && <div className={css.button} onClick={handleDownloadCSV}>Download CSV</div>}
           </div>}
         <div className={css.runtimeExperiment}>
           <Experiment
