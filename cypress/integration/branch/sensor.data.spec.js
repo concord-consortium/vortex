@@ -70,9 +70,7 @@ context("Testing Experiment Selection View", () => {
     })
 
     describe("Sensor Connection", () => {
-
-        it.only("connects to (mock) sensor", () => {
-            
+        it("connects to (mock) sensor", () => {
             sensorData.getTab('Collect').should('be.visible').click()
             sensorData.getSensorConnectionStatus().contains('No Sensor Connected').click()
             // Assert the connection status
@@ -83,12 +81,15 @@ context("Testing Experiment Selection View", () => {
             sensorData.getBackButton().click()
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             sensorData.getTab('Collect').click()
+            // Assert the disconnect status
             sensorData.getSensorConnectionStatus().should('contain', 'No Sensor Connected')
-            sensorData.getExperimentOptionsMenu().click()
+            sensorData.getExperimentOptionsMenu() // gets the click in the helper function
             sensorData.selectMenuOption('Connect')
-            cy.wait(2000)
+            // Assert the connection status
+            sensorData.getSensorConnectionStatus()
+            .should('contain.text', 'Connected: Mocked Sensor')
         })
-        it("verifies enabled sensor connection UI", () => {
+        it.skip("verifies enabled sensor connection UI", () => {
             sensorData.assertRecordButtonStatus('enabled')
             sensorData.getSensorConnectionStatus().contains(sensorLabels.mockSensorLabel)
             sensorData.getConnectedSensorValue('Temperature').should('not.contain', '--')
@@ -97,7 +98,7 @@ context("Testing Experiment Selection View", () => {
             // sensorData.ConnectedSensorValue('Relative Humidity').should('not.contain','--')
             // sensorData.getConnectedSensorValue('Light').should('not.contain','--')
         })
-        it("disconnects from mock sensor and verify UI", () => {
+        it.skip("disconnects from mock sensor and verify UI", () => {
             sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Disconnect')
 
@@ -105,7 +106,7 @@ context("Testing Experiment Selection View", () => {
             sensorData.getDisconnectSensorStateIcon().should('exist')
             sensorData.getDisconnectedSensorValue('Temperature').should('contain', '--')
         })
-        it("collects data from (mock) sensor", () => {
+        it.skip("collects data from (mock) sensor", () => {
             sensorData.getExperimentOptionsMenu().click()
             sensorData.selectMenuOption('Connect')
 
