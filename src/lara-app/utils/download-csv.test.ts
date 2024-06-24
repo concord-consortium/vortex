@@ -7,6 +7,8 @@ const tabularExperiment: IExperiment = {
     uuid: "59f660d6-0593-4f6a-9d54-35caed536095",
     name: "Tabular Experiment",
     initials: "TE",
+    iconColor: "#000",
+    iconHoverColor: "#777"
   },
   schema: {
     dataSchema: {
@@ -43,6 +45,8 @@ const timeSeriesExperiment: IExperiment = {
     uuid: "bfca7fb5-39ea-4238-8515-e469c44aa872",
     name: "Time Series Experiment",
     initials: "TS",
+    iconColor: "#000",
+    iconHoverColor: "#777"
   },
   schema: {
     dataSchema: {
