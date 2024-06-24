@@ -63,6 +63,9 @@ class SensorData {
     getExperimentOptionsMenu() {
         return cy.get('.data-table-field-module-dataTable-vortex').within(() => {
             cy.get('.menu-module-menuIcon-vortex')
+          .should('exist')
+          .and('be.visible')
+          .click({ force: true }) // click is here to get the helper function to work
         })
     }
 
