@@ -9,12 +9,18 @@ export interface IDeviceOptions {
   requestedCapabilities: ISensorCapabilities;
 }
 
+export interface ISelectableSensorInfo {
+  name: string;
+  internalId: any;
+}
+
 export class Device {
   protected _name: string;
   protected _deviceName: string;
   protected _capabilities: ISensorCapabilities;
   protected _requestedCapabilities: ISensorCapabilities;
   protected _serviceUUID: number | string;
+  protected _selectableSensors: ISelectableSensorInfo[];
 
   constructor(options: IDeviceOptions) {
     this._name = options.name;
@@ -22,6 +28,7 @@ export class Device {
     this._capabilities = options.capabilities;
     this._requestedCapabilities = options.capabilities;
     this._serviceUUID = options.serviceUUID;
+    this._selectableSensors = [];
   }
 
   public get name() {
@@ -36,11 +43,15 @@ export class Device {
     return this._requestedCapabilities;
   }
 
-  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+  public timeSeriesCapabilities(selectableSensorId: any): ITimeSeriesCapabilities|undefined {
     return undefined; // set in each device
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public get selectableSensors(): ISelectableSensorInfo[] {
+    return []; // set in each device
+  }
+
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
     throw new Error("collectTimeSeries() method not overridden!");
   }
 

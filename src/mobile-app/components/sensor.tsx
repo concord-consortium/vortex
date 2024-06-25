@@ -51,7 +51,9 @@ interface ISensorComponentProps {
   setManualEntryMode?: (flag: boolean) => void;
   isTimeSeries: boolean;
   timeSeriesCapabilities?: ITimeSeriesCapabilities;
+  selectableSensorId?: any;
   setTimeSeriesMeasurementPeriod?: (measurementPeriod: number) => void;
+  setSelectableSensorId?: (id: any) => void;
 }
 
 const iconClass = {
@@ -66,7 +68,7 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, setTimeSeriesMeasurementPeriod}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, selectableSensorId, setTimeSeriesMeasurementPeriod, setSelectableSensorId}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
@@ -133,6 +135,10 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     setTimeSeriesMeasurementPeriod?.(newPeriod);
   };
 
+  const handleSelectSelectableSensor = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    setSelectableSensorId?.(e.target.value);
+  };
+
   const connect = () => sensor.connect({
     onDevicesFound: ({devices, select, cancel}) => {
       setDevicesFound(devices);
@@ -174,10 +180,22 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     </div>
   );
 
+  const renderDeviceName = () => {
+    if (sensor.selectableSensors.length === 0) {
+      return <>{deviceName}</>;
+    }
+
+    return (
+      <select onChange={handleSelectSelectableSensor}>
+        {sensor.selectableSensors.map(s => <option key={s.internalId} value={s.internalId}>{s.name}</option>)}
+      </select>
+    );
+  };
+
   const renderConnected = () => (
     <div className={css.connectionLabel}>
       {renderIcon("connected")}
-      Connected: {deviceName}
+      Connected: {renderDeviceName()}
     </div>
   );
 
