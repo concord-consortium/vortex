@@ -133,8 +133,11 @@ export class MockSensor extends Sensor {
   }
 
   public get timeSeriesCapabilities(): ITimeSeriesCapabilities {
+    const defaultMeasurementPeriod = 50;
     return {
-      measurementPeriod: 100,
+      measurementPeriod: defaultMeasurementPeriod,
+      minMeasurementPeriod: 10,
+      defaultMeasurementPeriod,
       measurement: "Fake Value",
       valueKey: "timeSeries",
       units: "N/A",

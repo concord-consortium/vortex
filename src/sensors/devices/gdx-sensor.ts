@@ -4,7 +4,6 @@ import { ISensorCapabilities, ISensorValues, ITimeSeriesCapabilities } from "../
 import { IDataTableTimeData } from "../../shared/components/data-table-field";
 
 const goDirectServiceUUID = "d91714ef-28b9-4f91-ba16-f0d9a604f112";
-const defaultMeasurementPeriod = 100;
 
 // NOTE: to add a new sensor using the existing global capabilities add the prefix to the array
 // and update the mapping of the sensor name to the capability below.  More work will be
@@ -96,13 +95,18 @@ export class GDXSensorDevice extends Device {
           return;
         }
 
+        let defaultMeasurementPeriod = 50;
         const firstSensor = gdxDevice?.sensors[0];
         if (firstSensor) {
           const measurementInfo = firstSensor.specs?.measurementInfo;
           const measurement: string = firstSensor.name;
           const valueKey = measurement.toLowerCase();
+          const minMeasurementPeriod = gdxDevice.minMeasurementPeriod;
+          defaultMeasurementPeriod = Math.max(minMeasurementPeriod, defaultMeasurementPeriod);
           this._timeSeriesCapabilities = {
             measurementPeriod: defaultMeasurementPeriod,
+            minMeasurementPeriod,
+            defaultMeasurementPeriod,
             measurement,
             valueKey,
             units: firstSensor.unit,

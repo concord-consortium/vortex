@@ -13,8 +13,9 @@ import { useSensor } from "../../mobile-app/hooks/use-sensor";
 import { tableKeyboardNav } from "../utils/table-keyboard-nav";
 import { confirm, alert } from "../utils/dialogs";
 import { handleSpecialValue, isFunctionSymbol } from "../utils/handle-special-value";
-import css from "./data-table-field.module.scss";
 import DataTableSparkGraph from "./data-table-sparkgraph";
+
+import css from "./data-table-field.module.scss";
 
 const defPrecision = 2;
 
@@ -179,9 +180,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const waitForSensorIntervalRef = useRef(0);
   const stopTimeSeriesFnRef = useRef<(() => void)|undefined>(undefined);
   const timeSeriesRecordingRowRef = useRef<number|undefined>(undefined);
-  const maxNumTimeSeriesValues = useMemo(() => {
+  const maxTime = useMemo(() => {
     const result = isTimeSeries ? formData.reduce<number>((acc, {timeSeries}) => {
-      return Math.max(acc, Array.isArray(timeSeries) ? timeSeries.length : 0);
+      return Math.max(acc, Array.isArray(timeSeries) ? timeSeries[timeSeries.length - 1].time : 0);
     }, 0) : 0;
     return result;
   }, [isTimeSeries, formData]);
@@ -200,7 +201,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       waitForSensorIntervalRef.current = setInterval(() => {
         const result = sensor.timeSeriesCapabilities;
         if (result) {
-          setTimeSeriesCapabilities(result);
+          setTimeSeriesCapabilities({...result});
           clearInterval(waitForSensorIntervalRef.current);
         }
       });
@@ -208,6 +209,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
       setTimeSeriesCapabilities(undefined);
     }
   }, [sensor, sensorOutput.connected, isTimeSeries, setTimeSeriesCapabilities]);
+
+  const setTimeSeriesMeasurementPeriod = (newPeriod: number) => {
+    setTimeSeriesCapabilities(prev => prev ? {...prev, measurementPeriod: newPeriod} : prev);
+  };
 
   const sensorCanRecord = useMemo(() => {
     return sensorOutput.connected && Object.values(sensorOutput.values).length > 0;
@@ -345,11 +350,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
     };
 
     const recordTimeSeries = () => {
-      if (!sensor) {
+      if (!sensor || !timeSeriesCapabilities) {
         return;
       }
 
-      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(100, (values) => {
+      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, (values) => {
         const newData = formData.slice();
         newData[rowIdx] = {timeSeries: values};
         if (values.length <= MaxNumberOfTimeSeriesValues) {
@@ -487,12 +492,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       let contents;
       if (name === "timeSeries") {
-        let graphTitle = "";
-        const values= value || [];
-        if (timeSeriesCapabilities) {
-          const duration = Math.round((timeSeriesCapabilities.measurementPeriod / 1000) * values.length);
-          graphTitle = `${duration} sec`;
-        }
+        const values: IDataTableTimeData[] = value || [];
+        const graphTitle = values.length > 0 ? `${Math.round(values[values.length - 1].time)} sec` : "";
 
         contents =
           <div className={css.sparkgraphContainer}>
@@ -501,7 +502,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
               width={200}
               height={30}
               values={value || []}
-              maxNumTimeSeriesValues={maxNumTimeSeriesValues}
+              maxTime={maxTime}
             />
           </div>;
       } else if (readOnly) {
@@ -541,7 +542,16 @@ export const DataTableField: React.FC<FieldProps> = props => {
     <div className={css.dataTable}>
       <div className={css.topBar}>
         <div className={css.topBarLeft}>
-          {showSensor && sensor ? <SensorComponent sensor={sensor} manualEntryMode={manualEntryMode} setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode} isTimeSeries={isTimeSeries} timeSeriesCapabilities={timeSeriesCapabilities} /> : undefined}
+          {showSensor && sensor
+            ? <SensorComponent
+                sensor={sensor}
+                manualEntryMode={manualEntryMode}
+                setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode}
+                isTimeSeries={isTimeSeries}
+                timeSeriesCapabilities={timeSeriesCapabilities}
+                setTimeSeriesMeasurementPeriod={setTimeSeriesMeasurementPeriod}
+              />
+            : undefined}
           {title ? <div className={css.title}>{title}</div> : undefined}
         </div>
         <div className={css.topBarRight}>

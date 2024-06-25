@@ -16,13 +16,13 @@ interface IProps {
   width: number;
   height: number;
   values: IDataTableTimeData[];
-  maxNumTimeSeriesValues: number;
-  minNumTimeSeriesValues?: number;
+  maxTime: number;
+  minTime?: number;
   showAxes?: boolean;
   redrawSignal?: number;
 }
 
-export default function DataTableSparkGraph({width, height, values, maxNumTimeSeriesValues, minNumTimeSeriesValues, showAxes, redrawSignal}: IProps) {
+export default function DataTableSparkGraph({width, height, values, minTime, maxTime, showAxes, redrawSignal}: IProps) {
   const innerWidth = width - (leaderMargin * 2);
   const innerHeight = height - (leaderMargin * 2);
   const innerLeft = leaderMargin;
@@ -33,7 +33,7 @@ export default function DataTableSparkGraph({width, height, values, maxNumTimeSe
   const polyLinePointsRef = useRef<string[]>([]);
   const polygonPointsRef = useRef<string[]>([]);
   const leaderPointRef = useRef<ISparkGraphPoint|undefined>(undefined);
-  const lastMaxNumTimeSeriesValuesRef = useRef(maxNumTimeSeriesValues);
+  const lastMaxTimeRef = useRef(maxTime);
   const lastRedrawSignalRef = useRef(redrawSignal);
 
   let polyLinePoints = polyLinePointsRef.current;
@@ -42,21 +42,20 @@ export default function DataTableSparkGraph({width, height, values, maxNumTimeSe
 
   // instead of relying on the values changing just compare the last number of points displayed or if we are signaled to redraw
   const graphChanged = (polyLinePoints.length !== values.length)
-    || (maxNumTimeSeriesValues !== lastMaxNumTimeSeriesValuesRef.current)
+    || (maxTime !== lastMaxTimeRef.current)
     || (redrawSignal !== lastRedrawSignalRef.current);
   if (graphChanged) {
     const capabilities = values[0]?.capabilities;
 
     const minValue = capabilities?.minValue ?? values.reduce((acc, cur) => Math.min(cur.value, acc), Infinity);
     const maxValue = capabilities?.maxValue ?? values.reduce((acc, cur) => Math.max(cur.value, acc), -Infinity);
-    const maxNumValues = Math.max(maxNumTimeSeriesValues, (minNumTimeSeriesValues ?? 100));
 
     let x: number = 0;
     let y: number = 0;
 
-    polyLinePoints = values.map(({value}, index) => {
+    polyLinePoints = values.map(({value, time}) => {
       value = Math.max(minValue, Math.min(value, maxValue));
-      x = innerLeft + (innerWidth * (index / maxNumValues));
+      x = innerLeft + (innerWidth * (time / Math.max(maxTime, (minTime ?? 10))));
       y = innerLeft + (innerHeight - (((value - minValue) / (maxValue - minValue)) * innerHeight));
       return `${x},${y}`;
     });
@@ -69,7 +68,7 @@ export default function DataTableSparkGraph({width, height, values, maxNumTimeSe
 
     polyLinePointsRef.current = polyLinePoints;
     polygonPointsRef.current = polygonPoints;
-    lastMaxNumTimeSeriesValuesRef.current = maxNumTimeSeriesValues;
+    lastMaxTimeRef.current = maxTime;
     lastRedrawSignalRef.current = redrawSignal;
   }
 

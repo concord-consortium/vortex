@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { SensorValue } from "./sensor-value";
 import { Sensor, IConnectDevice, SelectDeviceFn, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, ISensorValues } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
@@ -17,7 +17,7 @@ interface ISensorSelectorProps {
   cancel: () => void;
 }
 
-const maxTimeSeriesValues = 5;
+const maxTime = 3;
 
 export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
   const sortedDevices = devices.sort((a, b) => a.id.localeCompare(b.id));
@@ -51,6 +51,7 @@ interface ISensorComponentProps {
   setManualEntryMode?: (flag: boolean) => void;
   isTimeSeries: boolean;
   timeSeriesCapabilities?: ITimeSeriesCapabilities;
+  setTimeSeriesMeasurementPeriod?: (measurementPeriod: number) => void;
 }
 
 const iconClass = {
@@ -65,14 +66,51 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, setTimeSeriesMeasurementPeriod}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
   const [showDeviceSelect, setShowDeviceSelect] = useState(false);
   const selectDevice = useRef<SelectDeviceFn|undefined>();
   const cancelSelectDevice = useRef<CancelDeviceFn|undefined>();
+
+  // generate a sliding window of time series values
   const latestValuesRef = useRef<IDataTableTimeData[]>([]);
+  useEffect(() => {
+    if (!sensor.connected || !isTimeSeries || !timeSeriesCapabilities) {
+      latestValuesRef.current = [];
+      return;
+    }
+
+    const valueKey = timeSeriesCapabilities.valueKey as keyof ISensorValues;
+    const timeDelta = sensor.pollInterval / 1000;
+    const hasValues = latestValuesRef.current.length > 0;
+    let latestTime = hasValues ? latestValuesRef.current[latestValuesRef.current.length - 1].time : 0;
+    let nextTime = hasValues ? latestTime + timeDelta : 0;
+    if (latestTime >= maxTime) {
+      nextTime = maxTime;
+      latestTime = maxTime;
+      latestValuesRef.current = latestValuesRef.current.slice(1).map(({value}, index) => {
+        return {value, time: index * timeDelta};
+      });
+    }
+    latestValuesRef.current.push({value: values[valueKey] ?? 0, time: nextTime});
+    latestValuesRef.current[0].capabilities = timeSeriesCapabilities;
+  }, [isTimeSeries, sensor, timeSeriesCapabilities, values]);
+
+  const timeSeriesPeriods = useMemo(() => {
+    if (!timeSeriesCapabilities) {
+      return [];
+    }
+
+    const {measurementPeriod, minMeasurementPeriod, defaultMeasurementPeriod} = timeSeriesCapabilities;
+
+    const result: number[] = [10, 20, 50, 200, 500, 1000, 2000, 10000, measurementPeriod, defaultMeasurementPeriod, minMeasurementPeriod]
+        .filter(n => n >= minMeasurementPeriod)
+        .filter((item, pos, self) => self.indexOf(item) === pos);
+    result.sort((a, b) => b - a);
+    return result;
+  }, [timeSeriesCapabilities]);
 
   const clearSelectDevice = () => {
     selectDevice.current = undefined;
@@ -88,6 +126,11 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   const handleCancelSelectDevice = () => {
     cancelSelectDevice.current?.();
     clearSelectDevice();
+  };
+
+  const handleMeasurementPeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newPeriod = parseInt(e.target.value, 10);
+    setTimeSeriesMeasurementPeriod?.(newPeriod);
   };
 
   const connect = () => sensor.connect({
@@ -160,17 +203,12 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
       return <div className={css.timeSeriesValue} />;
     }
 
-    const {measurementPeriod, measurement, units, minValue, maxValue} = timeSeriesCapabilities;
+    const {measurementPeriod, measurement, units} = timeSeriesCapabilities;
     const valueKey = timeSeriesCapabilities.valueKey as keyof ISensorValues;
     const sampleRate = measurementPeriod / 1000;
-    const maxSamples = sampleRate * MaxNumberOfTimeSeriesValues;
+    const maxSampleTime = sampleRate * MaxNumberOfTimeSeriesValues;
     const value = values[valueKey];
     const displayValue = value !== undefined ? value.toFixed(1) : "--";
-    while (latestValuesRef.current.length > maxTimeSeriesValues) {
-      latestValuesRef.current.shift();
-    }
-    latestValuesRef.current.push({value: value ?? 0, time: 0});
-    latestValuesRef.current[0].capabilities = timeSeriesCapabilities;
 
     return (
       <div className={css.timeSeriesValue}>
@@ -180,8 +218,8 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
               width={25}
               height={50}
               values={latestValuesRef.current}
-              minNumTimeSeriesValues={maxTimeSeriesValues}
-              maxNumTimeSeriesValues={maxTimeSeriesValues}
+              minTime={0}
+              maxTime={maxTime}
               showAxes={true}
               redrawSignal={Date.now()}
             />
@@ -195,9 +233,21 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
           </div>
         </div>
         <div className={css.tsvSeparator} />
-        <div>
-          <div>Samples: {sampleRate}/sec</div>
-          <div>Max Time: {maxSamples} secs</div>
+        <div className={css.tsvRight}>
+          <div className={css.tsvInfo}>
+            <div className={css.tsvInfoRow}>
+              <div>Samples:</div>
+              <div>
+                <select className={css.tsvSampleRate} value={measurementPeriod} onChange={handleMeasurementPeriodChange}>
+                  {timeSeriesPeriods.map(p => <option key={p} value={p}>{`${(1000 / p)}/sec`}</option>)}
+                </select>
+              </div>
+            </div>
+            <div className={css.tsvInfoRow}>
+              <div>Max Time:</div>
+              <div>{maxSampleTime} secs</div>
+            </div>
+          </div>
         </div>
       </div>
     );

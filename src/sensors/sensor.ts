@@ -80,6 +80,8 @@ export interface IConnectOptions {
 
 export interface ITimeSeriesCapabilities {
   measurementPeriod: number;
+  minMeasurementPeriod: number;
+  defaultMeasurementPeriod: number;
   measurement: string;
   valueKey: string;
   units: string;
@@ -96,7 +98,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
   private _experimentFilters: BluetoothRequestDeviceFilter[];
   private _capabilities: ISensorCapabilities;
   private pollTimeout: number;
-  private pollInterval: number;
+  private _pollInterval: number;
   private error: any;
 
   constructor(options: ISensorOptions) {
@@ -105,7 +107,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     this._capabilities = options.capabilities;
     this._connected = false;
     this._values = {};
-    this.pollInterval = options.pollInterval || 1000;
+    this._pollInterval = options.pollInterval || 1000;
     this.error = undefined;
   }
 
@@ -119,6 +121,10 @@ export class Sensor extends EventEmitter<SensorEvent> {
 
   public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
     return undefined; // set in device
+  }
+
+  public get pollInterval() {
+    return this._pollInterval;
   }
 
   public get connected() {
@@ -193,7 +199,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     const createTimeout = () => {
       this.pollTimeout = window.setTimeout(() => {
         this.sendData(options).then(() => this.poll({firstPoll: false}));
-      }, this.pollInterval);
+      }, this._pollInterval);
     };
 
     if (options.firstPoll) {
