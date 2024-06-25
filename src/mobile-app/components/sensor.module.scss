@@ -123,6 +123,33 @@
     border-right: 2px solid #bfe9c2;
     margin: 0 5px;
   }
+
+  .tsvRight {
+    .tsvInfo {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+
+      .tsvInfoRow {
+        display: flex;
+        align-items: center;
+        text-align: right;
+        justify-content: flex-end;
+        gap: 10px;
+
+        div:last-child {
+          min-width: 100px;
+          text-align: left;
+        }
+      }
+
+      select {
+        padding: 8px;
+        border-radius: 5px;
+        background-color: #fff;
+      }
+    }
+  }
 }
 
 .sensorSelector {
