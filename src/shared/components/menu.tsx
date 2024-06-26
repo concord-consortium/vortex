@@ -1,17 +1,19 @@
 import React, { useState, useEffect, useRef } from "react";
+import classNames from "classnames";
 import { Icon, IconName } from "./icon";
 import css from "./menu.module.scss";
 
 interface IMenuItemProps {
   onClick: () => void;
+  disabled?: boolean;
   icon?: IconName;
 }
 interface IMenuProps {
   icon?: IconName;
 }
-export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, children}) => {
+export const MenuItemComponent: React.FC<IMenuItemProps> = ({onClick, icon, disabled, children}) => {
   return (
-    <div className={css.menuItem} onClick={onClick}>
+    <div className={classNames(css.menuItem, {[css.disabled]: disabled})} onClick={disabled ? undefined : onClick}>
       {icon ? <Icon name={icon}/> : <div className={css.iconPlaceholder}/>}
       {children}
     </div>

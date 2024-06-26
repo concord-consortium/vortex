@@ -128,6 +128,7 @@
     "ace-builds": "^1.4.8",
     "ajv": "5.5.2",
     "aws-sdk": "^2.454.0",
+    "classnames": "^2.5.1",
     "client-oauth2": "^4.2.5",
     "eventemitter3": "^4.0.0",
     "firebase": "^7.6.1",

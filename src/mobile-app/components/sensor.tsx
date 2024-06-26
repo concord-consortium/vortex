@@ -1,4 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
+import classNames from "classnames";
 import { SensorValue } from "./sensor-value";
 import { Sensor, IConnectDevice, SelectDeviceFn, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, ISensorValues } from "../../sensors/sensor";
 import { useSensor } from "../hooks/use-sensor";
@@ -15,11 +16,12 @@ interface ISensorSelectorProps {
   devices: IConnectDevice[];
   selectDevice: SelectDeviceFn;
   cancel: () => void;
+  inputDisabled?: boolean;
 }
 
 const maxTime = 3;
 
-export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel}) => {
+export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices, selectDevice, cancel, inputDisabled}) => {
   const sortedDevices = devices.sort((a, b) => a.id.localeCompare(b.id));
   const handleCancel = () => cancel();
   return (
@@ -27,13 +29,13 @@ export const SensorSelectorComponent: React.FC<ISensorSelectorProps> = ({devices
       <div className={css.sensorSelectorHeader}>
         <div className={css.sensorSelectorHeaderTitle}>Choose a sensor...</div>
         <div className={css.sensorSelectorHeaderButtons}>
-          <div className={css.sensorSelectorHeaderButton} onClick={handleCancel}>Cancel</div>
+          <div className={css.sensorSelectorHeaderButton} onClick={inputDisabled ? undefined : handleCancel}>Cancel</div>
         </div>
       </div>
       {sortedDevices.map((device, index) => {
         const handleSelectDevice = () => selectDevice(device);
         return (
-          <div key={index} className={css.sensorSelectorItem} onClick={handleSelectDevice}>
+          <div key={index} className={css.sensorSelectorItem} onClick={inputDisabled ? undefined : handleSelectDevice}>
             <div className={css.sensorSelectorItemName}>{device.name}</div>
             <div className={css.sensorSelectorItemRssi}>
               <SensorStrength rssi={device.adData.rssi} />
@@ -54,6 +56,7 @@ interface ISensorComponentProps {
   selectableSensorId?: any;
   setTimeSeriesMeasurementPeriod?: (measurementPeriod: number) => void;
   setSelectableSensorId?: (id: any) => void;
+  inputDisabled?: boolean;
 }
 
 const iconClass = {
@@ -68,7 +71,7 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, selectableSensorId, setTimeSeriesMeasurementPeriod, setSelectableSensorId}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, selectableSensorId, setTimeSeriesMeasurementPeriod, setSelectableSensorId, inputDisabled}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
@@ -159,22 +162,24 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     </div>
   );
 
+  const connectionLabelClassName = classNames(css.connectionLabel, {[css.disabled]: inputDisabled});
+
   const renderError = () => (
-    <div className={css.connectionLabel}>
+    <div className={connectionLabelClassName}>
       {renderIcon("error")}
       {error.toString()}
     </div>
   );
 
   const renderDisconnected = () => (
-    <div className={css.connectionLabel} onClick={connect}>
+    <div className={connectionLabelClassName} onClick={inputDisabled ? undefined : connect}>
       {renderIcon("disconnected")}
       No Sensor Connected
     </div>
   );
 
   const renderConnecting = () => (
-    <div className={css.connectionLabel}>
+    <div className={connectionLabelClassName}>
       {renderIcon("connected")}
       {inCordova ? "Searching..." : "Connecting..."}
     </div>
@@ -186,14 +191,14 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     }
 
     return (
-      <select onChange={handleSelectSelectableSensor}>
+      <select onChange={handleSelectSelectableSensor} disabled={inputDisabled}>
         {sensor.selectableSensors.map(s => <option key={s.internalId} value={s.internalId}>{s.name}</option>)}
       </select>
     );
   };
 
   const renderConnected = () => (
-    <div className={css.connectionLabel}>
+    <div className={connectionLabelClassName}>
       {renderIcon("connected")}
       Connected: {renderDeviceName()}
     </div>
@@ -207,10 +212,10 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     return (
       <MenuComponent>
         {manualEntryMode && canSwitchModes
-          ? <MenuItemComponent onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent>
+          ? <MenuItemComponent disabled={inputDisabled} onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent>
           : <>
-              {connected ? <MenuItemComponent onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent icon="settings_input_antenna" onClick={connect}>Connect</MenuItemComponent>}
-              {canSwitchModes ? <MenuItemComponent onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent> : undefined}
+              {connected ? <MenuItemComponent disabled={inputDisabled} onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent icon="settings_input_antenna" disabled={inputDisabled} onClick={connect}>Connect</MenuItemComponent>}
+              {canSwitchModes ? <MenuItemComponent disabled={inputDisabled} onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent> : undefined}
             </>}
       </MenuComponent>
     );
@@ -256,7 +261,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
             <div className={css.tsvInfoRow}>
               <div>Samples:</div>
               <div>
-                <select className={css.tsvSampleRate} value={measurementPeriod} onChange={handleMeasurementPeriodChange}>
+                <select className={css.tsvSampleRate} value={measurementPeriod} onChange={handleMeasurementPeriodChange} disabled={inputDisabled}>
                   {timeSeriesPeriods.map(p => <option key={p} value={p}>{`${(1000 / p)}/sec`}</option>)}
                 </select>
               </div>
@@ -330,7 +335,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
         {error ? renderError() : (connected ? renderConnected() : (connecting ? renderConnecting() : renderDisconnected()))}
         {renderMenu()}
       </div>
-      {showDeviceSelect ? <SensorSelectorComponent devices={devicesFound} selectDevice={handleSelectDevice} cancel={handleCancelSelectDevice} /> : undefined}
+      {showDeviceSelect ? <SensorSelectorComponent devices={devicesFound} selectDevice={handleSelectDevice} cancel={handleCancelSelectDevice} inputDisabled={inputDisabled} /> : undefined}
       {isTimeSeries ? renderTimeSeries() : renderValues()}
     </div>
   );

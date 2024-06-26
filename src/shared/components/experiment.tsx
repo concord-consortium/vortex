@@ -12,9 +12,11 @@ interface IProps {
   onDataChange?: (newData: IExperimentData) => void;
   config: IExperimentConfig;
   defaultSectionIndex?: number;
+  inputDisabled?: boolean;
+  setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex, inputDisabled, setInputDisabled }) => {
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[defaultSectionIndex || 0]);
@@ -44,6 +46,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
               active={s === section}
               title={s.title}
               icon={s.icon as IconName}
+              disabled={inputDisabled}
               onClick={setSection.bind(null, s)}
             />
           )
@@ -55,6 +58,8 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
           experiment={experiment}
           experimentConfig={config}
           formData={currentData}
+          inputDisabled={inputDisabled}
+          setInputDisabled={setInputDisabled}
           onDataChange={onExperimentDataChange}
         />
       </div>
