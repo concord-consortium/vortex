@@ -38,4 +38,6 @@
     width: 24px;
     margin-right: 10px;
   }
+
+  @include add-disabled-class($opacity: 0.35);
 }

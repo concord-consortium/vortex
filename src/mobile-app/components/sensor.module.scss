@@ -19,6 +19,8 @@
   align-items: center;
   flex-grow: 1; /* to allow the label to take up as much room as possible */
 
+  @include add-disabled-class();
+
   // for selectable sensor
   select {
     margin-left: 7px;

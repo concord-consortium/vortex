@@ -12,6 +12,8 @@ export interface IVortexFormContext {
   experiment: IExperiment;
   experimentConfig: IExperimentConfig;
   formData: IExperimentData;
+  inputDisabled?: boolean;
+  setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
   sensor?: Sensor;
 }
 

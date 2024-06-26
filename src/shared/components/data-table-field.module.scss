@@ -163,6 +163,9 @@ $headerBorder: #fff;
       display: flex;
       justify-content: center;
       align-items: center;
+
+      @include add-disabled-class($opacity: 0.35);
+
       &.active {
         background-color: $sensorGreenLight1;
         &.refresh {
@@ -171,7 +174,7 @@ $headerBorder: #fff;
         &.record {
           background-color: $sensorGreenLight1;
         }
-        &:hover {
+        &:hover:not(.disabled) {
           cursor: pointer;
         }
       }

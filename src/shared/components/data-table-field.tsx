@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import classNames from "classnames";
 import { FieldProps } from "react-jsonschema-form";
 import { MockSensor } from "../../sensors/mock-sensor";
 import { ISensorCapabilities, ISensorConnectionEventData, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
@@ -187,6 +188,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return result;
   }, [isTimeSeries, formData]);
   const [selectableSensorId, setSelectableSensorId] = useState<any>();
+  const {inputDisabled, setInputDisabled} = formContext;
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -277,10 +279,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
   // for now select is the same as input but that will change once we add input validation
   const handleSelectChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
-    handleInputChange(rowIdx, propName, event);
+    !inputDisabled && handleInputChange(rowIdx, propName, event);
   };
   const handleSelectBlur = () => {
-    handleInputBlur();
+    !inputDisabled && handleInputBlur();
   };
 
   const handleInputChange = (rowIdx: number, propName: string, event: React.FormEvent<HTMLInputElement>) => {
@@ -288,10 +290,14 @@ export const DataTableField: React.FC<FieldProps> = props => {
     const newData = formData.slice();
     const rawValue = event.currentTarget.value;
     newData[rowIdx] = Object.assign({}, newData[rowIdx], { [propName]: rawValue });
-    setFormData(newData);
+    !inputDisabled && setFormData(newData);
   };
 
   const handleInputBlur = () => {
+    if (inputDisabled) {
+      return;
+    }
+
     const oldData = props.formData;
     if (formData !== oldData) {
       // New data has been added or something has been edited.
@@ -310,10 +316,13 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const handleEditSaveButton = () => setManualEntryMode(!manualEntryMode);
-  const handleCollectButton = () => setShowSensor(!showSensor);
+  const handleEditSaveButton = () => !inputDisabled && setManualEntryMode(!manualEntryMode);
+  const handleCollectButton = () => !inputDisabled && setShowSensor(!showSensor);
 
   const handleDeleteDataTrial = (rowIdx: number) => {
+    if (inputDisabled) {
+      return;
+    }
     confirm("Delete Trial?\n\nThis will delete the trial.", () => {
       const newData = formData.slice();
       newData[rowIdx] = {};
@@ -323,6 +332,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
   };
 
   const onSensorRecordClick = (rowIdx: number) => {
+    if (inputDisabled) {
+      return;
+    }
     if (!sensorOutput.connected) {
       alert("Sensor not connected");
       return;
@@ -355,6 +367,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
         return;
       }
 
+      setInputDisabled?.(true);
+
       stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, selectableSensorId, (values) => {
         const newData = formData.slice();
         newData[rowIdx] = {timeSeries: values};
@@ -384,11 +398,13 @@ export const DataTableField: React.FC<FieldProps> = props => {
   };
 
   const onSensorStopTimeSeries = (finalData: IDataTableRow[]) => {
+    // no check of input disabled here as this handler updates it
     if (stopTimeSeriesFnRef.current) {
       stopTimeSeriesFnRef.current?.();
       stopTimeSeriesFnRef.current = undefined;
       timeSeriesRecordingRowRef.current = undefined;
       saveData(finalData);
+      setInputDisabled?.(false);
     }
   };
 
@@ -411,12 +427,19 @@ export const DataTableField: React.FC<FieldProps> = props => {
     const iconName: IconName = sensorFieldsBlank ? (isTimeSeries ? "recordDataTrial" : "record") : (isTimeSeries ? (showStopButton ? "stopDataTrial" : "deleteDataTrial") : "replay");
     const onClick = iconName === "deleteDataTrial" ? handleDeleteDataTrial.bind(null, rowIdx) : (rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries.bind(null, formData) : onSensorRecordClick.bind(null, rowIdx)) : null);
     rowActive = iconName === "deleteDataTrial" ? true : rowActive;
+    const buttonDisabled = inputDisabled && !showStopButton;
+    const className = classNames(css.refreshSensorReading, {
+      [css.active]: rowActive,
+      [css.refresh]: !sensorFieldsBlank,
+      [css.record]:  sensorFieldsBlank,
+      [css.disabled]: buttonDisabled,
+    });
     const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {
         anyNonFunctionSensorValues &&
         <div
-          className={css.refreshSensorReading + ` ${rowActive ? css.active : ""}` + ` ${!sensorFieldsBlank ? css.refresh : css.record}`}
-          onClick={onClick}
+          className={className}
+          onClick={buttonDisabled ? undefined : onClick}
           data-test="record-sensor"
         >
           <Icon name={iconName} />
@@ -446,7 +469,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
         <input
           type="text"
           value={value}
-          disabled={disabled}
+          disabled={disabled || inputDisabled}
           onChange={handleInputChange.bind(null, rowIdx, name)}
           onBlur={handleInputBlur.bind(null, rowIdx, name)}
           placeholder={placeholder}
@@ -483,13 +506,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
       const sensorFieldIdx = sensorFields.indexOf(name);
       const isSensorField = sensorFieldIdx !== -1;
       const {valid, error} = isFunction ? {valid: true, error: undefined} : validateInput(name, String(value));
-      let classNames = "";
-      if (readOnly) classNames += " " + css.readOnly;
-      if (isSensorField) classNames += " " + css.sensorField;
-      if (isFunction) classNames += " " + css.function;
-      if (!valid) {
-        classNames += " " + css.invalid;
-      }
+      const rowClassName = classNames({
+        [css.readOnly]: readOnly,
+        [css.sensorField]: isSensorField,
+        [css.function]: isFunction,
+        [css.invalid]: !valid,
+      });
 
       let contents;
       if (name === "timeSeries") {
@@ -519,7 +541,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
           </div>;
       }
 
-      return <td key={name} className={classNames}>{contents}</td>;
+      return <td key={name} className={rowClassName}>{contents}</td>;
     });
   };
   const renderPromptForData = (isFirst: boolean) => {
@@ -533,8 +555,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
     );
   };
 
-  const buttonStyle = (enabled: boolean) => `${css.button}${enabled ? "" : ` ${css.buttonDisabled}`}`;
-  const editEnabled = !showSensor;
+  const buttonStyle = (enabled: boolean) => classNames(css.button, {[css.buttonDisabled]: !enabled});
+  const editEnabled = !showSensor && !inputDisabled;
   const editTitle = editEnabled ? undefined : "Disabled while using the sensor";
   const showSensorEnabled = !manualEntryMode;
   const showSensorTitle = showSensorEnabled ? undefined : "Disabled while editing";
@@ -549,6 +571,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
                 manualEntryMode={manualEntryMode}
                 setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode}
                 isTimeSeries={isTimeSeries}
+                inputDisabled={inputDisabled}
                 timeSeriesCapabilities={timeSeriesCapabilities}
                 selectableSensorId={selectableSensorId}
                 setTimeSeriesMeasurementPeriod={setTimeSeriesMeasurementPeriod}

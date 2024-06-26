@@ -24,6 +24,8 @@
       padding: 2px 4px;
       width: 100%;
 
+      @include add-disabled-class();
+
       input{
         padding: 0;
         width: 100%;
@@ -43,7 +45,10 @@
 .headerBackIcon {
   margin: 5px 15px 0 15px;
   padding: 0;
-  &:hover {
+
+  @include add-disabled-class();
+
+  &:hover:not(.disabled) {
     cursor: pointer;
   }
   svg {

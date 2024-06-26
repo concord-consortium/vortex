@@ -18,13 +18,15 @@ interface IProps {
   formData: IExperimentData;
   onDataChange?: (newData: IExperimentData) => void;
   experimentConfig: IExperimentConfig;
+  inputDisabled?: boolean;
+  setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SectionComponent: {[name in SectionComponentName]: SectionComponent} = {
   metadata: Metadata
 };
 
-export const Section: React.FC<IProps> = ({ section, experiment, formData, onDataChange, experimentConfig }) => {
+export const Section: React.FC<IProps> = ({ section, experiment, formData, onDataChange, experimentConfig, inputDisabled, setInputDisabled }) => {
   let formSchema: IDataSchema | null = null;
   if (section.formFields && section.formFields.length > 0) {
     const dataSchema = experiment.schema.dataSchema;
@@ -39,7 +41,7 @@ export const Section: React.FC<IProps> = ({ section, experiment, formData, onDat
 
   const onChange = (event: IChangeEvent<IExperimentData>) => {
     // Immediately save the data.
-    onDataChange && onDataChange(event.formData);
+    !inputDisabled && onDataChange && onDataChange(event.formData);
   };
 
   return (
@@ -66,7 +68,9 @@ export const Section: React.FC<IProps> = ({ section, experiment, formData, onDat
             experiment,
             experimentConfig,
             // Pass the whole form data again, so custom field can access other field values.
-            formData
+            formData,
+            inputDisabled,
+            setInputDisabled
           } as IVortexFormContext}
         >
           {/* Children are used to render custom action buttons. We don't want any, */}

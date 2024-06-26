@@ -31,3 +31,10 @@ $sensorGreenLight2: #7fd384;
 $timeSeriesStroke: #444444;
 $timeSeriesFill: #99FF8A;
 $timeSeriesLeaderFill: #00A80A;
+
+@mixin add-disabled-class($opacity: 1) {
+  &.disabled {
+    opacity: $opacity;
+    cursor: not-allowed;
+  }
+}
