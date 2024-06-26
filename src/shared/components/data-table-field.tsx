@@ -186,6 +186,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }, 0) : 0;
     return result;
   }, [isTimeSeries, formData]);
+  const [selectableSensorId, setSelectableSensorId] = useState<any>();
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -198,17 +199,17 @@ export const DataTableField: React.FC<FieldProps> = props => {
     clearInterval(waitForSensorIntervalRef.current);
     if (sensor && sensorOutput.connected && isTimeSeries) {
       // wait for sensor to come online and set its time series capabilities
-      waitForSensorIntervalRef.current = setInterval(() => {
-        const result = sensor.timeSeriesCapabilities;
+      waitForSensorIntervalRef.current = window.setInterval(() => {
+        const result = sensor.timeSeriesCapabilities(selectableSensorId);
         if (result) {
           setTimeSeriesCapabilities({...result});
           clearInterval(waitForSensorIntervalRef.current);
         }
-      });
+      }, 10);
     } else {
       setTimeSeriesCapabilities(undefined);
     }
-  }, [sensor, sensorOutput.connected, isTimeSeries, setTimeSeriesCapabilities]);
+  }, [sensor, sensorOutput.connected, isTimeSeries, setTimeSeriesCapabilities, selectableSensorId]);
 
   const setTimeSeriesMeasurementPeriod = (newPeriod: number) => {
     setTimeSeriesCapabilities(prev => prev ? {...prev, measurementPeriod: newPeriod} : prev);
@@ -354,7 +355,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
         return;
       }
 
-      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, (values) => {
+      stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, selectableSensorId, (values) => {
         const newData = formData.slice();
         newData[rowIdx] = {timeSeries: values};
         if (values.length <= MaxNumberOfTimeSeriesValues) {
@@ -549,7 +550,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
                 setManualEntryMode={showShowSensorButton ? undefined : setManualEntryMode}
                 isTimeSeries={isTimeSeries}
                 timeSeriesCapabilities={timeSeriesCapabilities}
+                selectableSensorId={selectableSensorId}
                 setTimeSeriesMeasurementPeriod={setTimeSeriesMeasurementPeriod}
+                setSelectableSensorId={setSelectableSensorId}
               />
             : undefined}
           {title ? <div className={css.title}>{title}</div> : undefined}

@@ -1,6 +1,6 @@
 import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
 
-import { Device } from "./devices/device";
+import { Device, ISelectableSensorInfo } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
 import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
 import { MultiSensorDevice } from "./devices/multi-sensor";
@@ -93,8 +93,12 @@ export class DeviceSensor extends Sensor {
     return Promise.resolve();
   }
 
-  public get timeSeriesCapabilities() {
-    return this.device?.timeSeriesCapabilities;
+  public timeSeriesCapabilities(selectableSensorId: any) {
+    return this.device?.timeSeriesCapabilities(selectableSensorId);
+  }
+
+  public get selectableSensors(): ISelectableSensorInfo[] {
+    return this.device?.selectableSensors ?? [];
   }
 
   protected pollValues(options: IPollOptions): Promise<ISensorValues> {
@@ -119,9 +123,9 @@ export class DeviceSensor extends Sensor {
     });
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
     if (this.device) {
-      return this.device.collectTimeSeries(measurementPeriod, callback);
+      return this.device.collectTimeSeries(measurementPeriod, selectableSensorId, callback);
     }
     return () => {
       // noop

@@ -1,4 +1,5 @@
 import { IDataTableTimeData } from "../shared/components/data-table-field";
+import { ISelectableSensorInfo } from "./devices/device";
 import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
 
 type MockValueDirection = "up" | "down";
@@ -132,7 +133,7 @@ export class MockSensor extends Sensor {
     return Promise.resolve(values);
   }
 
-  public get timeSeriesCapabilities(): ITimeSeriesCapabilities {
+  public timeSeriesCapabilities(selectableSensorId: any): ITimeSeriesCapabilities {
     const defaultMeasurementPeriod = 50;
     return {
       measurementPeriod: defaultMeasurementPeriod,
@@ -146,11 +147,18 @@ export class MockSensor extends Sensor {
     };
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public get selectableSensors(): ISelectableSensorInfo[] {
+    return [
+      {name: "Mocked Sensor: Force", internalId: 0},
+      {name: "Mocked Sensor: Temperature", internalId: 1},
+    ];
+  }
+
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
     let time = 0;
     const delta = measurementPeriod / 1000;
     const values: IDataTableTimeData[] = [];
-    const capabilities = {...this.timeSeriesCapabilities, measurementPeriod};
+    const capabilities = {...this.timeSeriesCapabilities(selectableSensorId), measurementPeriod};
 
     const callCallback = () => {
       const value = this.mockValues.timeSeries;

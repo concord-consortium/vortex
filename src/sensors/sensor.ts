@@ -1,5 +1,6 @@
 import EventEmitter from "eventemitter3";
 import { IDataTableTimeData } from "../shared/components/data-table-field";
+import { ISelectableSensorInfo } from "./devices/device";
 
 export interface ISensorCapabilities {
   illuminance?: boolean;
@@ -119,8 +120,12 @@ export class Sensor extends EventEmitter<SensorEvent> {
     return this._capabilities;
   }
 
-  public get timeSeriesCapabilities(): ITimeSeriesCapabilities|undefined {
+  public timeSeriesCapabilities(selectableSensorId: any): ITimeSeriesCapabilities|undefined {
     return undefined; // set in device
+  }
+
+  public get selectableSensors(): ISelectableSensorInfo[] {
+    return []; // set in device
   }
 
   public get pollInterval() {
@@ -159,7 +164,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     }
   }
 
-  public collectTimeSeries(measurementPeriod: number, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
     throw new Error("collectTimeSeries() method not overridden!");
   }
 
