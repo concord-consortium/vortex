@@ -77,7 +77,6 @@ class SensorData {
     getRecordButton() {
         return cy.get('[data-test="record-sensor"]')
     }
-
     assertRecordButtonStatus(status) {
         if (status == 'enabled') {
             return this.getRecordButton().should('have.class', 'data-table-field-module-active-vortex')
