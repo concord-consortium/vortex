@@ -1,6 +1,6 @@
 import EventEmitter from "eventemitter3";
-import { IDataTableTimeData } from "../shared/components/data-table-field";
 import { ISelectableSensorInfo } from "./devices/device";
+import { ITimeSeriesCapabilities } from "../shared/utils/time-series";
 
 export interface ISensorCapabilities {
   illuminance?: boolean;
@@ -79,18 +79,6 @@ export interface IConnectOptions {
   onDevicesFound: OnDevicesFoundFn;
 }
 
-export interface ITimeSeriesCapabilities {
-  measurementPeriod: number;
-  minMeasurementPeriod: number;
-  defaultMeasurementPeriod: number;
-  measurement: string;
-  valueKey: string;
-  units: string;
-  minValue: number;
-  maxValue: number;
-}
-
-export const MaxNumberOfTimeSeriesValues = 1000;
 
 export class Sensor extends EventEmitter<SensorEvent> {
   protected _deviceName: string | undefined;
@@ -164,7 +152,7 @@ export class Sensor extends EventEmitter<SensorEvent> {
     }
   }
 
-  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: number[]) => void): () => void {
     throw new Error("collectTimeSeries() method not overridden!");
   }
 

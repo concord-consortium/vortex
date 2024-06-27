@@ -1,13 +1,13 @@
 import React, { useState, useRef, useMemo, useEffect } from "react";
 import classNames from "classnames";
 import { SensorValue } from "./sensor-value";
-import { Sensor, IConnectDevice, SelectDeviceFn, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, ISensorValues } from "../../sensors/sensor";
+import { Sensor, IConnectDevice, SelectDeviceFn, ISensorValues } from "../../sensors/sensor";
+import { ITimeSeriesCapabilities, ITimeSeriesMetadata, MaxNumberOfTimeSeriesValues, getTimeSeriesMetadata } from "../../shared/utils/time-series";
 import { useSensor } from "../hooks/use-sensor";
 import { MenuComponent, MenuItemComponent } from "../../shared/components/menu";
 import { inCordova } from "../../shared/utils/in-cordova";
 import { SensorStrength } from "./sensor-strength";
 import { Icon } from "../../shared/components/icon";
-import { IDataTableTimeData } from "../../shared/components/data-table-field";
 import DataTableSparkGraph from "../../shared/components/data-table-sparkgraph";
 
 import css from "./sensor.module.scss";
@@ -80,28 +80,32 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   const cancelSelectDevice = useRef<CancelDeviceFn|undefined>();
 
   // generate a sliding window of time series values
-  const latestValuesRef = useRef<IDataTableTimeData[]>([]);
+  const timeSeriesValuesRef = useRef<number[]>([]);
   useEffect(() => {
     if (!sensor.connected || !isTimeSeries || !timeSeriesCapabilities) {
-      latestValuesRef.current = [];
+      timeSeriesValuesRef.current = [];
       return;
     }
 
     const valueKey = timeSeriesCapabilities.valueKey as keyof ISensorValues;
-    const timeDelta = sensor.pollInterval / 1000;
-    const hasValues = latestValuesRef.current.length > 0;
-    let latestTime = hasValues ? latestValuesRef.current[latestValuesRef.current.length - 1].time : 0;
-    let nextTime = hasValues ? latestTime + timeDelta : 0;
-    if (latestTime >= maxTime) {
-      nextTime = maxTime;
+    const measurementPeriod = sensor.pollInterval / 1000;
+    let latestTime = timeSeriesValuesRef.current.length * measurementPeriod;
+    if (latestTime > maxTime) {
       latestTime = maxTime;
-      latestValuesRef.current = latestValuesRef.current.slice(1).map(({value}, index) => {
-        return {value, time: index * timeDelta};
-      });
+      timeSeriesValuesRef.current = timeSeriesValuesRef.current.slice(1);
     }
-    latestValuesRef.current.push({value: values[valueKey] ?? 0, time: nextTime});
-    latestValuesRef.current[0].capabilities = timeSeriesCapabilities;
+    timeSeriesValuesRef.current.push(values[valueKey] ?? 0);
   }, [isTimeSeries, sensor, timeSeriesCapabilities, values]);
+
+  const timeSeriesMetadataRef = useRef<ITimeSeriesMetadata|undefined>(undefined);
+  useEffect(() => {
+    if (!isTimeSeries || !timeSeriesCapabilities) {
+      timeSeriesMetadataRef.current = undefined;
+      return;
+    }
+
+    timeSeriesMetadataRef.current = {...getTimeSeriesMetadata(timeSeriesCapabilities), measurementPeriod: sensor.pollInterval};
+  }, [isTimeSeries, timeSeriesCapabilities]);
 
   const timeSeriesPeriods = useMemo(() => {
     if (!timeSeriesCapabilities) {
@@ -222,7 +226,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   };
 
   const renderTimeSeries = () => {
-    if (!timeSeriesCapabilities) {
+    if (!timeSeriesCapabilities || !timeSeriesMetadataRef.current) {
       return <div className={css.timeSeriesValue} />;
     }
 
@@ -240,7 +244,8 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
             <DataTableSparkGraph
               width={25}
               height={50}
-              values={latestValuesRef.current}
+              values={timeSeriesValuesRef.current}
+              metadata={timeSeriesMetadataRef.current}
               minTime={0}
               maxTime={maxTime}
               showAxes={true}

@@ -1,10 +1,11 @@
 import {unparse} from "papaparse";
 
-import { IDataTableRow, IDataTableTimeData } from "../../shared/components/data-table-field";
+import { IDataTableRow } from "../../shared/components/data-table-field";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { isFunctionSymbol, handleSpecialValue } from "../../shared/utils/handle-special-value";
+import { ITimeSeriesMetadata, TimeSeriesDataKey, TimeSeriesMetadataKey } from "../../shared/utils/time-series";
 
-type TimeValues = Record<string, number|undefined>;
+type TimeValues = Record<string, string|undefined>;
 type OtherValues = Record<string, any>;
 type TimeSeriesRow = {timeValues: TimeValues, otherValues: OtherValues};
 
@@ -36,10 +37,10 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
   }, {});
 
   const rawRows: IDataTableRow[] = data.experimentData;
-  const isTimeSeries = (experiment.schema.formUiSchema?.experimentData?.["ui:dataTableOptions"]?.sensorFields || []).indexOf("timeSeries") !== -1;
+  const isTimeSeries = (experiment.schema.formUiSchema?.experimentData?.["ui:dataTableOptions"]?.sensorFields || []).indexOf(TimeSeriesDataKey) !== -1;
 
   if (isTimeSeries) {
-    const nonTimeSeriesTitles = Object.keys(titleMap).filter(key => key !== "timeSeries");
+    const nonTimeSeriesTitles = Object.keys(titleMap).filter(key => key !== TimeSeriesDataKey);
     const timeKeys = new Set<string>();
     const timeSeriesRows: TimeSeriesRow[] = [];
 
@@ -51,10 +52,13 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
         otherValues[titleMap[key]] = getRowValue(key, rawRow, rawRows);
       });
 
-      const timeSeries = (rawRow.timeSeries ?? []) as IDataTableTimeData[];
-      timeSeries.forEach(({time, value}) => {
+      const timeSeries = (rawRow[TimeSeriesDataKey] ?? []) as number[];
+      const {measurementPeriod} = (rawRow[TimeSeriesMetadataKey] ?? {measurementPeriod: 0}) as ITimeSeriesMetadata;
+      const timeDelta = measurementPeriod / 1000;
+      timeSeries.forEach((value, index) => {
+        const time = index * timeDelta;
         const timeKey = getTimeKey(time);
-        timeValues[timeKey] = value;
+        timeValues[timeKey] = String(value);
         timeKeys.add(timeKey);
       });
 
@@ -64,7 +68,7 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
 
     // unroll each time/value reading into its own row
     const unrolledRows: Record<string,any>[] = [];
-    const timeSeriesKey = titleMap.timeSeries ?? "Time Series Value";
+    const timeSeriesKey = titleMap[TimeSeriesDataKey] ?? "Time Series Value";
     sortedTimeKeys.forEach(timeKey => {
       const row: Record<string, any> = {Time: timeKey};
       timeSeriesRows.forEach(({timeValues}, rowIndex) => {

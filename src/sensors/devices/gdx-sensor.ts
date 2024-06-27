@@ -1,7 +1,7 @@
 import { Device, ISelectableSensorInfo } from "./device";
 import godirect from "@vernier/godirect/dist/godirect.min.cjs";
-import { ISensorCapabilities, ISensorValues, ITimeSeriesCapabilities } from "../sensor";
-import { IDataTableTimeData } from "../../shared/components/data-table-field";
+import { ISensorCapabilities, ISensorValues } from "../sensor";
+import { ITimeSeriesCapabilities } from "../../shared/utils/time-series";
 
 const goDirectServiceUUID = "d91714ef-28b9-4f91-ba16-f0d9a604f112";
 
@@ -76,10 +76,8 @@ export class GDXSensorDevice extends Device {
     return this.gdxDevice.sensors.map((s: any) => ({name: s.name, internalId: s.number}));
   }
 
-  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
-    let capabilities = this.timeSeriesCapabilities(selectableSensorId);
-
-    if (!this.gdxDevice || !capabilities) {
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: number[]) => void): () => void {
+    if (!this.gdxDevice) {
       return () => {
         // noop
       };
@@ -89,16 +87,11 @@ export class GDXSensorDevice extends Device {
 
     let time = 0;
     const delta = measurementPeriod / 1000;
-    const values: IDataTableTimeData[] = [];
-    capabilities = {...capabilities, measurementPeriod};
+    const values: number[] = [];
 
     const handleChange = (sensor: any) => {
       if (sensor.number === selectableSensorId) {
-        if (values.length === 0) {
-          values.push({time, value: sensor.value, capabilities});
-        } else {
-          values.push({time, value: sensor.value});
-        }
+        values.push(sensor.value);
         callback(values);
         time += delta;
       }

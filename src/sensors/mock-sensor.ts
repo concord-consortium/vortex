@@ -1,6 +1,7 @@
-import { IDataTableTimeData } from "../shared/components/data-table-field";
+import { TimeSeriesDataKey, getTimeSeriesMetadata } from "../shared/utils/time-series";
 import { ISelectableSensorInfo } from "./devices/device";
-import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
+import { Sensor, ISensorOptions, ISensorValues, IPollOptions, IConnectOptions } from "./sensor";
+import { ITimeSeriesCapabilities } from "../shared/utils/time-series";
 
 type MockValueDirection = "up" | "down";
 interface IStartingSensorValues extends Required<ISensorValues> {
@@ -46,19 +47,19 @@ export class MockSensor extends Sensor {
       illuminance: options.minValues?.illuminance || 0,
       temperature: options.minValues?.temperature || -18,
       humidity: options.minValues?.humidity || 0,
-      timeSeries: options.minValues?.timeSeries || -5,
+      timeSeries: options.minValues?.[TimeSeriesDataKey] || -5,
     };
     this.maxMockValues = {
       illuminance: options.maxValues?.illuminance || 10000,
       temperature: options.maxValues?.temperature || 38,
       humidity: options.maxValues?.humidity || 90,
-      timeSeries: options.maxValues?.timeSeries || 5,
+      timeSeries: options.maxValues?.[TimeSeriesDataKey] || 5,
     };
     this.mockValues = {
       illuminance: this.randomInRange("illuminance"),
       temperature: this.randomInRange("temperature"),
       humidity: this.randomInRange("humidity"),
-      timeSeries: this.randomInRange("timeSeries"),
+      timeSeries: this.randomInRange(TimeSeriesDataKey),
       ...options.startingValues,
     };
     this.mockValueDirections = {
@@ -127,8 +128,8 @@ export class MockSensor extends Sensor {
       this.setNextRandomMockValue({measurement: "temperature", increment: 0.2});
     }
 
-    values.timeSeries = this.mockValues.timeSeries;
-    this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.2});
+    values[TimeSeriesDataKey] = this.mockValues[TimeSeriesDataKey];
+    this.setNextRandomMockValue({measurement: TimeSeriesDataKey, increment: 0.2});
 
     return Promise.resolve(values);
   }
@@ -140,7 +141,7 @@ export class MockSensor extends Sensor {
       minMeasurementPeriod: 10,
       defaultMeasurementPeriod,
       measurement: "Fake Value",
-      valueKey: "timeSeries",
+      valueKey: TimeSeriesDataKey,
       units: "N/A",
       minValue: -5,
       maxValue: 5,
@@ -154,22 +155,14 @@ export class MockSensor extends Sensor {
     ];
   }
 
-  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
-    let time = 0;
-    const delta = measurementPeriod / 1000;
-    const values: IDataTableTimeData[] = [];
-    const capabilities = {...this.timeSeriesCapabilities(selectableSensorId), measurementPeriod};
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: number[]) => void): () => void {
+    const values: number[] = [];
 
     const callCallback = () => {
-      const value = this.mockValues.timeSeries;
-      this.setNextRandomMockValue({measurement: "timeSeries", increment: 0.5});
-      if (values.length === 0) {
-        values.push({time, value, capabilities});
-      } else {
-        values.push({time, value});
-      }
+      const value = this.mockValues[TimeSeriesDataKey];
+      this.setNextRandomMockValue({measurement: TimeSeriesDataKey, increment: 0.5});
+      values.push(value);
       callback(values);
-      time += delta;
     };
 
     callCallback();

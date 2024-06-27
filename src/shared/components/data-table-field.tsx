@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import classNames from "classnames";
 import { FieldProps } from "react-jsonschema-form";
 import { MockSensor } from "../../sensors/mock-sensor";
-import { ISensorCapabilities, ISensorConnectionEventData, ITimeSeriesCapabilities, MaxNumberOfTimeSeriesValues, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
+import { ISensorCapabilities, ISensorConnectionEventData, SensorCapabilityKey, SensorEvent } from "../../sensors/sensor";
+import { ITimeSeriesCapabilities, ITimeSeriesMetadata, MaxNumberOfTimeSeriesValues, TimeSeriesMetadataKey, getTimeSeriesMetadata } from "../utils/time-series";
 import { SensorComponent } from "../../mobile-app/components/sensor";
 import { IVortexFormContext } from "./form";
 import { getURLParam } from "../utils/get-url-param";
@@ -15,6 +16,7 @@ import { tableKeyboardNav } from "../utils/table-keyboard-nav";
 import { confirm, alert } from "../utils/dialogs";
 import { handleSpecialValue, isFunctionSymbol } from "../utils/handle-special-value";
 import DataTableSparkGraph from "./data-table-sparkgraph";
+import { TimeSeriesDataKey } from "../utils/time-series";
 
 import css from "./data-table-field.module.scss";
 
@@ -58,8 +60,7 @@ interface IDataTableDataSchema {
   };
 }
 
-export type IDataTableTimeData = {time: number, value: number, capabilities?: ITimeSeriesCapabilities};
-export type IDataTableRowData = string | number | IDataTableTimeData[] | undefined;
+export type IDataTableRowData = string | number | number[] | ITimeSeriesMetadata | undefined;
 
 // Form data accepted by this component.
 export interface IDataTableRow {
@@ -128,7 +129,7 @@ const castToExpectedTypes = (fieldDefinition: {[propName: string]: IDataTableFie
     newData.push(newRow);
     Object.keys(row).forEach(propName => {
       const rawValue = formData[rowIdx][propName];
-      newRow[propName] = fieldDefinition[propName].type === "number" && !isNaN(Number(rawValue)) ? Number(rawValue) : rawValue;
+      newRow[propName] = fieldDefinition[propName]?.type === "number" && !isNaN(Number(rawValue)) ? Number(rawValue) : rawValue;
     });
   });
   return newData;
@@ -166,7 +167,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const uiSchema: IFormUiSchema = props.uiSchema as IFormUiSchema;
   const experimentFilters = uiSchema["ui:dataTableOptions"]?.filters || [];
   const sensorFields = uiSchema["ui:dataTableOptions"]?.sensorFields || [];
-  const isTimeSeries = sensorFields.indexOf("timeSeries") !== -1;
+  const isTimeSeries = sensorFields.indexOf(TimeSeriesDataKey) !== -1;
   // Sensor instance can be provided in form context or it'll be created using filters or sensorFields as capabilities.
   const sensor = formContext.experimentConfig?.useSensors && sensorFields.length > 0 ? (formContext.sensor || getSensor(sensorFields, experimentFilters)) : null;
   const sensorOutput = useSensor(sensor);
@@ -182,8 +183,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const stopTimeSeriesFnRef = useRef<(() => void)|undefined>(undefined);
   const timeSeriesRecordingRowRef = useRef<number|undefined>(undefined);
   const maxTime = useMemo(() => {
-    const result = isTimeSeries ? formData.reduce<number>((acc, {timeSeries}) => {
-      return Math.max(acc, Array.isArray(timeSeries) ? timeSeries[timeSeries.length - 1].time : 0);
+    const result = isTimeSeries ? formData.reduce<number>((acc, row) => {
+      const timeSeries = row[TimeSeriesDataKey];
+      const {measurementPeriod} = (row[TimeSeriesMetadataKey] ?? {measurementPeriod: 0}) as ITimeSeriesMetadata;
+      return Math.max(acc, Array.isArray(timeSeries) ? (measurementPeriod / 1000) * timeSeries.length : 0);
     }, 0) : 0;
     return result;
   }, [isTimeSeries, formData]);
@@ -245,7 +248,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
 
     const propType = fieldDefinition[propName].type;
-    if (propName === "timeSeries") {
+    if (propName === TimeSeriesDataKey) {
       // no validation on time series data
     } else if ((propType === "number") || (propType === "integer")) {
       const {minimum, maximum} = fieldDefinition[propName] as IDataTableNumberInputField;
@@ -369,9 +372,11 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       setInputDisabled?.(true);
 
+      const timeSeriesMetadata = getTimeSeriesMetadata(timeSeriesCapabilities);
+
       stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, selectableSensorId, (values) => {
         const newData = formData.slice();
-        newData[rowIdx] = {timeSeries: values};
+        newData[rowIdx] = {timeSeries: values, timeSeriesMetadata};
         if (values.length <= MaxNumberOfTimeSeriesValues) {
           setFormData(newData);
         }
@@ -514,9 +519,12 @@ export const DataTableField: React.FC<FieldProps> = props => {
       });
 
       let contents;
-      if (name === "timeSeries") {
-        const values: IDataTableTimeData[] = value || [];
-        const graphTitle = values.length > 0 ? `${Math.round(values[values.length - 1].time)} sec` : "";
+      if (name === TimeSeriesDataKey) {
+        const values: number[] = value || [];
+        const metadata = (row[TimeSeriesMetadataKey] ?? {measurementPeriod: 0});
+        const {measurementPeriod} = metadata;
+        const time = values.length * (measurementPeriod / 1000);
+        const graphTitle = values.length > 0 ? `${Math.round(time)} sec` : "";
 
         contents =
           <div className={css.sparkgraphContainer}>
@@ -524,7 +532,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
             <DataTableSparkGraph
               width={200}
               height={30}
-              values={value || []}
+              values={values}
+              metadata={metadata}
               maxTime={maxTime}
             />
           </div>;
