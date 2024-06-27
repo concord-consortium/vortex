@@ -46,6 +46,22 @@ class SensorData {
             cy.get('.sensor-value-module-connectedValue-vortex')
         })
     }
+    selectSensor(input){
+         // Click to focus on the select dropdown (adjust the selector as needed)
+        cy.get('div.sensor-module-connectionLabel-vortex select').focus();
+
+        if (input === 'Force') {
+            // Select the "Mocked Sensor: Force" option
+            cy.get('div.sensor-module-connectionLabel-vortex select').select('Mocked Sensor: Force');
+            return 'Mocked Sensor: Force';
+        } else if (input === 'Temperature') {
+            // Select the "Mocked Sensor: Temperature" option
+            cy.get('div.sensor-module-connectionLabel-vortex select').select('Mocked Sensor: Temperature');
+            return 'Mocked Sensor: Temperature';
+        } else {
+            throw new Error('Invalid input: please specify either "Force" or "Temperature"');
+        }
+    }
 
     getDataRow(index) {
         return cy.get('.data-table-field-module-refreshSensorReading-vortex').eq(index - 1).parent().parent()

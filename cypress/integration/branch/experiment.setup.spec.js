@@ -1,4 +1,5 @@
 import ExperimentSetup from "../../supports/elements/ExperimentSetup"
+import SensorData from "../../supports/elements/SensorData"
 
 context("Testing Experiment Selection View", () => {
 
@@ -14,6 +15,8 @@ context("Testing Experiment Selection View", () => {
   let studySite1 = "Study Site #1"
   let studySite2 = "Study Site #2"
   let defaultSchoolyardInvestigation = "Schoolyard Investigation #1"
+
+  let sensorData = new SensorData();
 
   before(() => {
     cy.visit(url);
@@ -99,5 +102,37 @@ context("Testing Experiment Selection View", () => {
     it("deletes Stream Study experiment", () => {
       experimentSetup.deleteExperiment()
     })
+  })
+
+  describe("Tests Data Trial", () => {
+
+    it.only("create and setup a data trial", () => {
+      experimentSetup.openNewExperiment('Data Trial')
+      //cy.wait(500)
+      
+      sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+      sensorData.selectMenuOption('Connect')
+
+      // Select and verify the "Mocked Sensor: Temperature" option
+      sensorData.selectSensor('Temperature')
+      cy.get('div.sensor-module-connectionLabel-vortex select')
+          .should('have.value', '1');
+
+    })
+    // this is pasted code from above
+    // it("edit experiment and verify changes", () => {
+    //   experimentSetup.getExperiment('Stream Study', 1).click()
+    //   experimentSetup.getExperimentNameSpan().click()
+    //   experimentSetup.getNameInput().type(testLabel2)
+    //   experimentSetup.getGroupMembersTextBox().type(testGroupMembers)
+    //   experimentSetup.getSubheader(testLabel2)
+    //   experimentSetup.getBackButton().click()
+    //   experimentSetup.expandAllExperimentLabels()
+    //   experimentSetup.getExperimentLabel(testLabel2).should('be.visible')
+    // })
+
+    // it("deletes Stream Study experiment", () => {
+    //   experimentSetup.deleteExperiment()
+    // })
   })
 })
