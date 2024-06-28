@@ -1,5 +1,4 @@
-import { Sensor, ISensorValues, ISensorOptions, ISensorCapabilities, ISetConnectedOptions, IPollOptions, IConnectOptions, ITimeSeriesCapabilities } from "./sensor";
-
+import { Sensor, ISensorValues, ISensorOptions, ISetConnectedOptions, IPollOptions, IConnectOptions } from "./sensor";
 import { Device, ISelectableSensorInfo } from "./devices/device";
 import { SensorTag2Device } from "./devices/sensor-tag-cc2650";
 import { SensorTagCC1350Device } from "./devices/sensor-tag-cc1350";
@@ -7,7 +6,6 @@ import { MultiSensorDevice } from "./devices/multi-sensor";
 import { GDXSensorDevice } from "./devices/gdx-sensor";
 import { logInfo } from "../shared/utils/log";
 import { inCordova } from "../shared/utils/in-cordova";
-import { IDataTableTimeData } from "../shared/components/data-table-field";
 
 declare global {
   // tslint:disable-next-line:interface-name
@@ -123,7 +121,7 @@ export class DeviceSensor extends Sensor {
     });
   }
 
-  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: IDataTableTimeData[]) => void): () => void {
+  public collectTimeSeries(measurementPeriod: number, selectableSensorId: any, callback: (values: number[]) => void): () => void {
     if (this.device) {
       return this.device.collectTimeSeries(measurementPeriod, selectableSensorId, callback);
     }

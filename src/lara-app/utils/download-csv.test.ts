@@ -1,3 +1,4 @@
+import { TimeSeriesDataKey, TimeSeriesMetadataKey } from "../../shared/utils/time-series";
 import { IExperiment, IExperimentData } from "../../shared/experiment-types";
 import { downloadCSV, getFilename, getRows, getTimeKey, sortNaturally } from "./download-csv";
 
@@ -54,7 +55,7 @@ const timeSeriesExperiment: IExperiment = {
         experimentData: {
           items: {
             properties: {
-              timeSeries: {
+              [TimeSeriesDataKey]: {
                 title: "Results"
               },
               label: {
@@ -68,7 +69,7 @@ const timeSeriesExperiment: IExperiment = {
     formUiSchema: {
       experimentData: {
         "ui:dataTableOptions": {
-          sensorFields: ["timeSeries"]
+          sensorFields: [TimeSeriesDataKey]
         }
       }
     }
@@ -78,11 +79,10 @@ const timeSeriesExperiment: IExperiment = {
 const timeSeriesData: IExperimentData = {
   timestamp: 987654321,
   experimentData: [
-    {timeSeries: [{time: 0, value: 1}, {time: 1, value: 2}], label: "Label #1"},
-    {timeSeries: [{time: 1, value: 3}, {time: 2, value: 4}], label: "Label #2"}
+    {[TimeSeriesDataKey]: [1, 2], [TimeSeriesMetadataKey]: { measurementPeriod: 1000}, label: "Label #1"},
+    {[TimeSeriesDataKey]: [3, 4], [TimeSeriesMetadataKey]: { measurementPeriod: 2000}, label: "Label #2"}
   ]
 };
-
 
 describe("download csv functions", () => {
 
@@ -126,22 +126,22 @@ describe("download csv functions", () => {
       expect(getRows(timeSeriesExperiment, timeSeriesData)).toStrictEqual([
         {
           "Time": "0",
-          "Row 1 Results": 1,
-          "Row 2 Results": "",
+          "Row 1 Results": "1",
+          "Row 2 Results": "3",
           "Row 1 Label": "Label #1",
           "Row 2 Label": "Label #2",
         },
         {
           "Time": "1",
-          "Row 1 Results": 2,
-          "Row 2 Results": 3,
+          "Row 1 Results": "2",
+          "Row 2 Results": "",
           "Row 1 Label": "Label #1",
           "Row 2 Label": "Label #2",
         },
         {
           "Time": "2",
           "Row 1 Results": "",
-          "Row 2 Results": 4,
+          "Row 2 Results": "4",
           "Row 1 Label": "Label #1",
           "Row 2 Label": "Label #2",
         },

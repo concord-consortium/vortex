@@ -1,7 +1,7 @@
 import React, { useRef } from "react";
-import { IDataTableTimeData } from "./data-table-field";
 
 import css from "./data-table-sparkgraph.module.scss";
+import { ITimeSeriesMetadata } from "../utils/time-series";
 
 const leaderRadius = 3;
 const leaderStokeWidth = 1.5;
@@ -15,14 +15,15 @@ interface ISparkGraphPoint {
 interface IProps {
   width: number;
   height: number;
-  values: IDataTableTimeData[];
+  values: number[];
+  metadata: ITimeSeriesMetadata;
   maxTime: number;
   minTime?: number;
   showAxes?: boolean;
   redrawSignal?: number;
 }
 
-export default function DataTableSparkGraph({width, height, values, minTime, maxTime, showAxes, redrawSignal}: IProps) {
+export default function DataTableSparkGraph({width, height, values, metadata, minTime, maxTime, showAxes, redrawSignal}: IProps) {
   const innerWidth = width - (leaderMargin * 2);
   const innerHeight = height - (leaderMargin * 2);
   const innerLeft = leaderMargin;
@@ -45,16 +46,15 @@ export default function DataTableSparkGraph({width, height, values, minTime, max
     || (maxTime !== lastMaxTimeRef.current)
     || (redrawSignal !== lastRedrawSignalRef.current);
   if (graphChanged) {
-    const capabilities = values[0]?.capabilities;
-
-    const minValue = capabilities?.minValue ?? values.reduce((acc, cur) => Math.min(cur.value, acc), Infinity);
-    const maxValue = capabilities?.maxValue ?? values.reduce((acc, cur) => Math.max(cur.value, acc), -Infinity);
+    const minValue = metadata.minValue ?? values.reduce((acc, cur) => Math.min(cur, acc), Infinity);
+    const maxValue = metadata.maxValue ?? values.reduce((acc, cur) => Math.max(cur, acc), -Infinity);
 
     let x: number = 0;
     let y: number = 0;
 
-    polyLinePoints = values.map(({value, time}) => {
+    polyLinePoints = values.map((value, index) => {
       value = Math.max(minValue, Math.min(value, maxValue));
+      const time = index * (metadata.measurementPeriod / 1000);
       x = innerLeft + (innerWidth * (time / Math.max(maxTime, (minTime ?? 10))));
       y = innerLeft + (innerHeight - (((value - minValue) / (maxValue - minValue)) * innerHeight));
       return `${x},${y}`;
