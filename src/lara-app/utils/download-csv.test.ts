@@ -59,7 +59,11 @@ const timeSeriesExperiment: IExperiment = {
                 title: "Results"
               },
               label: {
-                title: "Label"
+                title: "Label",
+                isTimeSeriesLabel: true
+              },
+              extraData: {
+                title: "Extra Data"
               }
             }
           }
@@ -79,8 +83,8 @@ const timeSeriesExperiment: IExperiment = {
 const timeSeriesData: IExperimentData = {
   timestamp: 987654321,
   experimentData: [
-    {[TimeSeriesDataKey]: [1, 2], [TimeSeriesMetadataKey]: { measurementPeriod: 1000}, label: "Label #1"},
-    {[TimeSeriesDataKey]: [3, 4], [TimeSeriesMetadataKey]: { measurementPeriod: 2000}, label: "Label #2"}
+    {[TimeSeriesDataKey]: [1, 2], [TimeSeriesMetadataKey]: { measurementPeriod: 1000}, label: "First Label", extraData: "one"},
+    {[TimeSeriesDataKey]: [3, 4], [TimeSeriesMetadataKey]: { measurementPeriod: 2000}, label: "Second Label", extraData: "two"}
   ]
 };
 
@@ -126,24 +130,24 @@ describe("download csv functions", () => {
       expect(getRows(timeSeriesExperiment, timeSeriesData)).toStrictEqual([
         {
           "Time": "0",
-          "Row 1 Results": "1",
-          "Row 2 Results": "3",
-          "Row 1 Label": "Label #1",
-          "Row 2 Label": "Label #2",
+          "First Label": "1",
+          "Second Label": "3",
+          "Row 1 Extra Data": "one",
+          "Row 2 Extra Data": "two",
         },
         {
           "Time": "1",
-          "Row 1 Results": "2",
-          "Row 2 Results": "",
-          "Row 1 Label": "Label #1",
-          "Row 2 Label": "Label #2",
+          "First Label": "2",
+          "Second Label": "",
+          "Row 1 Extra Data": "one",
+          "Row 2 Extra Data": "two",
         },
         {
           "Time": "2",
-          "Row 1 Results": "",
-          "Row 2 Results": "4",
-          "Row 1 Label": "Label #1",
-          "Row 2 Label": "Label #2",
+          "First Label": "",
+          "Second Label": "4",
+          "Row 1 Extra Data": "one",
+          "Row 2 Extra Data": "two",
         },
       ]);
     });
