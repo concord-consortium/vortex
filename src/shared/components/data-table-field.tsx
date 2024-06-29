@@ -48,6 +48,7 @@ interface IDataTableArrayField {
   title?: string;
   readOnly?: boolean;
   placeholder?: string;
+  isTimeSeriesLabel?: boolean;
 }
 
 interface IDataTableDataSchema {

@@ -44,7 +44,8 @@
                 "label": {
                   "title": "Label",
                   "type": "string",
-                  "placeholder": "Label #$N"
+                  "placeholder": "Label #$N",
+                  "isTimeSeriesLabel": true
                 }
               }
             }

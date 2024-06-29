@@ -40,7 +40,8 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
   const isTimeSeries = (experiment.schema.formUiSchema?.experimentData?.["ui:dataTableOptions"]?.sensorFields || []).indexOf(TimeSeriesDataKey) !== -1;
 
   if (isTimeSeries) {
-    const nonTimeSeriesTitles = Object.keys(titleMap).filter(key => key !== TimeSeriesDataKey);
+    const timeSeriesLabelKey = Object.keys(properties).find(key => properties[key].isTimeSeriesLabel);
+    const nonTimeSeriesTitles = Object.keys(titleMap).filter(key => (key !== TimeSeriesDataKey) && (key !== timeSeriesLabelKey));
     const timeKeys = new Set<string>();
     const timeSeriesRows: TimeSeriesRow[] = [];
 
@@ -72,7 +73,8 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
     sortedTimeKeys.forEach(timeKey => {
       const row: Record<string, any> = {Time: timeKey};
       timeSeriesRows.forEach(({timeValues}, rowIndex) => {
-        row[`Row ${rowIndex + 1} ${timeSeriesKey}`] = timeValues[timeKey] ?? "";
+        const rowKey = ((timeSeriesLabelKey && rawRows[rowIndex][timeSeriesLabelKey]) as string|undefined) || `Row ${rowIndex + 1} ${timeSeriesKey}`;
+        row[rowKey] = timeValues[timeKey] ?? "";
       });
       timeSeriesRows.forEach(({otherValues}, rowIndex) => {
         nonTimeSeriesTitles.forEach(key => {
