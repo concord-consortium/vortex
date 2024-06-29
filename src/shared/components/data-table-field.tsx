@@ -370,7 +370,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
         return;
       }
 
-      setInputDisabled?.(true);
+      // TODO: RE-ENABLE
+      // DISABLED FOR NOW AS THIS BREAKS DATA SAVING
+      // setInputDisabled?.(true);
 
       const timeSeriesMetadata = getTimeSeriesMetadata(timeSeriesCapabilities);
 
@@ -409,7 +411,9 @@ export const DataTableField: React.FC<FieldProps> = props => {
       stopTimeSeriesFnRef.current = undefined;
       timeSeriesRecordingRowRef.current = undefined;
       saveData(finalData);
-      setInputDisabled?.(false);
+      // TODO: RE-ENABLE
+      // DISABLED FOR NOW AS THIS BREAKS DATA SAVING
+      // setInputDisabled?.(false);
     }
   };
 
