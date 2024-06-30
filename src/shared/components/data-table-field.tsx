@@ -192,7 +192,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return result;
   }, [isTimeSeries, formData]);
   const [selectableSensorId, setSelectableSensorId] = useState<any>();
-  const {inputDisabled, setInputDisabled} = formContext;
+  const {inputDisabled, setInputDisabled, log} = formContext;
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -204,6 +204,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     setTimeSeriesCapabilities(undefined);
     clearInterval(waitForSensorIntervalRef.current);
     if (sensor && sensorOutput.connected && isTimeSeries) {
+      log?.("sensorSelected", {name: sensor.deviceName});
       // wait for sensor to come online and set its time series capabilities
       waitForSensorIntervalRef.current = window.setInterval(() => {
         const result = sensor.timeSeriesCapabilities(selectableSensorId);
@@ -240,7 +241,10 @@ export const DataTableField: React.FC<FieldProps> = props => {
   }, []);
 
   // Notifies parent component that data has changed. Cast values to proper types if possible.
-  const saveData = (newData: IDataTableData) => onChange(castToExpectedTypes(fieldDefinition, newData));
+  const saveData = (newData: IDataTableData) => {
+    log?.("saveExperimentData");
+    onChange(castToExpectedTypes(fieldDefinition, newData));
+  };
 
   const validateInput = (propName: string, value: string): {valid: boolean, error?: string} => {
     // allow blanking out
@@ -328,6 +332,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       return;
     }
     confirm("Delete Trial?\n\nThis will delete the trial.", () => {
+      log?.("deleteDataTrial", {row: rowIdx});
       const newData = formData.slice();
       newData[rowIdx] = {};
       setFormData(newData);
@@ -351,6 +356,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     });
 
     const recordSingleDataPoint = () => {
+      log?.("sensorRecordSinglePoint", {row: rowIdx});
       const values = sensorOutput.values;
       const result: { [k: string]: number } = {};
       sensorFields.forEach((name: SensorCapabilityKey) => {
@@ -370,6 +376,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
       if (!sensor || !timeSeriesCapabilities) {
         return;
       }
+
+      log?.("sensorRecordTimeSeries", {row: rowIdx});
 
       // TODO: RE-ENABLE
       // DISABLED FOR NOW AS THIS BREAKS DATA SAVING
@@ -408,6 +416,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   const onSensorStopTimeSeries = (finalData: IDataTableRow[]) => {
     // no check of input disabled here as this handler updates it
     if (stopTimeSeriesFnRef.current) {
+      log?.("sensorStopTimeSeries");
       stopTimeSeriesFnRef.current?.();
       stopTimeSeriesFnRef.current = undefined;
       timeSeriesRecordingRowRef.current = undefined;
@@ -590,6 +599,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
                 selectableSensorId={selectableSensorId}
                 setTimeSeriesMeasurementPeriod={setTimeSeriesMeasurementPeriod}
                 setSelectableSensorId={setSelectableSensorId}
+                log={log}
               />
             : undefined}
           {title ? <div className={css.title}>{title}</div> : undefined}

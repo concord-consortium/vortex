@@ -18,7 +18,7 @@ interface IProps {
 export const AppComponent:React.FC<IProps> = () => {
   const [error, setError] = useState<any>();
   const {
-    connectedToLara, initInteractiveData, experiment, previewMode, firebaseJWT, runKey, phone, setHeight, setDataset
+    connectedToLara, initMessage, experiment, previewMode, firebaseJWT, runKey, setAuthoredState, setHeight, setDataset, log
   } = useInteractiveApi({setError});
 
   const renderMessage = (message: string) => <div className={css.message}>{message}</div>;
@@ -28,16 +28,16 @@ export const AppComponent:React.FC<IProps> = () => {
       return renderMessage(error.toString());
     }
 
-    if (!connectedToLara || !initInteractiveData) {
-      return renderMessage("Waiting to connect to LARA ...");
+    if (!connectedToLara || !initMessage) {
+      return renderMessage("Waiting to connect to Activity Player ...");
     }
 
-    if (initInteractiveData.mode === "authoring") {
+    if (initMessage.mode === "authoring") {
       return <LaraAuthoringComponent
         // TODO: Re-add authored state when S3 Authoring is ready.
         // authoredState={initInteractiveData.authoredState}
         experiment={experiment}
-        phone={phone} />;
+        setAuthoredState={setAuthoredState} />;
     }
 
     if (!experiment) {
@@ -65,9 +65,10 @@ export const AppComponent:React.FC<IProps> = () => {
         setDataset={setDataset}
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
-        reportMode={initInteractiveData.mode === "report"}
+        reportMode={initMessage.mode === "report"}
         previewMode={previewMode}
         setHeight={setHeight}
+        log={log}
       />
     );
   };
