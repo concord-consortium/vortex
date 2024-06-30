@@ -85,12 +85,13 @@ interface IPhotoProps {
   saveAll: () => void;
   width: number;
   height: number;
+  inputDisabled?: boolean;
 }
 
-export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width, height}) => {
+export const Photo: React.FC<IPhotoProps> = ({photo, deletePhoto, saveAll, width, height, inputDisabled}) => {
   const {localPhotoUrl, remotePhotoUrl} = photo;
   const addCaptionRef = useRef<HTMLInputElement|null>(null);
-  const handleDeletePhoto = () => deletePhoto(photo);
+  const handleDeletePhoto = () => !inputDisabled && deletePhoto(photo);
   const handleAddCaptionKeyUp = (e: React.KeyboardEvent<HTMLInputElement>) => {
     if (addCaptionRef.current) {
       photo.note = addCaptionRef.current.value.trim();
@@ -139,16 +140,16 @@ export const Thumbnail: React.FC<{photo: IPhotoOrNote, selected: boolean, select
   );
 };
 
-export const Note: React.FC<{note: IPhotoOrNote, deleteNote: (note: IPhotoOrNote) => void}> = ({note, deleteNote}) => {
+export const Note: React.FC<{note: IPhotoOrNote, deleteNote: (note: IPhotoOrNote) => void, inputDisabled?: boolean}> = ({note, deleteNote, inputDisabled}) => {
   const localTime = (new Date(note.timestamp)).toLocaleString();
-  const handleDeleteNote = () => deleteNote(note);
+  const handleDeleteNote = () => !inputDisabled && deleteNote(note);
   return (
     <div className={css.note}>
-      <div className={css.noteMenu}>
+      {!inputDisabled && <div className={css.noteMenu}>
         <MenuComponent icon={"delete"}>
           <MenuItemComponent icon={"delete"} onClick={handleDeleteNote}>Delete Note</MenuItemComponent>
         </MenuComponent>
-      </div>
+      </div>}
       <div className={css.noteText}>{note.note}</div>
       <div className={css.noteTimestamp}>{localTime}</div>
     </div>
@@ -184,6 +185,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const showCameraButton = !!formContext.experimentConfig?.showCameraButton;
   const minCameraWidth = formContext.experimentConfig?.minCameraWidth || 0;
   const minCameraHeight = formContext.experimentConfig?.minCameraHeight || 0;
+  const inputDisabled = formContext.inputDisabled;
 
   const updateFormData = (newFormData: IPhotoOrNote[]) => {
     setFormData(newFormData);
@@ -222,7 +224,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const handleSelectNoteSubTab = () => setSubTab("note");
   const handleSelectPhotoSubTab = () => setSubTab("photo");
   const handleAddNoteKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (addNoteRef.current) {
+    if (!inputDisabled && addNoteRef.current) {
       const note = addNoteRef.current.value.trim();
       if ((note.length > 0) && (e.keyCode === 13)) {
         e.preventDefault();
@@ -238,6 +240,9 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
     }
   };
   const handleDeletePhotoOrNote = (item: IPhotoOrNote) => {
+    if (inputDisabled) {
+      return;
+    }
     const newFormData = formData.slice();
     const index = formData.indexOf(item);
     newFormData.splice(index, 1);
@@ -269,8 +274,8 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const renderNoteSubTab = () => {
     return (
       <div className={css.noteSubTab}>
-        <textarea className={css.addNote} ref={addNoteRef} placeholder="Add a note" onKeyUp={handleAddNoteKeyUp} />
-        {notes().map((note, index) => <Note key={index} note={note} deleteNote={handleDeletePhotoOrNote} />)}
+        {!inputDisabled && <textarea className={css.addNote} ref={addNoteRef} placeholder="Add a note" onKeyUp={handleAddNoteKeyUp} />}
+        {notes().map((note, index) => <Note key={index} note={note} deleteNote={handleDeletePhotoOrNote} inputDisabled={inputDisabled} />)}
       </div>
     );
   };
@@ -290,6 +295,7 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
             saveAll={handleSaveAll}
             width={width}
             height={height}
+            inputDisabled={inputDisabled}
           />
         </>
       );

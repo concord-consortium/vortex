@@ -21,6 +21,7 @@ interface IProps {
   inputDisabled?: boolean;
   setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
   log?: (action: string, data?: object | undefined) => void;
+  reportMode?: boolean;
 }
 
 const SectionComponent: {[name in SectionComponentName]: SectionComponent} = {

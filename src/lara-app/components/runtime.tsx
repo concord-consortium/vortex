@@ -3,18 +3,19 @@ import * as firebase from "firebase/app";
 import "firebase/firestore";
 
 import { Experiment } from "../../shared/components/experiment";
-import { IExperiment, IExperimentData, IExperimentConfig } from "../../shared/experiment-types";
+import { IExperiment, IExperimentData, IExperimentConfig, IExperimentV1 } from "../../shared/experiment-types";
 import { IRun } from "../../mobile-app/hooks/use-runs";
 import { createCodeForExperimentRun, getSaveExperimentRunUrl } from "../../shared/api";
 import { CODE_LENGTH } from "../../mobile-app/components/uploader";
 import { getURLParam } from "../../shared/utils/get-url-param";
 import ResizeObserver from "resize-observer-polyfill";
-import { IDataset } from "@concord-consortium/lara-interactive-api";
-const QRCode = require("qrcode-svg");
-import { generateDataset } from "../utils/generate-dataset";
-import css from "./runtime.module.scss";
 import { IJwtClaims } from "@concord-consortium/lara-plugin-api";
 import { downloadCSV } from "../utils/download-csv";
+import { IInteractiveStateJSON } from "../hooks/interactive-api";
+
+const QRCode = require("qrcode-svg");
+
+import css from "./runtime.module.scss";
 
 const UPDATE_QR_INTERVAL = 1000 * 60 * 60;  // 60 minutes
 
@@ -30,7 +31,8 @@ export type IQRCodeContent = IQRCodeContentV1 | IQRCodeContentV11;
 
 interface IProps {
   experiment: IExperiment;
-  setDataset: (dataset: IDataset | null) => void;
+  saveExperimentData: (newData: IExperimentData, experiment: IExperimentV1) => void;
+  interactiveState: IInteractiveStateJSON | null;
   runKey?: string;
   firebaseJWT?: IJwtClaims;
   setError: (error: any) => void;
@@ -42,7 +44,7 @@ interface IProps {
 }
 
 export const RuntimeComponent = ({
-  experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight, setDataset, log
+  experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight, log, saveExperimentData, interactiveState
 } : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
@@ -105,11 +107,12 @@ export const RuntimeComponent = ({
           const newData = experimentRef.current?.data as IExperimentData | undefined;
           setExperimentData(newData);
           if (newData) {
-            // This will generate dataset and send it to parent window using LARA Interactive API. Dataset is used
-            // by the graph interactive. Note that the mobile app import saves data directly in Firestore, so this
+            // This will generate dataset and send it to parent window using LARA Interactive API along with the
+            // full interactive state so that it can be viewed in the class dashboard.
+            // Dataset is used by the graph interactive. Note that the mobile app import saves data directly in Firestore, so this
             // listener is the only place where we have a chance to catch this data update, generate dataset,
             // and finally send it to ActivityPlayer.
-            setDataset(generateDataset(newData, experiment));
+            saveExperimentData(newData, experiment);
           }
 
           // if there is no data force an upload - DISABLED FOR NOW
@@ -117,6 +120,10 @@ export const RuntimeComponent = ({
         }, (err) => {
           setError(err);
         });
+    }
+
+    if (previewMode && interactiveState && interactiveState.data) {
+      setExperimentData(interactiveState.data);
     }
   }, [runKey, previewMode]);
 
@@ -170,7 +177,7 @@ export const RuntimeComponent = ({
     if (reportOrPreviewMode || !runKey || !firebaseJWT) {
       // Dataset is usually generated in the Firestore #onSnapshot handler, but the preview mode doesn't use Firestore.
       // Generate it manually, so authors can see the connection between Vortex and the graph interactive.
-      setDataset(generateDataset(data, experiment));
+      saveExperimentData(data, experiment);
       return;
     }
 
@@ -237,6 +244,7 @@ export const RuntimeComponent = ({
             defaultSectionIndex={defaultSectionIndex}
             onDataChange={handleSaveData}
             log={log}
+            reportMode={reportMode}
           />
         </div>
         {showQrContainer &&

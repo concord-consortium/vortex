@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import * as firebase from "firebase/app";
 import * as jwt from "jsonwebtoken";
 import { v4 as uuidv4 } from "uuid";
-import { IExperiment, IExperimentV1 } from "../../shared/experiment-types";
+import { IExperiment, IExperimentV1, IExperimentData } from "../../shared/experiment-types";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
 import { IAuthoredState } from "../../authoring-app/components/lara-authoring";
 import { setHeight, IDataset, IInitInteractive, IInteractiveStateWithDataset, useAuthoredState, useInteractiveState, useInitMessage, setSupportedFeatures, getFirebaseJwt, log } from "@concord-consortium/lara-interactive-api";
@@ -13,9 +13,10 @@ const experiments = require("../../data/experiments.json") as Experiments;
 
 export type IInitInteractiveData = IInitInteractive<IInteractiveStateJSON, IAuthoredState>;
 
-interface IInteractiveStateJSON extends IInteractiveStateWithDataset {
+export interface IInteractiveStateJSON extends IInteractiveStateWithDataset {
   runKey: string | undefined;
   experimentId: string | undefined;
+  data?: IExperimentData;
 }
 
 const findExperiment = (experimentId?: string) => {
@@ -30,6 +31,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   // previewMode is disabled by default. It'll be turned on when firebaseJWT cannot be obtained.
   const [previewMode, setPreviewMode] = useState<boolean>(false);
   const dataset = useRef<IDataset | null>(null);
+  const data = useRef<IExperimentData| undefined>(undefined);
 
   // use ref for runKey and experimentId values as they are used in iframe phone callback
   // and the current state value is not available in that closure
@@ -38,12 +40,11 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
 
   const initMessage = useInitMessage<IInteractiveStateJSON, IAuthoredState>();
   const { setAuthoredState } = useAuthoredState<IAuthoredState>();
-  const { setInteractiveState } = useInteractiveState<IInteractiveStateJSON>();
+  const { interactiveState, setInteractiveState } = useInteractiveState<IInteractiveStateJSON>();
 
   useEffect(() => {
     if (initMessage) {
       const { mode } = initMessage;
-      const interactiveState: IInteractiveStateJSON | null = ((mode === "runtime") || (mode === "report")) ? (initMessage as any).interactiveState : null; // as any due to TypeScript 3 - remove after upgrade
       let _experiment: IExperimentV1 | undefined;
 
       setConnectedToLara(true);
@@ -81,6 +82,7 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
         if (_experiment) {
           dataset.current = interactiveState?.dataset || generateDataset({ experimentData: [] }, _experiment);
         }
+        data.current = interactiveState?.data;
         if (!existingRunKey) {
           // Once runKey, experimentId and dataset are set for the **first time**, make sure they're saved back
           // in LARA or ActivityPlayer. This is especially important in ActivityPlayer which is not polling
@@ -143,20 +145,22 @@ export const useInteractiveApi = (options: {setError: (error: any) => void}) => 
   }, [initMessage]);
 
   const sendCurrentInteractiveState = () => {
-    const intState: IInteractiveStateJSON = {
+    const initState: IInteractiveStateJSON = {
       runKey: runKey.current,
       experimentId: experimentId.current,
-      dataset: dataset.current
+      dataset: dataset.current,
+      data: data.current,
     };
-    setInteractiveState(intState);
+    setInteractiveState(initState);
   };
 
-  const setDataset = (newDataset: IDataset | null) => {
-    dataset.current = newDataset;
+  const saveExperimentData = (theData: IExperimentData, theExperiment: IExperimentV1) => {
+    data.current = theData;
+    dataset.current = generateDataset(theData, theExperiment);
     sendCurrentInteractiveState();
   };
 
   return {
-    connectedToLara, initMessage, experiment, previewMode, firebaseJWT, runKey: runKey.current, setAuthoredState, setHeight, setDataset, log
+    connectedToLara, initMessage, experiment, previewMode, firebaseJWT, runKey: runKey.current, setAuthoredState, setHeight, log, saveExperimentData, interactiveState
   };
 };
