@@ -243,7 +243,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     const displayValue = value !== undefined ? value.toFixed(1) : "--";
 
     return (
-      <div className={css.timeSeriesValue}>
+      <div className={css.timeSeriesValue} key={`timeseries-${selectableSensorId}`}>
         <div className={css.tsvLeft}>
           <div className={css.tsvGraph}>
             <DataTableSparkGraph
@@ -323,7 +323,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     }
     const className = connected ? css.connectedValues : css.disconnectedValues;
     return (
-      <div className={className}>
+      <div className={className} key={`values-${selectableSensorId}`}>
         {fragments}
       </div>
     );

@@ -135,16 +135,20 @@ export class MockSensor extends Sensor {
   }
 
   public timeSeriesCapabilities(selectableSensorId: any): ITimeSeriesCapabilities {
+    selectableSensorId = parseInt(selectableSensorId ?? "0", 10);
+    const {measurement, units, minValue, maxValue} = selectableSensorId === 0
+      ? {measurement: "Force", units: "N", minValue: -50, maxValue: 50}
+      : {measurement: "Temperature", units: "°C", minValue: -40, maxValue: 125};
     const defaultMeasurementPeriod = 50;
     return {
       measurementPeriod: defaultMeasurementPeriod,
       minMeasurementPeriod: 10,
       defaultMeasurementPeriod,
-      measurement: "Fake Value",
+      measurement,
       valueKey: TimeSeriesDataKey,
-      units: "N/A",
-      minValue: -5,
-      maxValue: 5,
+      units,
+      minValue,
+      maxValue,
     };
   }
 
