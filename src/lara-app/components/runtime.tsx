@@ -38,10 +38,11 @@ interface IProps {
   reportMode?: boolean;
   previewMode?: boolean;
   setHeight: (height: number) => void;
+  log?: (action: string, data?: object | undefined) => void;
 }
 
 export const RuntimeComponent = ({
-  experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight, setDataset
+  experiment, runKey, firebaseJWT, setError, defaultSectionIndex, reportMode, previewMode, setHeight, setDataset, log
 } : IProps) => {
   const [experimentData, setExperimentData] = useState<IExperimentData|undefined>();
   const [queriedFirestore, setQueriedFirestore] = useState(false);
@@ -148,6 +149,7 @@ export const RuntimeComponent = ({
   }, [containerRef.current]);
 
   const handleUploadAgain = () => {
+    log?.("importData");
     setExperimentData(undefined);
     setDisplayQrAndMaybeRegenerateQR(true);
     displayingCode.current = true;
@@ -156,6 +158,7 @@ export const RuntimeComponent = ({
   const handleDownloadCSV = () => {
     // not stuttering here...
     if (experimentData?.experimentData) {
+      log?.("downloadCSV");
       downloadCSV(experiment, experimentData);
     }
   };
@@ -233,6 +236,7 @@ export const RuntimeComponent = ({
             config={config}
             defaultSectionIndex={defaultSectionIndex}
             onDataChange={handleSaveData}
+            log={log}
           />
         </div>
         {showQrContainer &&

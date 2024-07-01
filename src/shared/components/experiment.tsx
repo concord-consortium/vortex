@@ -14,15 +14,22 @@ interface IProps {
   defaultSectionIndex?: number;
   inputDisabled?: boolean;
   setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
+  log?: (action: string, data?: object | undefined) => void;
 }
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex, inputDisabled, setInputDisabled }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex, inputDisabled, setInputDisabled, log }) => {
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[defaultSectionIndex || 0]);
   const [currentData, setCurrentData] = useState<IExperimentData>(data || initNewFormData(experiment));
 
+  const handleSetSection = (s: ISection) => {
+    log?.("selectSection", {title: s.title});
+    setSection(s);
+  };
+
   const onExperimentDataChange = (newData: IExperimentData) => {
+    log?.("experimentDataChange");
     setCurrentData(newData);
     if (onDataChange) {
       onDataChange(newData);
@@ -47,7 +54,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
               title={s.title}
               icon={s.icon as IconName}
               disabled={inputDisabled}
-              onClick={setSection.bind(null, s)}
+              onClick={handleSetSection.bind(null, s)}
             />
           )
         }
@@ -61,6 +68,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
           inputDisabled={inputDisabled}
           setInputDisabled={setInputDisabled}
           onDataChange={onExperimentDataChange}
+          log={log}
         />
       </div>
     </div>

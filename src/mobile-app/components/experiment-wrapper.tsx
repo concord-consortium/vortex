@@ -16,6 +16,7 @@ interface IProps {
   onDataChange: (data: IExperimentData) => void;
   onBackBtnClick: () => void;
   onUpload: () => void;
+  log?: (action: string, data?: object | undefined) => void;
 }
 
 // App specific config. Mobile app shouldn't show labels and it should use sensors without having to use the collect button.
@@ -28,7 +29,7 @@ const experimentConfig: IExperimentConfig = {
   showCameraButton: true
 };
 
-export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload, embeddedPreview }) => {
+export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx, data, onDataChange, onBackBtnClick, onUpload, embeddedPreview, log }) => {
   const [editing, isEditing ] = useState(false);
   const [inputDisabled, setInputDisabled] = useState(false);
   const { metadata } = experiment;
@@ -97,6 +98,7 @@ export const ExperimentWrapper: React.FC<IProps> = ({ experiment, experimentIdx,
           onDataChange={onDataChange}
           inputDisabled={inputDisabled}
           setInputDisabled={setInputDisabled}
+          log={log}
         />
       </div>
     </div>

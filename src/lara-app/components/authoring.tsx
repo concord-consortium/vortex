@@ -1,13 +1,14 @@
 import React, { useState } from "react";
 import { Experiments } from "../../mobile-app/hooks/use-experiments";
-const experiments = require("../../data/experiments.json") as Experiments;
+import { IExperiment } from "../../shared/experiment-types";
 
 import css from "./authoring.module.scss";
-import { IExperiment } from "../../shared/experiment-types";
+
+const experiments = require("../../data/experiments.json") as Experiments;
 
 interface IProps {
   experiment?: IExperiment;
-  phone: any;
+  setAuthoredState: (state: IAuthoredState) => void;
 }
 
 export interface IAuthoredState {
@@ -20,10 +21,11 @@ export const AuthoringComponent = (props : IProps) => {
 
   const handleSelectExperiment = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setExperimentId(e.target.value);
-    props.phone.post("authoredState", {
+    const authoredState: IAuthoredState = {
       version: "1.0",
       experimentId: e.target.value
-    } as IAuthoredState);
+    };
+    props.setAuthoredState(authoredState);
   };
 
   return (

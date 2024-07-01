@@ -15,6 +15,7 @@ export interface IVortexFormContext {
   inputDisabled?: boolean;
   setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
   sensor?: Sensor;
+  log?: (action: string, data?: object | undefined) => void;
 }
 
 const VortexFormTheme = {

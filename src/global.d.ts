@@ -3,6 +3,5 @@ declare module "*.sass";
 declare module "*.scss";
 declare module "*.svg";
 declare module "react-json-editor-ajrm";
-declare module "iframe-phone";
 declare module "react-ace";
 

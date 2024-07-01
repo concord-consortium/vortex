@@ -57,6 +57,7 @@ interface ISensorComponentProps {
   setTimeSeriesMeasurementPeriod?: (measurementPeriod: number) => void;
   setSelectableSensorId?: (id: any) => void;
   inputDisabled?: boolean;
+  log?: (action: string, data?: object | undefined) => void;
 }
 
 const iconClass = {
@@ -71,7 +72,7 @@ const iconClassHi = {
   error: css.errorIcon
 };
 
-export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, selectableSensorId, setTimeSeriesMeasurementPeriod, setSelectableSensorId, inputDisabled}) => {
+export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manualEntryMode, setManualEntryMode, isTimeSeries, timeSeriesCapabilities, selectableSensorId, setTimeSeriesMeasurementPeriod, setSelectableSensorId, inputDisabled, log}) => {
   const {connected, connecting, deviceName, values, error} = useSensor(sensor);
 
   const [devicesFound, setDevicesFound] = useState<IConnectDevice[]>([]);
@@ -128,6 +129,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
   };
 
   const handleSelectDevice = (device: IConnectDevice) => {
+    log?.("selectDevice", {name: device.name});
     selectDevice.current?.(device);
     clearSelectDevice();
   };
@@ -139,10 +141,12 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
 
   const handleMeasurementPeriodChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newPeriod = parseInt(e.target.value, 10);
+    log?.("setMeasurementPeriod", {period: newPeriod});
     setTimeSeriesMeasurementPeriod?.(newPeriod);
   };
 
   const handleSelectSelectableSensor = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    log?.("selectSensor", {selectableSensor: e.target.value});
     setSelectableSensorId?.(e.target.value);
   };
 
@@ -155,6 +159,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
     }
   }).catch(() => sensor.disconnect());
   const disconnect = () => {
+    log?.("disconnectDevice");
     sensor.disconnect();
     clearSelectDevice();
   };

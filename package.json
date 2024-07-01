@@ -132,7 +132,6 @@
     "client-oauth2": "^4.2.5",
     "eventemitter3": "^4.0.0",
     "firebase": "^7.6.1",
-    "iframe-phone": "^1.2.0",
     "js-base64": "^2.5.1",
     "jsonwebtoken": "^8.5.1",
     "jsqr": "^1.2.0",
