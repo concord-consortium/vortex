@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useMemo } from "react";
+import React, { useState, useEffect, useRef, useMemo, useCallback } from "react";
 import classNames from "classnames";
 import { FieldProps } from "react-jsonschema-form";
 import { MockSensor } from "../../sensors/mock-sensor";
@@ -192,7 +192,13 @@ export const DataTableField: React.FC<FieldProps> = props => {
     return result;
   }, [isTimeSeries, formData]);
   const [selectableSensorId, setSelectableSensorId] = useState<any>();
-  const {inputDisabled, setInputDisabled, log} = formContext;
+  const {log} = formContext;
+
+  // So this is a bit of a hack - if we use the setInputDisabled function passed in the formContext
+  // the timeseries data saving fails, probably because of a re-render which updates the formData.
+  // If we keep this local and use the passed in value for the initial value (as it may be true in report mode)
+  // the data saving works.
+  const [inputDisabled, setInputDisabled] = useState(formContext.inputDisabled ?? false);
 
   // listen for prop changes from uploads
   useEffect(() => {
@@ -379,20 +385,18 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       log?.("sensorRecordTimeSeries", {row: rowIdx});
 
-      // TODO: RE-ENABLE
-      // DISABLED FOR NOW AS THIS BREAKS DATA SAVING
-      // setInputDisabled?.(true);
+      setInputDisabled(true);
 
       const timeSeriesMetadata = getTimeSeriesMetadata(timeSeriesCapabilities);
 
       stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, selectableSensorId, (values) => {
         const newData = formData.slice();
-        newData[rowIdx] = {timeSeries: values, timeSeriesMetadata};
+        newData[rowIdx] = {...newData[rowIdx], timeSeries: values, timeSeriesMetadata};
         if (values.length <= MaxNumberOfTimeSeriesValues) {
           setFormData(newData);
         }
         if (values.length === MaxNumberOfTimeSeriesValues) {
-          onSensorStopTimeSeries(newData);
+          onSensorStopTimeSeries();
         }
       });
       timeSeriesRecordingRowRef.current = rowIdx;
@@ -413,19 +417,24 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const onSensorStopTimeSeries = (finalData: IDataTableRow[]) => {
+  const onSensorStopTimeSeries = useCallback(() => {
     // no check of input disabled here as this handler updates it
     if (stopTimeSeriesFnRef.current) {
       log?.("sensorStopTimeSeries");
       stopTimeSeriesFnRef.current?.();
       stopTimeSeriesFnRef.current = undefined;
       timeSeriesRecordingRowRef.current = undefined;
-      saveData(finalData);
-      // TODO: RE-ENABLE
-      // DISABLED FOR NOW AS THIS BREAKS DATA SAVING
-      // setInputDisabled?.(false);
+      saveData(formData);
+      setInputDisabled(false);
     }
-  };
+  }, [formData]);
+
+  // make sure the time series recording stops if the tab is changed
+  useEffect(() => {
+    return () => {
+      onSensorStopTimeSeries();
+    };
+  }, []);
 
   const renderRow = (row: { [k: string]: any }, rowIdx: number) => {
     const basicCells = renderBasicCells(fieldKeys, row, rowIdx);
@@ -444,7 +453,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
     let rowActive = recordingTimeSeries ? (sensorCanRecord && timeSeriesRecordingRowRef.current === rowIdx) : sensorCanRecord;
     const showStopButton = recordingTimeSeries && timeSeriesRecordingRowRef.current === rowIdx;
     const iconName: IconName = sensorFieldsBlank ? (isTimeSeries ? "recordDataTrial" : "record") : (isTimeSeries ? (showStopButton ? "stopDataTrial" : "deleteDataTrial") : "replay");
-    const onClick = iconName === "deleteDataTrial" ? handleDeleteDataTrial.bind(null, rowIdx) : (rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries.bind(null, formData) : onSensorRecordClick.bind(null, rowIdx)) : null);
+    const onClick = iconName === "deleteDataTrial" ? handleDeleteDataTrial.bind(null, rowIdx) : (rowActive ? (recordingTimeSeries ? onSensorStopTimeSeries : onSensorRecordClick.bind(null, rowIdx)) : null);
     rowActive = iconName === "deleteDataTrial" ? true : rowActive;
     const buttonDisabled = inputDisabled && !showStopButton;
     const className = classNames(css.refreshSensorReading, {
