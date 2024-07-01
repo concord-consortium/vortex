@@ -15,9 +15,10 @@ interface IProps {
   inputDisabled?: boolean;
   setInputDisabled?: React.Dispatch<React.SetStateAction<boolean>>;
   log?: (action: string, data?: object | undefined) => void;
+  reportMode?: boolean;
 }
 
-export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex, inputDisabled, setInputDisabled, log }) => {
+export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, config, defaultSectionIndex, inputDisabled, setInputDisabled, log, reportMode }) => {
   const { schema } = experiment;
   const { sections } = schema;
   const [section, setSection] = useState<ISection>(sections[defaultSectionIndex || 0]);
@@ -65,7 +66,7 @@ export const Experiment: React.FC<IProps> = ({ experiment, data, onDataChange, c
           experiment={experiment}
           experimentConfig={config}
           formData={currentData}
-          inputDisabled={inputDisabled}
+          inputDisabled={inputDisabled || reportMode}
           setInputDisabled={setInputDisabled}
           onDataChange={onExperimentDataChange}
           log={log}

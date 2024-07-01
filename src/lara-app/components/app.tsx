@@ -18,7 +18,7 @@ interface IProps {
 export const AppComponent:React.FC<IProps> = () => {
   const [error, setError] = useState<any>();
   const {
-    connectedToLara, initMessage, experiment, previewMode, firebaseJWT, runKey, setAuthoredState, setHeight, setDataset, log
+    connectedToLara, initMessage, experiment, previewMode, firebaseJWT, runKey, setAuthoredState, setHeight, log, saveExperimentData, interactiveState
   } = useInteractiveApi({setError});
 
   const renderMessage = (message: string) => <div className={css.message}>{message}</div>;
@@ -62,7 +62,8 @@ export const AppComponent:React.FC<IProps> = () => {
         experiment={experiment}
         runKey={runKey}
         firebaseJWT={firebaseJWT}
-        setDataset={setDataset}
+        saveExperimentData={saveExperimentData}
+        interactiveState={interactiveState}
         setError={setError}
         defaultSectionIndex={defaultSectionIndex}
         reportMode={initMessage.mode === "report"}
