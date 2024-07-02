@@ -5,7 +5,7 @@
         <g id="Monitor-Your-World-App-Update" transform="translate(-1728, -173)">
             <g id="Stop-Data-Trial-Icon" transform="translate(1728, 173)">
                 <polygon id="Path" points="0 0 24 0 24 24 0 24"></polygon>
-                <rect id="Stop" fill="#ffffff" fill-rule="nonzero" x="4" y="4" width="16" height="16" rx="2"></rect>
+                <rect id="Stop" fill="#00a80a" fill-rule="nonzero" x="4" y="4" width="16" height="16" rx="2"></rect>
             </g>
         </g>
     </g>

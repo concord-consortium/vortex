@@ -174,6 +174,10 @@ $headerBorder: #fff;
         &.record {
           background-color: $sensorGreenLight1;
         }
+        &.timeSeriesStop {
+          background-color: #fff;
+          border: 4px solid #00a80a;
+        }
         &:hover:not(.disabled) {
           cursor: pointer;
         }

@@ -461,6 +461,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
       [css.refresh]: !sensorFieldsBlank,
       [css.record]:  sensorFieldsBlank,
       [css.disabled]: buttonDisabled,
+      [css.timeSeriesStop]: iconName === "stopDataTrial",
     });
     const refreshBtnCell = <td key="refreshBtn" className={`${css.refreshSensorReadingColumn} ${css.readOnly}`}>
       {

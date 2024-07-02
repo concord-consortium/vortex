@@ -26,7 +26,7 @@ export const RunPicker: React.FC<IProps> = ({ runs, onRunSelect, onRunUpload, on
               <div className={css.icon}><Icon name="upload" /></div><div className={css.text}>Upload</div></div> : undefined}
           </div>
           <div className={css.menuContainer}>
-            <MenuComponent>
+            <MenuComponent icon="more">
               {onRunEdit ? <MenuItemComponent icon={"create"} onClick={onRunEdit.bind(null, run)}>Edit</MenuItemComponent> : undefined}
               {onRunUpload ? <MenuItemComponent icon={"upload"} onClick={onRunUpload.bind(null, run)}>Upload</MenuItemComponent> : undefined}
               {onRunDelete ? <MenuItemComponent icon={"delete"} onClick={onRunDelete.bind(null, run)}>Delete</MenuItemComponent> : undefined}
