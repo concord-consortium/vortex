@@ -225,17 +225,19 @@ export const RuntimeComponent = ({
     // of the container changes
     const height = showQrContainer ? 675 : "auto";
 
+    const showImportButton = !reportOrPreviewMode;
+    const showDownloadCSVButton = !!experimentData;
+
     return (
       <div style={{height}}>
-        {!previewMode ? undefined :
+        {previewMode && !reportMode &&
           <div className={css.previewModeNotice}>
             You are viewing a preview of the activity. <strong>NO DATA IS BEING SAVED!</strong>
           </div>}
-        {reportOrPreviewMode ? undefined :
-          <div className={css.topBar}>
-            <div className={css.button} onClick={handleUploadAgain}>Import</div>
-            {experimentData && <div className={css.button} onClick={handleDownloadCSV}>Download CSV</div>}
-          </div>}
+        {(showImportButton || showDownloadCSVButton) ? <div className={css.topBar}>
+          {showImportButton && <div className={css.button} onClick={handleUploadAgain}>Import</div>}
+          {showDownloadCSVButton && <div className={css.button} onClick={handleDownloadCSV}>Download CSV</div>}
+        </div> : undefined}
         <div className={css.runtimeExperiment}>
           <Experiment
             experiment={experiment}
