@@ -22,6 +22,7 @@ import ReRecordDataTrial from "../icons/re-record-data-trial.svg";
 import StopDataTrial from "../icons/stop-data-trial.svg";
 import DeleteDataTrial from "../icons/delete-data-trial.svg";
 import More from "../icons/more-button.svg";
+import Disconnect from "../icons/sensor-disconnect.svg";
 
 const Icons = {
   label: Label,
@@ -46,7 +47,8 @@ const Icons = {
   reRecordDataTrial: ReRecordDataTrial,
   stopDataTrial: StopDataTrial,
   deleteDataTrial: DeleteDataTrial,
-  more: More
+  more: More,
+  disconnect: Disconnect
 };
 export type IconName = keyof typeof Icons;
 

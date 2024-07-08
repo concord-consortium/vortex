@@ -223,7 +223,7 @@ export const SensorComponent: React.FC<ISensorComponentProps> = ({sensor, manual
         {manualEntryMode && canSwitchModes
           ? <MenuItemComponent disabled={inputDisabled} onClick={setSensorMode} icon="sensor">Sensor Mode</MenuItemComponent>
           : <>
-              {connected ? <MenuItemComponent disabled={inputDisabled} onClick={disconnect}>Disconnect</MenuItemComponent> : <MenuItemComponent icon="settings_input_antenna" disabled={inputDisabled} onClick={connect}>Connect</MenuItemComponent>}
+              {connected ? <MenuItemComponent disabled={inputDisabled} onClick={disconnect} icon="disconnect">Disconnect</MenuItemComponent> : <MenuItemComponent icon="settings_input_antenna" disabled={inputDisabled} onClick={connect}>Connect</MenuItemComponent>}
               {canSwitchModes ? <MenuItemComponent disabled={inputDisabled} onClick={setEditMode} icon="create">Edit Mode</MenuItemComponent> : undefined}
             </>}
       </MenuComponent>
