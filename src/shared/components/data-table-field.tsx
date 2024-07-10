@@ -547,8 +547,8 @@ export const DataTableField: React.FC<FieldProps> = props => {
         const values: number[] = value || [];
         const metadata = (row[TimeSeriesMetadataKey] ?? {measurementPeriod: 0});
         const {measurementPeriod} = metadata;
-        const time = values.length * (measurementPeriod / 1000);
-        const graphTitle = values.length > 0 ? `${Math.round(time)} sec` : "";
+        const time = Math.max(0, values.length - 1) * (measurementPeriod / 1000);
+        const graphTitle = `${Math.round(time)} sec`;
 
         contents =
           <div className={css.sparkgraphContainer}>

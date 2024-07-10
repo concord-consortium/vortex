@@ -96,13 +96,17 @@ export class GDXSensorDevice extends Device {
         time += delta;
       }
     };
-    this.gdxDevice.sensors.forEach((sensor: any) => {
-      if (sensor.number === selectableSensorId) {
-        sensor.on("value-changed", handleChange);
-      }
-    });
 
-    this.gdxDevice.start(measurementPeriod);
+    // need to use internal _stopMeasurements function as stop() doesn't return the promise
+    this.gdxDevice._stopMeasurements().then(() => {
+      this.gdxDevice.sensors.forEach((sensor: any) => {
+        if (sensor.number === selectableSensorId) {
+          sensor.on("value-changed", handleChange);
+        }
+      });
+
+      this.gdxDevice.start(measurementPeriod);
+    });
 
     return () => {
       this.gdxDevice?.sensors.forEach((sensor: any) => {
