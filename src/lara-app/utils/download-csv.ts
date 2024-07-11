@@ -7,7 +7,7 @@ import { ITimeSeriesMetadata, TimeSeriesDataKey, TimeSeriesMetadataKey } from ".
 
 type TimeValues = Record<string, string|undefined>;
 type OtherValues = Record<string, any>;
-type TimeSeriesRow = {timeValues: TimeValues, otherValues: OtherValues};
+type TimeSeriesRow = {timeValues: TimeValues, units: string, otherValues: OtherValues};
 
 export const getTimeKey = (time: number) => time.toFixed(3).replace(/\.?0+$/, "");
 
@@ -54,7 +54,7 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
       });
 
       const timeSeries = (rawRow[TimeSeriesDataKey] ?? []) as number[];
-      const {measurementPeriod} = (rawRow[TimeSeriesMetadataKey] ?? {measurementPeriod: 0}) as ITimeSeriesMetadata;
+      const {measurementPeriod, units} = (rawRow[TimeSeriesMetadataKey] ?? {measurementPeriod: 0, units: ""}) as ITimeSeriesMetadata;
       const timeDelta = measurementPeriod / 1000;
       timeSeries.forEach((value, index) => {
         const time = index * timeDelta;
@@ -63,7 +63,7 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
         timeKeys.add(timeKey);
       });
 
-      timeSeriesRows.push({timeValues, otherValues});
+      timeSeriesRows.push({timeValues, units, otherValues});
     }, []);
     const sortedTimeKeys = sortNaturally(Array.from(timeKeys));
 
@@ -72,9 +72,10 @@ export const getRows = (experiment: IExperiment, data: IExperimentData) => {
     const timeSeriesKey = titleMap[TimeSeriesDataKey] ?? "Time Series Value";
     sortedTimeKeys.forEach(timeKey => {
       const row: Record<string, any> = {Time: timeKey};
-      timeSeriesRows.forEach(({timeValues}, rowIndex) => {
+      timeSeriesRows.forEach(({timeValues, units}, rowIndex) => {
         const rowKey = ((timeSeriesLabelKey && rawRows[rowIndex][timeSeriesLabelKey]) as string|undefined) || `Row ${rowIndex + 1} ${timeSeriesKey}`;
-        row[rowKey] = timeValues[timeKey] ?? "";
+        const unitsSuffix = units ? ` (${units})` : "";
+        row[`${rowKey}${unitsSuffix}`] = timeValues[timeKey] ?? "";
       });
       timeSeriesRows.forEach(({otherValues}, rowIndex) => {
         nonTimeSeriesTitles.forEach(key => {

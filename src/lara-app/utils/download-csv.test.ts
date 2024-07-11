@@ -83,8 +83,8 @@ const timeSeriesExperiment: IExperiment = {
 const timeSeriesData: IExperimentData = {
   timestamp: 987654321,
   experimentData: [
-    {[TimeSeriesDataKey]: [1, 2], [TimeSeriesMetadataKey]: { measurementPeriod: 1000}, label: "First Label", extraData: "one"},
-    {[TimeSeriesDataKey]: [3, 4], [TimeSeriesMetadataKey]: { measurementPeriod: 2000}, label: "Second Label", extraData: "two"}
+    {[TimeSeriesDataKey]: [1, 2], [TimeSeriesMetadataKey]: { measurementPeriod: 1000, units: "N"}, label: "First Label", extraData: "one"},
+    {[TimeSeriesDataKey]: [3, 4], [TimeSeriesMetadataKey]: { measurementPeriod: 2000, /* no units here intentionally */}, label: "Second Label", extraData: "two"}
   ]
 };
 
@@ -130,21 +130,21 @@ describe("download csv functions", () => {
       expect(getRows(timeSeriesExperiment, timeSeriesData)).toStrictEqual([
         {
           "Time": "0",
-          "First Label": "1",
-          "Second Label": "3",
+          "First Label (N)": "1",
+          "Second Label": "3",  // no units for second timeseries so no unit should show
           "Row 1 Extra Data": "one",
           "Row 2 Extra Data": "two",
         },
         {
           "Time": "1",
-          "First Label": "2",
+          "First Label (N)": "2",
           "Second Label": "",
           "Row 1 Extra Data": "one",
           "Row 2 Extra Data": "two",
         },
         {
           "Time": "2",
-          "First Label": "",
+          "First Label (N)": "",
           "Second Label": "4",
           "Row 1 Extra Data": "one",
           "Row 2 Extra Data": "two",
