@@ -223,20 +223,31 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
   const handleSelectNoteSubTab = () => setSubTab("note");
   const handleSelectPhotoSubTab = () => setSubTab("photo");
-  const handleAddNoteKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+  const getAddNoteContent = () => {
     if (!inputDisabled && addNoteRef.current) {
-      const note = addNoteRef.current.value.trim();
-      if ((note.length > 0) && (e.keyCode === 13)) {
-        e.preventDefault();
-        updateFormData([{
-          isPhoto: false,
-          localPhotoUrl: "",
-          remotePhotoUrl: "",
-          note,
-          timestamp: timestamp()
-        }, ...formData]);
+      return addNoteRef.current.value.trim();
+    }
+    return "";
+  };
+  const handleAddNote = () => {
+    const note = getAddNoteContent();
+    if (note.length > 0) {
+      updateFormData([{
+        isPhoto: false,
+        localPhotoUrl: "",
+        remotePhotoUrl: "",
+        note,
+        timestamp: timestamp()
+      }, ...formData]);
+      if (addNoteRef.current) {
         addNoteRef.current.value = "";
       }
+    }
+  };
+  const handleAddNoteKeyUp = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if ((getAddNoteContent().length > 0) && (e.keyCode === 13)) {
+      e.preventDefault();
+      handleAddNote();
     }
   };
   const handleDeletePhotoOrNote = (item: IPhotoOrNote) => {
@@ -274,7 +285,10 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
   const renderNoteSubTab = () => {
     return (
       <div className={css.noteSubTab}>
-        {!inputDisabled && <textarea className={css.addNote} ref={addNoteRef} placeholder="Add a note" onKeyUp={handleAddNoteKeyUp} />}
+        <div className={css.addNoteContainer}>
+          {!inputDisabled && <textarea className={css.addNote} ref={addNoteRef} placeholder="Add a note and press enter to save" onKeyUp={handleAddNoteKeyUp} />}
+          {!inputDisabled && <div className={css.addNoteButton} onClick={handleAddNote}><Icon name={"add_circle"}/></div>}
+        </div>
         {notes().map((note, index) => <Note key={index} note={note} deleteNote={handleDeletePhotoOrNote} inputDisabled={inputDisabled} />)}
       </div>
     );
