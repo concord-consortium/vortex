@@ -46,7 +46,7 @@ class SensorData {
             cy.get('.sensor-value-module-connectedValue-vortex')
         })
     }
-    selectSensor(input){
+    selectSensor(sensorType){
          // Click to focus on the select dropdown (adjust the selector as needed)
         cy.get('div.sensor-module-connectionLabel-vortex select').focus();
 
