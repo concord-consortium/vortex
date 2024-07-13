@@ -106,9 +106,8 @@ context("Testing Experiment Selection View", () => {
 
   describe("Tests Data Trial", () => {
 
-    it.only("create and setup a data trial", () => {
+    it.only("collect time series data from (mock) sensor", () => {
       experimentSetup.openNewExperiment('Data Trial')
-      //cy.wait(500)
       
       sensorData.getExperimentOptionsMenu() // gets the click in the helper function
       sensorData.selectMenuOption('Connect')
@@ -116,8 +115,23 @@ context("Testing Experiment Selection View", () => {
       // Select and verify the "Mocked Sensor: Temperature" option
       sensorData.selectSensor('Temperature')
       cy.get('div.sensor-module-connectionLabel-vortex select')
-          .should('have.value', '1');
-
+          .should('have.value', '1')
+      // Assert the connection status
+      sensorData.getSensorConnectionStatus()
+      .should('contain.text', 'Connected: Mocked Sensor')
+      
+      // select the sample rate
+      sensorData.selectSample('100/sec')
+      // TODO: add checks that time series data displays
+      // and UI is disabled during time series checks
+      // Blocker: PT #187949831
+      // also fix expected to find element 5 error (probably just need x-1)
+      for (let i = 0; i <= 5; i++) {
+        sensorData.getDataTrialRow(i).within(() => {
+            sensorData.getRecordButton().click()
+            cy.wait(20000) // wait for new sensor values
+        })
+      }
     })
     // this is pasted code from above
     // it("edit experiment and verify changes", () => {
