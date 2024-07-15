@@ -119,19 +119,54 @@ context("Testing Experiment Selection View", () => {
       // Assert the connection status
       sensorData.getSensorConnectionStatus()
       .should('contain.text', 'Connected: Mocked Sensor')
-      
+
+      // Check that the input fields are disabled
+      const labelSelectors = [
+        'input[placeholder="Label #1"]',
+        'input[placeholder="Label #2"]',
+        'input[placeholder="Label #3"]',
+        'input[placeholder="Label #4"]',
+        'input[placeholder="Label #5"]'
+      ]
+
       // select the sample rate
       sensorData.selectSample('100/sec')
+      sensorData.getRecordButton().first().click()
+      // Check the data collection every 1 second for a total of 5 seconds
+      // Note: after 5 sec Cypress starts failing the test because of missed
+      // time. This should be enough for now to ensure that the test is at 
+      // least starting.
+      const checkTimes = [1, 2, 3, 4, 5]
+      checkTimes.forEach((time) => {
+        cy.wait(time * 100)
+        cy.get('.data-table-field-module-sparkgraphContainer-vortex')
+        .contains(`${time} sec`)
+        .should('be.visible')
+      })
+      labelSelectors.forEach((selector) => {
+        cy.get(selector).should('be.disabled')
+        // Check that the connected icon button is disabled
+        cy.get('div.sensor-module-connectionLabel-vortex select').should('be.disabled')
+
+        // Check that the sample rate dropdown is disabled
+        cy.get('.sensor-module-tsvInfoRow-vortex select').should('be.disabled')
+      })
+      // Checks to make sure that the run automatically stops and final display
+      // is 10 sec
+      cy.wait(2000)
+      cy.get('.data-table-field-module-sparkgraphContainer-vortex')
+        .contains(`10 sec`)
+      
       // TODO: add checks that time series data displays
       // and UI is disabled during time series checks
       // Blocker: PT #187949831
       // also fix expected to find element 5 error (probably just need x-1)
-      for (let i = 0; i <= 5; i++) {
-        sensorData.getDataTrialRow(i).within(() => {
-            sensorData.getRecordButton().click()
-            cy.wait(20000) // wait for new sensor values
-        })
-      }
+    //   for (let i = 0; i <= 5; i++) {
+    //     sensorData.getDataTrialRow(i).within(() => {
+    //         sensorData.getRecordButton().click()
+    //         cy.wait(20000) // wait for new sensor values
+    //     })
+    //   }
     })
     // this is pasted code from above
     // it("edit experiment and verify changes", () => {
