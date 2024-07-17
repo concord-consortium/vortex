@@ -38,7 +38,11 @@ class ExperimentSetup {
             cy.get('.menu-module-menu-vortex').contains('Delete').click()
         })
     }
-
+    deleteDataTrialExperiment() {
+        return cy.get('[data-test="record-sensor"]').first().click()//.then(() => {
+            //cy.get('.menu-module-menu-vortex').contains('Delete').click()
+       // })
+    }
     // Label Tab UI selectors needed
 
     getBackButton() {

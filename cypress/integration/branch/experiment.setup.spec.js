@@ -105,7 +105,7 @@ context("Testing Experiment Selection View", () => {
   })
 
   describe("Tests Data Trial", () => {
-
+    
     it("collect time series data from (mock) sensor", () => {
 
       // Constants will check that the input fields are disabled
@@ -136,11 +136,8 @@ context("Testing Experiment Selection View", () => {
 
       // Start recording data trial
       sensorData.getRecordButton().first().click()
-      // Check the data collection every 1 second for a total of 5 seconds
-      // Note: after 5 sec Cypress starts failing the test because the timing
-      // isn't perfectly synchronized. A duration of 5 seconds will ensure that  
-      // the trial is at least starting.
-      const checkTimes = [1, 2, 3, 4, 5]
+      // Check the data collection every 1 second for the duration of the run (10 sec)
+      const checkTimes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
       checkTimes.forEach((time) => {
         cy.wait(time * 100)
         cy.get('.data-table-field-module-sparkgraphContainer-vortex')
@@ -163,6 +160,7 @@ context("Testing Experiment Selection View", () => {
         .contains(`10 sec`)
       
       // Checks that it's possible to stop recording in the middle of a time trial
+      // also checks that UI disables during a run
       cy.log('checks that it is possible to stop recording in the middle of a time trial')
       sensorData.getRecordButton().last().click()
       labelSelectors.forEach((selector) => {
@@ -187,27 +185,18 @@ context("Testing Experiment Selection View", () => {
       //     })
       //   }
 
-      //   cy.log('Delete the trial run')
-      //   The delete tests are not working now because Cypress won't 
-      //   recognize the delete button. Putting this code here for now
-      //   in case it's fixable
-      //   sensorData.getRecordButton().first().click({force:true})
-      //   cy.wait(1000)
-      //       // Wait for the confirmation dialog to appear and verify the text
-      //   // Check if the confirmation dialog is present and interact with it
-      // // Intercept the window confirm dialog and automatically click "OK"
-      //   cy.on('window:confirm', (txt) => {
-      //     // Assertion to check the text of the confirmation dialog
-      //     expect(txt).to.contains('delete trial? this will delete the trial')
-      //     return true; // This will simulate clicking the "OK" button
-      //   })
-
-      //   // Checks to make sure that the top line was deleted and defaulted.
-      //   cy.get('.data-table-field-module-sparkgraphContainer-vortex').first()
-      //       .contains(`^0 sec`)
-      //       .should('be.visible')
-      //   cy.get(labelSelectors[0]).should('have.attr', 'placeholder', 'Label #1')
-
+      cy.log('Delete the trial run')
+      sensorData.getRecordButton().first().click({force:true})
+      cy.wait(1000)
+      // Wait for the confirmation dialog to appear and verify the text
+      // Check if the confirmation dialog is present and interact with it
+      // Intercept the window confirm dialog and automatically click "OK"
+      experimentSetup.deleteDataTrialExperiment()
+        // Checks to make sure that the top line was deleted and defaulted.
+        cy.get('.data-table-field-module-sparkgraphContainer-vortex').first()
+            .contains(/^0 sec$/)
+            .should('be.visible')
+        cy.get(labelSelectors[0]).should('have.attr', 'placeholder', 'Label #1')
     })
     it("checks that labels can be renamed and retain new names after a data trial run", () => {
       cy.visit(url);
