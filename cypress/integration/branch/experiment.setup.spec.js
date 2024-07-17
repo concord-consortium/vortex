@@ -1,4 +1,5 @@
 import ExperimentSetup from "../../supports/elements/ExperimentSetup"
+import SensorData from "../../supports/elements/SensorData"
 
 context("Testing Experiment Selection View", () => {
 
@@ -14,6 +15,8 @@ context("Testing Experiment Selection View", () => {
   let studySite1 = "Study Site #1"
   let studySite2 = "Study Site #2"
   let defaultSchoolyardInvestigation = "Schoolyard Investigation #1"
+
+  let sensorData = new SensorData();
 
   before(() => {
     cy.visit(url);
@@ -98,6 +101,169 @@ context("Testing Experiment Selection View", () => {
 
     it("deletes Stream Study experiment", () => {
       experimentSetup.deleteExperiment()
+    })
+  })
+
+  describe("Tests Data Trial", () => {
+    
+    it("collect time series data from (mock) sensor", () => {
+
+      // Constants will check that the input fields are disabled
+      const labelSelectors = [
+        'input[placeholder="Label #1"]',
+        'input[placeholder="Label #2"]',
+        'input[placeholder="Label #3"]',
+        'input[placeholder="Label #4"]',
+        'input[placeholder="Label #5"]'
+      ]
+      // Open a new Data Trial
+      experimentSetup.openNewExperiment('Data Trial')
+      
+      sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+
+      // Select and verify the "Mocked Sensor: Temperature" option
+      cy.log('Select and verify mocked sensor')
+      sensorData.selectMenuOption('Connect')
+      sensorData.selectSensor('Temperature')
+      cy.get('div.sensor-module-connectionLabel-vortex select')
+        .should('have.value', '1')
+      // Assert the connection status
+      sensorData.getSensorConnectionStatus()
+        .should('contain.text', 'Connected: Mocked Sensor')
+
+      // Select the sample rate
+      sensorData.selectSample('100/sec')
+
+      // Start recording data trial
+      sensorData.getRecordButton().first().click()
+      // Check the data collection every 1 second for the duration of the run (10 sec)
+      const checkTimes = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+      checkTimes.forEach((time) => {
+        cy.wait(time * 100)
+        cy.get('.data-table-field-module-sparkgraphContainer-vortex')
+        .contains(`${time} sec`)
+        .should('be.visible')
+      })
+
+      // Check that the selectors are disabled during collection run.
+      labelSelectors.forEach((selector) => {
+        cy.get(selector).should('be.disabled')
+        // Check that the connected icon button is disabled
+        cy.get('div.sensor-module-connectionLabel-vortex select').should('be.disabled')
+        // Check that the sample rate dropdown is disabled
+        cy.get('.sensor-module-tsvInfoRow-vortex select').should('be.disabled')
+      })
+      // Checks to make sure that the run automatically stops after the max time 
+      // and final display is 10 sec
+      cy.wait(10000)
+      cy.get('.data-table-field-module-sparkgraphContainer-vortex')
+        .contains(`10 sec`)
+      
+      // Checks that it's possible to stop recording in the middle of a time trial
+      // also checks that UI disables during a run
+      cy.log('checks that it is possible to stop recording in the middle of a time trial')
+      sensorData.getRecordButton().last().click()
+      labelSelectors.forEach((selector) => {
+        cy.get(selector).should('be.disabled')
+        // Check that the connected icon button is disabled
+        cy.get('div.sensor-module-connectionLabel-vortex select').should('be.disabled')
+
+        // Check that the sample rate dropdown is disabled
+        cy.get('.sensor-module-tsvInfoRow-vortex select').should('be.disabled')
+      })
+      cy.wait(5000)
+      sensorData.getRecordButton().last().click()
+
+      // TODO: add checks that time series data displays
+      // for all elements in the table elements
+      // Blocker: PT #187949831
+      // also fix expected to find element 5 error (probably just need x-1)
+      //   for (let i = 0; i <= 5; i++) {
+      //     sensorData.getDataTrialRow(i).within(() => {
+      //         sensorData.getRecordButton().click()
+      //         cy.wait(20000) // wait for new sensor values
+      //     })
+      //   }
+
+      cy.log('Delete the trial run')
+      sensorData.getRecordButton().first().click({force:true})
+      cy.wait(1000)
+      // Wait for the confirmation dialog to appear and verify the text
+      // Check if the confirmation dialog is present and interact with it
+      // Intercept the window confirm dialog and automatically click "OK"
+      experimentSetup.deleteDataTrialExperiment()
+        // Checks to make sure that the top line was deleted and defaulted.
+        cy.get('.data-table-field-module-sparkgraphContainer-vortex').first()
+            .contains(/^0 sec$/)
+            .should('be.visible')
+        cy.get(labelSelectors[0]).should('have.attr', 'placeholder', 'Label #1')
+    })
+    it("checks that labels can be renamed and retain new names after a data trial run", () => {
+      cy.visit(url);
+      // Define the label selectors and new labels
+      const labelSelectors = [
+        'input[placeholder="Label #1"]',
+        'input[placeholder="Label #2"]',
+        'input[placeholder="Label #3"]',
+        'input[placeholder="Label #4"]',
+        'input[placeholder="Label #5"]'
+      ]
+      const newLabels = [
+        'New Label #1',
+        'New Label #2',
+        'New Label #3',
+        'New Label #4',
+        'New Label #5'
+      ]
+    
+      // Open a new Data Trial
+      experimentSetup.openNewExperiment('Data Trial')
+
+      sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+
+      // Select and verify the "Mocked Sensor: Force" option
+      // Used force sensor to vary it up for QA
+      cy.log('Select and verify mocked sensor')
+      sensorData.selectMenuOption('Connect')
+      sensorData.selectSensor('Force')
+      cy.get('div.sensor-module-connectionLabel-vortex select')
+          .should('have.value', '0')
+      // Assert the connection status
+      sensorData.getSensorConnectionStatus()
+      .should('contain.text', 'Connected: Mocked Sensor')
+
+      // Select the sample rate
+      sensorData.selectSample('20/sec')
+    
+      // Ensure the input fields are not disabled before the collection run and rename labels
+      labelSelectors.forEach((selector, index) => {
+        cy.get(selector)
+          .should('not.be.disabled')
+          .clear()
+          .type(newLabels[index])
+          .should('have.value', newLabels[index])
+      })
+    
+      // Start the data collection
+      sensorData.getRecordButton().first().click()
+    
+      // Check that the selectors are disabled during collection run
+      // (this checks that the run is going)
+      labelSelectors.forEach((selector) => {
+        cy.get(selector).should('be.disabled')
+      })
+    
+      // Wait for the data collection to go a bit (adjust time as necessary)
+      cy.wait(5000)
+      // stop the data collection
+      sensorData.getRecordButton().first().click()
+    
+      // After the data collection, check that the labels retain their new names
+      labelSelectors.forEach((selector, index) => {
+        cy.get(selector)
+          .should('not.be.disabled')
+          .should('have.value', newLabels[index])
+      })
     })
   })
 })

@@ -1,7 +1,7 @@
 import ExperimentSetup from "../../supports/elements/ExperimentSetup"
 import SensorData from "../../supports/elements/SensorData";
 
-context.skip("Testing Experiment Selection View", () => {
+context("Testing Experiment Selection View", () => {
 
     //const branch = "master"
 
@@ -70,23 +70,31 @@ context.skip("Testing Experiment Selection View", () => {
     })
 
     describe("Sensor Connection", () => {
-
         it("connects to (mock) sensor", () => {
-            sensorData.getExperimentOptionsMenu().should('be.visible').click()
-            sensorData.selectMenuOption('Connect')
-            cy.wait(2000)
+            sensorData.getTab('Collect').should('be.visible').click()
+            sensorData.getSensorConnectionStatus().contains('No Sensor Connected').click()
+            // Assert the connection status
+            sensorData.getSensorConnectionStatus()
+            .should('contain.text', 'Connected: Mocked Sensor')
         })
         it("returning to experiments list should disconnect from sensor", () => {
             sensorData.getBackButton().click()
             experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
             sensorData.getTab('Collect').click()
+            // Assert the disconnect status
             sensorData.getSensorConnectionStatus().should('contain', 'No Sensor Connected')
-            sensorData.getExperimentOptionsMenu().click()
+            sensorData.getExperimentOptionsMenu() // gets the click in the helper function
             sensorData.selectMenuOption('Connect')
-            cy.wait(2000)
+            // Assert the connection status
+            sensorData.getSensorConnectionStatus()
+            .should('contain.text', 'Connected: Mocked Sensor')
         })
         it("verifies enabled sensor connection UI", () => {
-            sensorData.assertRecordButtonStatus('enabled')
+            sensorData.getBackButton().click()
+            experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
+            sensorData.getTab('Collect').click()
+            sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+            sensorData.selectMenuOption('Connect')
             sensorData.getSensorConnectionStatus().contains(sensorLabels.mockSensorLabel)
             sensorData.getConnectedSensorValue('Temperature').should('not.contain', '--')
             // Not able to get a second sensor value, Temp is enough for now
@@ -95,7 +103,12 @@ context.skip("Testing Experiment Selection View", () => {
             // sensorData.getConnectedSensorValue('Light').should('not.contain','--')
         })
         it("disconnects from mock sensor and verify UI", () => {
-            sensorData.getExperimentOptionsMenu().click()
+            sensorData.getBackButton().click()
+            experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
+            sensorData.getTab('Collect').click()
+            sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+            sensorData.selectMenuOption('Connect')
+            sensorData.getExperimentOptionsMenu()
             sensorData.selectMenuOption('Disconnect')
 
             sensorData.getSensorConnectionStatus().contains('No Sensor Connected')
@@ -103,7 +116,10 @@ context.skip("Testing Experiment Selection View", () => {
             sensorData.getDisconnectedSensorValue('Temperature').should('contain', '--')
         })
         it("collects data from (mock) sensor", () => {
-            sensorData.getExperimentOptionsMenu().click()
+            sensorData.getBackButton().click()
+            experimentSetup.getExperiment('Schoolyard Investigation', 1).click()
+            sensorData.getTab('Collect').click()
+            sensorData.getExperimentOptionsMenu() // gets the click in the helper function
             sensorData.selectMenuOption('Connect')
 
             for (let i = 0; i <= 5; i++) {

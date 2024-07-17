@@ -46,9 +46,52 @@ class SensorData {
             cy.get('.sensor-value-module-connectedValue-vortex')
         })
     }
+    selectSensor(input){
+         // Click to focus on the select dropdown (adjust the selector as needed)
+        cy.get('div.sensor-module-connectionLabel-vortex select').focus();
 
+        if (input === 'Force') {
+            // Select the "Mocked Sensor: Force" option
+            cy.get('div.sensor-module-connectionLabel-vortex select').select('Mocked Sensor: Force');
+            return 'Mocked Sensor: Force';
+        } else if (input === 'Temperature') {
+            // Select the "Mocked Sensor: Temperature" option
+            cy.get('div.sensor-module-connectionLabel-vortex select').select('Mocked Sensor: Temperature');
+            return 'Mocked Sensor: Temperature';
+        } else {
+            throw new Error('Invalid input: please specify either "Force" or "Temperature"');
+        }
+    }
+    selectSample(input) {
+        // Click to focus on the select dropdown (adjust the selector as needed)
+        cy.get('div.sensor-module-tsvInfoRow-vortex select').focus();
+    
+        // Define the valid options
+        const options = [
+            '0.1/sec',
+            '0.5/sec',
+            '1/sec',
+            '2/sec',
+            '5/sec',
+            '20/sec',
+            '50/sec',
+            '100/sec'
+        ];
+    
+        // Check if the input is one of the valid options
+        if (options.includes(input)) {
+            // Select the specified option
+            cy.get('div.sensor-module-tsvInfoRow-vortex select').select(input);
+            return input;
+        } else {
+            throw new Error(`Invalid input: please specify one of the following options: ${options.join(', ')}`);
+        }
+    }
     getDataRow(index) {
         return cy.get('.data-table-field-module-refreshSensorReading-vortex').eq(index - 1).parent().parent()
+    }
+    getDataTrialRow(index) {
+        return cy.get('.data-table-field-module-refreshSensorReading-vortex').eq(index).parent().parent()
     }
 
     getCompletedDataRow(index) {
@@ -63,6 +106,9 @@ class SensorData {
     getExperimentOptionsMenu() {
         return cy.get('.data-table-field-module-dataTable-vortex').within(() => {
             cy.get('.menu-module-menuIcon-vortex')
+          .should('exist')
+          .and('be.visible')
+          .click({ force: true }) // click is here to get the helper function to work
         })
     }
 
@@ -74,7 +120,6 @@ class SensorData {
     getRecordButton() {
         return cy.get('[data-test="record-sensor"]')
     }
-
     assertRecordButtonStatus(status) {
         if (status == 'enabled') {
             return this.getRecordButton().should('have.class', 'data-table-field-module-active-vortex')
