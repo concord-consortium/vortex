@@ -105,9 +105,39 @@ context("Testing Experiment Selection View", () => {
   })
 
   describe("Tests Data Trial", () => {
-    
-    it("collect time series data from (mock) sensor", () => {
+    it("collect time series data from (mock) sensor for each data row", () => {
+    // Open a new Data Trial
+    experimentSetup.openNewExperiment('Data Trial')
 
+    sensorData.getExperimentOptionsMenu() // gets the click in the helper function
+
+    // Select and verify the "Mocked Sensor: Temperature" option
+    cy.log('Select and verify mocked sensor')
+    sensorData.selectMenuOption('Connect')
+    sensorData.selectSensor('Temperature')
+    cy.get('div.sensor-module-connectionLabel-vortex select')
+      .should('have.value', '1')
+    // Assert the connection status
+    sensorData.getSensorConnectionStatus()
+      .should('contain.text', 'Connected: Mocked Sensor')
+
+    // Select the sample rate
+    sensorData.selectSample('100/sec')
+   
+    // Checks that time series data displays
+    // for all elements in the table elements
+    cy.log('checks time series displays for each row')
+    for (let i = 0; i <= 4; i++) {
+      sensorData.getDataTrialRow(i).within(() => {
+          sensorData.getRecordButton().click()
+          cy.wait(20000) // wait for new sensor values
+          cy.get('.data-table-field-module-sparkgraphContainer-vortex')
+          .contains(/10 sec$/)
+          .should('be.visible')
+      })
+    }
+    })
+    it("collect time series data from (mock) sensor, confirms UI, delete data trial", () => {
       // Constants will check that the input fields are disabled
       const labelSelectors = [
         'input[placeholder="Label #1"]',
@@ -173,17 +203,6 @@ context("Testing Experiment Selection View", () => {
       })
       cy.wait(5000)
       sensorData.getRecordButton().last().click()
-
-      // TODO: add checks that time series data displays
-      // for all elements in the table elements
-      // Blocker: PT #187949831
-      // also fix expected to find element 5 error (probably just need x-1)
-      //   for (let i = 0; i <= 5; i++) {
-      //     sensorData.getDataTrialRow(i).within(() => {
-      //         sensorData.getRecordButton().click()
-      //         cy.wait(20000) // wait for new sensor values
-      //     })
-      //   }
 
       cy.log('Delete the trial run')
       sensorData.getRecordButton().first().click({force:true})
