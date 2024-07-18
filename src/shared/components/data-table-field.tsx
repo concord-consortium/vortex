@@ -193,6 +193,7 @@ export const DataTableField: React.FC<FieldProps> = props => {
   }, [isTimeSeries, formData]);
   const [selectableSensorId, setSelectableSensorId] = useState<any>();
   const {log} = formContext;
+  const timeSeriesFormDataRef = useRef<IDataTableRow[]|undefined>(undefined);
 
   // So this is a bit of a hack - if we use the setInputDisabled function passed in the formContext
   // the timeseries data saving fails, probably because of a re-render which updates the formData.
@@ -389,11 +390,15 @@ export const DataTableField: React.FC<FieldProps> = props => {
 
       const timeSeriesMetadata = getTimeSeriesMetadata(timeSeriesCapabilities);
 
+      // save a ref to the data so that when we stop the stop handler doesn't keep a closure over the data
+      timeSeriesFormDataRef.current = [];
+
       stopTimeSeriesFnRef.current = sensor.collectTimeSeries(timeSeriesCapabilities.measurementPeriod, selectableSensorId, (values) => {
         const newData = formData.slice();
         newData[rowIdx] = {...newData[rowIdx], timeSeries: values, timeSeriesMetadata};
         if (values.length <= MaxNumberOfTimeSeriesValues) {
           setFormData(newData);
+          timeSeriesFormDataRef.current = newData;
         }
         if (values.length === MaxNumberOfTimeSeriesValues) {
           onSensorStopTimeSeries();
@@ -417,17 +422,18 @@ export const DataTableField: React.FC<FieldProps> = props => {
     }
   };
 
-  const onSensorStopTimeSeries = useCallback(() => {
+  const onSensorStopTimeSeries = () => {
     // no check of input disabled here as this handler updates it
-    if (stopTimeSeriesFnRef.current) {
+    if (stopTimeSeriesFnRef.current && timeSeriesFormDataRef.current) {
       log?.("sensorStopTimeSeries");
       stopTimeSeriesFnRef.current?.();
       stopTimeSeriesFnRef.current = undefined;
       timeSeriesRecordingRowRef.current = undefined;
-      saveData(formData);
+      saveData(timeSeriesFormDataRef.current);
+      timeSeriesFormDataRef.current = undefined;
       setInputDisabled(false);
     }
-  }, [formData]);
+  };
 
   // make sure the time series recording stops if the tab is changed
   useEffect(() => {
