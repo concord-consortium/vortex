@@ -138,6 +138,7 @@ context("Testing Experiment Selection View", () => {
     }
     })
     it("collect time series data from (mock) sensor, confirms UI, delete data trial", () => {
+      cy.visit(url);
       // Constants will check that the input fields are disabled
       const labelSelectors = [
         'input[placeholder="Label #1"]',
