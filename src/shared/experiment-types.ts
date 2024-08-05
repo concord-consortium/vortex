@@ -56,10 +56,11 @@ export interface IExperimentSchema {
 }
 
 export const EXPERIMENT_VERSION_1 = "1.0.0";
-export const MAX_SUPPORTED_EXPERIMENT_VERSION = EXPERIMENT_VERSION_1;
+export const EXPERIMENT_VERSION_1_1 = "1.1.0";
+export const MAX_SUPPORTED_EXPERIMENT_VERSION = EXPERIMENT_VERSION_1_1;
 
 export interface IExperimentV1 {
-  version: "1.0.0";
+  version: "1.0.0" | "1.1.0";
   metadata: {
     uuid: string;
     name: string;

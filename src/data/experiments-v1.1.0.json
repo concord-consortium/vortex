@@ -1,0 +1,644 @@
+[
+  {
+    "version": "1.1.0",
+    "metadata": {
+      "uuid": "aefb5299-c127-4d84-b7f0-78da389ebecd",
+      "name": "Data Trial",
+      "initials": "DT",
+      "iconColor": "#008a09",
+      "iconHoverColor": "#40a847"
+    },
+    "schema": {
+      "sections": [
+        {
+          "title": "Collect",
+          "icon": "collect",
+          "formFields": [
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "experimentData": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "timeSeries"
+              ],
+              "properties": {
+                "timeSeries": {
+                  "title": "Readout",
+                  "type": "array"
+                },
+                "label": {
+                  "title": "Label",
+                  "type": "string",
+                  "placeholder": "Label #$N",
+                  "isTimeSeriesLabel": true
+                }
+              }
+            }
+          },
+          "photo": {
+            "title": "Photos",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "customName": {
+          "ui:icon": "label",
+          "ui:placeholder": "Time Series Investigation"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": [
+              "timeSeries"
+            ],
+            "filters": [{
+              "namePrefix": "GDX-"
+            }]
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        },
+        {
+          "label": ""
+        }
+      ],
+      "photo": []
+    }
+  },
+  {
+    "version": "1.1.0",
+    "metadata": {
+      "uuid": "e431af00-5ef9-44f8-a887-c76caa6ddde1",
+      "name": "Schoolyard Investigation",
+      "initials": "SI",
+      "iconColor": "#e0007f",
+      "iconHoverColor": "#e8409f"
+    },
+    "schema": {
+      "titleField": "studySite",
+      "customNameField": "customName",
+      "sections": [
+        {
+          "title": "Label",
+          "icon": "assignment",
+          "formFields": [
+            "customName",
+            "studySite",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
+        },
+        {
+          "title": "Collect",
+          "icon": "collect",
+          "formFields": [
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [
+          "studySite"
+        ],
+        "properties": {
+          "customName": {
+            "title": "",
+            "type": "string"
+          },
+          "studySite": {
+            "title": "Study Site",
+            "type": "string",
+            "enum": [
+              "Study Site #1",
+              "Study Site #2"
+            ],
+            "enumNames": [
+              "Study Site #1",
+              "Study Site #2"
+            ]
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "experimentData": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "location"
+              ],
+              "properties": {
+                "location": {
+                  "title": "Location",
+                  "type": "string",
+                  "readOnly": true
+                },
+                "temperature": {
+                  "title": "Temperature (\u00B0C)",
+                  "type": "number"
+                },
+                "humidity": {
+                  "title": "Humidity (%)",
+                  "type": "number"
+                },
+                "illuminance": {
+                  "title": "Light (lux)",
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "photo": {
+            "title": "Photos",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "customName": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Investigation"
+        },
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "groupMembers": {
+          "ui:icon": "group",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": [
+              "temperature",
+              "humidity",
+              "illuminance"
+            ],
+            "titleField": "studySite"
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [
+        {
+          "location": "Corner 1"
+        },
+        {
+          "location": "Corner 2"
+        },
+        {
+          "location": "Corner 3"
+        },
+        {
+          "location": "Corner 4"
+        },
+        {
+          "location": "Center"
+        },
+        {
+          "location": "Average",
+          "temperature": "<AVG>",
+          "humidity": "<AVG>",
+          "illuminance": "<AVG>"
+        }
+      ],
+      "photo": []
+    }
+  },
+  {
+    "version": "1.1.0",
+    "metadata": {
+      "uuid": "d27df06a-0997-4c53-8afd-d5dcc627d44f",
+      "name": "Stream Study",
+      "initials": "SS",
+      "iconColor": "#0f73b8",
+      "iconHoverColor": "#4b96ca"
+    },
+    "schema": {
+      "titleField": "studySite",
+      "customNameField": "customName",
+      "sections": [
+        {
+          "title": "Label",
+          "icon": "assignment",
+          "formFields": [
+            "customName",
+            "studySite",
+            "groupMembers"
+          ],
+          "components": [
+            "metadata"
+          ]
+        },
+        {
+          "title": "Collect",
+          "icon": "collect",
+          "formFields": [
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Note & Photo",
+          "icon": "note_and_photo",
+          "formFields": [
+            "photo"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [
+          "studySite"
+        ],
+        "properties": {
+          "customName": {
+            "title": "",
+            "type": "string"
+          },
+          "studySite": {
+            "title": "Study Site",
+            "type": "string",
+            "enum": [
+              "Study Site #1",
+              "Study Site #2"
+            ],
+            "enumNames": [
+              "Study Site #1",
+              "Study Site #2"
+            ]
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "experimentData": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "ph": {
+                  "title": "pH (SU)",
+                  "type": "number"
+                },
+                "airtemp": {
+                  "title": "Air Temperature (\u00B0C)",
+                  "type": "number"
+                },
+                "watertemp": {
+                  "title": "Water Temperature (\u00B0C)",
+                  "type": "number"
+                },
+                "nitrate": {
+                  "title": "Nitrate (ppm)",
+                  "type": "number"
+                },
+                "phosphate": {
+                  "title": "Phosphate (ppm)",
+                  "type": "number"
+                },
+                "oxygen": {
+                  "title": "Dissolved Oxygen (ppm)",
+                  "type": "number"
+                },
+                "turbidity": {
+                  "title": "Turbidity (JTU)",
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "photo": {
+            "title": "Photos and Notes",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "customName": {
+          "ui:icon": "label",
+          "ui:placeholder": "My Investigation"
+        },
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "groupMembers": {
+          "ui:icon": "group",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "sensorFields": []
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [
+        {}
+      ],
+      "photo": []
+    }
+  },
+  {
+    "version": "1.1.0",
+    "metadata": {
+      "uuid": "df02396f-a3d6-4dc5-bc10-fac4007fb6de",
+      "name": "Pond Study",
+      "initials": "PS",
+      "iconColor": "#d04a06",
+      "iconHoverColor": "#dc7744"
+    },
+    "schema": {
+      "titleField": "Collect",
+      "customNameField": "customName",
+      "sections": [
+        {
+          "title": "Collect",
+          "icon": "collect",
+          "formFields": [
+            "tableTitle",
+            "experimentData"
+          ]
+        },
+        {
+          "title": "Notes",
+          "icon": "note_and_photo",
+          "formFields": [
+            "studySite",
+            "groupMembers",
+            "photo"
+          ],
+          "components": [
+            "metadata"
+          ]
+        }
+      ],
+      "dataSchema": {
+        "type": "object",
+        "required": [],
+        "properties": {
+          "tableTitle": {
+            "title": "Pond Data",
+            "type": "string"
+          },
+          "experimentData": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "location"
+              ],
+              "properties": {
+                "location": {
+                  "title": "Location",
+                  "type": "string",
+                  "readOnly": true
+                },
+                "temperature1": {
+                  "title": "Air Temperature (C)",
+                  "type": "number"
+                },
+                "temperature2": {
+                  "title": "Water Temperature (C)",
+                  "type": "number"
+                },
+                "dissolved_oxygen": {
+                  "title": "Dissolved Oxygen (ppm)",
+                  "type": "number"
+                },
+                "turbidity": {
+                  "title": "Turbidity (JTU)",
+                  "type": "number"
+                },
+                "pH": {
+                  "title": "pH (SU)",
+                  "type": "number"
+                }
+              }
+            }
+          },
+          "studySite": {
+            "title": "Pond Site Number",
+            "type": "string",
+            "enum": [
+              "Study Site #1",
+              "Study Site #2"
+            ],
+            "enumNames": [
+              "Study Site #1",
+              "Study Site #2"
+            ]
+          },
+          "groupMembers": {
+            "title": "Group Members",
+            "type": "string"
+          },
+          "photo": {
+            "title": "Photos and Notes",
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "isPhoto": {
+                  "type": "boolean"
+                },
+                "localPhotoUrl": {
+                  "type": "string"
+                },
+                "remotePhotoUrl": {
+                  "type": "string"
+                },
+                "note": {
+                  "type": "string"
+                },
+                "timestamp": {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              }
+            }
+          }
+        }
+      },
+      "formUiSchema": {
+        "tableTitle": {
+          "ui:placeholder": "Title"
+        },
+        "experimentData": {
+          "ui:field": "dataTable",
+          "ui:dataTableOptions": {
+            "titleField": "tableTitle",
+            "sensorFields": []
+          }
+        },
+        "studySite": {
+          "ui:icon": "assignment",
+          "ui:placeholder": "Study Site"
+        },
+        "groupMembers": {
+          "ui:icon": "group",
+          "ui:placeholder": "Group Team Members"
+        },
+        "note": {
+          "items": {
+            "ui:widget": "textarea"
+          }
+        },
+        "photo": {
+          "ui:field": "photo"
+        }
+      }
+    },
+    "data": {
+      "experimentData": [
+        {
+          "location": "Location 1"
+        },
+        {
+          "location": "Location 2"
+        },
+        {
+          "location": "Average",
+          "temperature1": "<AVG>",
+          "temperature2": "<AVG>",
+          "dissolved_oxygen": "<AVG>",
+          "turbidity": "<AVG>",
+          "pH": "<AVG>"
+        }
+      ],
+      "photo": []
+    }
+  }
+]

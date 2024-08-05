@@ -1,11 +1,11 @@
 import * as semver from "semver";
 import { useState, useEffect } from "react";
-import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION, EXPERIMENT_VERSION_1 } from "../../shared/experiment-types";
+import { IExperiment, MAX_SUPPORTED_EXPERIMENT_VERSION, EXPERIMENT_VERSION_1, EXPERIMENT_VERSION_1_1 } from "../../shared/experiment-types";
 import { logError, logInfo } from "../../shared/utils/log";
-const builtInExperiments = require("../../data/experiments.json") as Experiments;
+const builtInExperiments = require("../../data/experiments-v1.1.0.json") as Experiments;
 const getUpdateUrl = () => {
   const url = window.localStorage.getItem("updateUrl");
-  return url || "https://models-resources.concord.org/vortex/data/experiments.json";
+  return url || "https://models-resources.concord.org/vortex/data/experiments-v1.1.0.json";
 };
 const localStorageKey = "experiments";
 
@@ -49,20 +49,25 @@ export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments
 
   remoteExperiments.forEach(experiment => {
     if (semver.lte(experiment.version, MAX_SUPPORTED_EXPERIMENT_VERSION)) {
-      /*
-      TODO: when/if the version number is ever increased use something like the following
-            to migrate the data to the latest version supported by the app.
-
       while (semver.neq(experiment.version, MAX_SUPPORTED_EXPERIMENT_VERSION)) {
         switch (experiment.version) {
           case EXPERIMENT_VERSION_1:
             // no-op for now, if new version is added a migration would be added here
             // migrating to the next version.  The loop would continue until the migration
             // reaches the max supported version of the app
+            experiment.version = EXPERIMENT_VERSION_1_1;
+            break;
+          case EXPERIMENT_VERSION_1_1:
+            // again a noop - version 1.1 introduces time series but does not change existing experiment types
+            // and the default remote experiments filename was updated so that older clients do not
+            // get the new json.
+
+            // We just need to update the version to the last supported version to exit the loop
+            // THIS SHOULD LINE SHOULD BE MOVED TO THE LAST VERSION WHEN A VERSION IS ADDED
+            experiment.version = MAX_SUPPORTED_EXPERIMENT_VERSION;
             break;
         }
       }
-      */
 
       filteredExperiments.push(experiment);
       save = true;
@@ -79,16 +84,6 @@ export const migrateAndFilterRemoteExperiments = (remoteExperiments: Experiments
 };
 
 export const useExperiments = (optionalStorage?: IExperimentStorage) => {
-  return {
-    experiments: builtInExperiments,
-    upgradeApp: false
-  };
-
-  /*
-
-  DISABLING AUTO UPDATE OF EXPERIMENTS DURING DEVELOPMENT
-
-
   // get the previously downloaded experiments (if any)
   const storage = optionalStorage || defaultStorage;
   const savedExperiments = storage.load();
@@ -119,5 +114,4 @@ export const useExperiments = (optionalStorage?: IExperimentStorage) => {
   }, []); // load the external json file once
 
   return useExperimentsResult;
-  */
 };
