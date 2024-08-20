@@ -30,11 +30,11 @@
     ]
   },
   "dependencies": {
-    "com.virtuoworks.cordova-plugin-canvascamera": "^1.2.2",
+    "com.virtuoworks.cordova-plugin-canvascamera": "git+https://github.com/concord-consortium/CanvasCameraPlugin.git",
     "cordova-android": "^13.0.0",
     "cordova-browser": "^7.0.0",
     "cordova-ios": "^7.1.1",
-    "cordova-plugin-ble": "^2.0.1",
+    "cordova-plugin-ble": "git+https://github.com/concord-consortium/cordova-ble.git",
     "cordova-plugin-compat": "^1.2.0",
     "cordova-plugin-dialogs": "^2.0.2",
     "cordova-plugin-ionic-webview": "^5.0.1",
