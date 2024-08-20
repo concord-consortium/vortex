@@ -281,10 +281,15 @@ export const Uploader = (props: IProps) => {
               <RunInfoComponent run={props.run} expanded={true} />
             </div>
           </div>
+          {/*
+
+          NOPHOTO: Removed the photo element due to iOS build issues
+
           <div className={css.modePicker}>
             <div className={modeChoiceClassName(UploaderMode.EnterCode)} onClick={handleSelectEnterCodeMode}>{`Enter ${CODE_LENGTH} Digit Code`}</div>
             <div className={modeChoiceClassName(UploaderMode.ScanQR)} onClick={handleSelectScanQRMode}>Or Scan QR Code</div>
           </div>
+          */}
           {uploaderMode === UploaderMode.ScanQR ? renderScanQR() : renderEnterCode()}
         </div>
       </div>
