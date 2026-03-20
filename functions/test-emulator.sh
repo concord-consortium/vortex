@@ -25,7 +25,7 @@ check() {
 }
 
 RUN_KEY="test-run-$$"
-RUN_DATA=$(echo -n '{"name":"test-run","version":1}' | base64 -w0)
+RUN_DATA=$(echo -n '{"name":"test-run","version":1}' | base64 | tr -d '\n')
 
 echo "=== Test 1: saveExperimentRun — save experiment data ==="
 RESULT=$(curl -s -X POST \

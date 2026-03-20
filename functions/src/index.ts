@@ -140,7 +140,7 @@ export const createCodeForExperimentRun = functions.https.onRequest((request, re
       const oldCodes = await firestore.collection("codes").where("createdAt", "<=", yesterday).get()
       const oldCodeIds: string[] = [];
       oldCodes.forEach(oldCode => oldCodeIds.push(oldCode.id))
-      await oldCodeIds.map(oldCodeId => firestore.collection("codes").doc(oldCodeId).delete())
+      await Promise.all(oldCodeIds.map(oldCodeId => firestore.collection("codes").doc(oldCodeId).delete()))
 
       // keep trying to generate a new doc with a random 9 digit number
       let attempt = 0;
