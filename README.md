@@ -173,6 +173,53 @@ To deploy a production release:
 1. Test the staged release at https://models-resources.concord.org/vortex/index-staging.html
 1. Update production by running the [Release Workflow](https://github.com/concord-consortium/vortex/actions/workflows/release.yml) and entering the release version tag.
 
+## Cloud Functions
+
+The `functions/` directory contains Firebase Cloud Functions deployed to the `vortex-e5d5d` project. These are 1st generation HTTPS functions running on Node 22.
+
+### Functions
+
+- `saveExperimentRun` — saves experiment run data and photos to Firestore
+- `getExperimentPhoto` — retrieves photo data from Firestore by photo URL
+- `createCodeForExperimentRun` — generates a temporary code linked to an experiment run
+- `getUrlForExperimentRunCode` — resolves a code to a `saveExperimentRun` URL
+
+### Prerequisites
+
+- [Firebase CLI](https://firebase.google.com/docs/cli) installed (`npm install -g firebase-tools`)
+- Access to the `vortex-e5d5d` Firebase project (`firebase login`)
+
+### Development
+
+1. `cd functions`
+2. `npm install`
+3. `npm run build` — compile TypeScript
+4. `npm run lint` — run ESLint
+
+### Local Emulator Testing
+
+Start the Firebase emulators:
+
+    firebase emulators:start --only functions,firestore
+
+Then run the automated smoke tests in another terminal:
+
+    ./functions/test-emulator.sh
+
+The Emulator UI is available at `http://localhost:4000` to browse Firestore data. Java Runtime is required for the Firestore emulator.
+
+### Deployment
+
+From the project root:
+
+    firebase deploy --only functions
+
+Or from the `functions/` directory:
+
+    npm run deploy
+
+The `firebase.json` predeploy hooks will automatically lint and build before deploying.
+
 ## Updating Experiments
 
 Each time the mobile app launches it downloads a json file which is an array of experiments and saves them to local storage.  If the version number of the experiments json file is greater than the mobile apps known max supported version an upgrade message is shown in the mobile interface.
