@@ -1,21 +1,23 @@
-import * as functions from "firebase-functions";
+import * as functions from "firebase-functions/v1";
 import * as admin from "firebase-admin";
+import { FieldValue } from "firebase-admin/firestore";
 import * as cors from "cors";
 import { Base64 } from "js-base64"
 
-admin.initializeApp(functions.config().firebase);
-admin.firestore().settings({
-  timestampsInSnapshots: true   // this removes a deprecation warning
-});
+admin.initializeApp();
 
 const corsHandler = cors({origin: true});
+
+const errorMessage = (err: unknown): string =>
+  err instanceof Error ? err.message : String(err);
 
 const sendError = (response: functions.Response, code: number, result: any) => response.status(code).send({success: false, result});
 const sendSuccess = (response: functions.Response, result: any) => response.status(200).send({success: true, result});
 
 export const saveExperimentRun = functions.https.onRequest((request, response) => {
   corsHandler(request, response, () => {
-    const {runKey, runData} = request.query;
+    const runKey = request.query.runKey as string | undefined;
+    const runData = request.query.runData as string | undefined;
     if (!runKey) {
       sendError(response, 400, "Missing runKey in query string!");
     } else if (!runData) {
@@ -25,14 +27,14 @@ export const saveExperimentRun = functions.https.onRequest((request, response) =
       try {
         runDataJSON = JSON.parse(Base64.decode(runData))
       } catch (err){
-        sendError(response, 500, `Error decoding runData: ${err.toString()}`)
+        sendError(response, 500, `Error decoding runData: ${errorMessage(err)}`)
         return
       }
       runDataJSON = runDataJSON || {}
       const body = request.body || {}
 
       // set timestamps on the data
-      const now = admin.firestore.FieldValue.serverTimestamp();
+      const now = FieldValue.serverTimestamp();
 
       const firestore = admin.firestore();
       const runDocRef = firestore.collection("runs").doc(runKey);
@@ -56,32 +58,32 @@ export const saveExperimentRun = functions.https.onRequest((request, response) =
                 .collection("experiments")
                 .add(body)
                 .then(() => sendSuccess(response, "Run saved"))
-                .catch(err => sendError(response, 500, err.toString()))
+                .catch(err => sendError(response, 500, errorMessage(err)))
             } else if (body.localPhotoUrl)  {
               return runDocRef
                 .collection("photos")
                 .add(body)
                 .then((doc) => sendSuccess(response, `photo://${runKey}/${doc.id}`))
-                .catch(err => sendError(response, 500, err.toString()))
+                .catch(err => sendError(response, 500, errorMessage(err)))
             } else {
               sendError(response, 500, "Missing experiment or localPhotoUrl in upload")
               return;
             }
           })
-          .catch(err => sendError(response, 500, err.toString()))
+          .catch(err => sendError(response, 500, errorMessage(err)))
       })
-      .catch(err => sendError(response, 500, err.toString()))
+      .catch(err => sendError(response, 500, errorMessage(err)))
     }
   });
 });
 
 export const getExperimentPhoto = functions.https.onRequest((request, response) => {
   corsHandler(request, response, () => {
-    const {src} = request.query;
+    const src = request.query.src as string | undefined;
     if (!src) {
       sendError(response, 400, "Missing src in query string!");
     } else {
-      const match = src.match(/^photo\:\/\/([^/]+)\/(.+)$/);
+      const match = src.match(/^photo:\/\/([^/]+)\/(.+)$/);
       if (match) {
         const runKey = match[1];
         const docId = match[2];
@@ -99,7 +101,7 @@ export const getExperimentPhoto = functions.https.onRequest((request, response) 
               sendError(response, 500, "Photo does not exist!");
             }
           })
-          .catch(err => sendError(response, 500, err.toString()));
+          .catch(err => sendError(response, 500, errorMessage(err)));
       } else {
         sendError(response, 500, `Invalid src photo url: ${src}`);
       }
@@ -110,7 +112,7 @@ export const getExperimentPhoto = functions.https.onRequest((request, response) 
 interface CodeDocument {
   runKey: any;
   runData: any;
-  createdAt: FirebaseFirestore.FieldValue;
+  createdAt: FieldValue;
 }
 
 export const createCodeForExperimentRun = functions.https.onRequest((request, response) => {
@@ -120,7 +122,7 @@ export const createCodeForExperimentRun = functions.https.onRequest((request, re
       for (let i = 0; i < 6; i++) {
         numbers.push(String(Math.random() * 100)[0])
       }
-      return numbers.join("").substr(0, 9);
+      return numbers.join("").substring(0, 9);
     }
 
     const {runKey, runData} = request.body;
@@ -129,7 +131,7 @@ export const createCodeForExperimentRun = functions.https.onRequest((request, re
     } else if (!runData) {
       sendError(response, 400, "Missing runData in request body!");
     } else {
-      const now = admin.firestore.FieldValue.serverTimestamp();
+      const now = FieldValue.serverTimestamp();
       const firestore = admin.firestore();
 
       // clear out old data
@@ -138,10 +140,11 @@ export const createCodeForExperimentRun = functions.https.onRequest((request, re
       const oldCodes = await firestore.collection("codes").where("createdAt", "<=", yesterday).get()
       const oldCodeIds: string[] = [];
       oldCodes.forEach(oldCode => oldCodeIds.push(oldCode.id))
-      await oldCodeIds.map(oldCodeId => firestore.collection("codes").doc(oldCodeId).delete())
+      await Promise.all(oldCodeIds.map(oldCodeId => firestore.collection("codes").doc(oldCodeId).delete()))
 
       // keep trying to generate a new doc with a random 9 digit number
       let attempt = 0;
+      // eslint-disable-next-line no-constant-condition
       while (true) {
         const code = generateCode();
         const codeRef = firestore.collection("codes").doc(code);
@@ -182,7 +185,7 @@ export const createCodeForExperimentRun = functions.https.onRequest((request, re
 
 export const getUrlForExperimentRunCode = functions.https.onRequest((request, response) => {
   corsHandler(request, response, async () => {
-    const {code} = request.query;
+    const code = request.query.code as string | undefined;
     if (!code) {
       sendError(response, 400, "Missing code in query string!");
     } else {
