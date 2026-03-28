@@ -397,11 +397,17 @@ export const PhotoOrNoteField: React.FC<FieldProps> = props => {
 
   return (
     <div className={css.photoOrNote}>
+      {/*
+
+      NOPHOTO: Removed the photo element due to iOS build issues
+
       <div className={css.subTabs}>
         <div className={subTabClassName("photo")} onClick={handleSelectPhotoSubTab}><Icon name="photo" /></div>
         <div className={subTabClassName("note")} onClick={handleSelectNoteSubTab}><Icon name="comment" /></div>
       </div>
       {subTab === "note" ? renderNoteSubTab() : renderPhotoSubTab() }
+      */}
+     {renderNoteSubTab()}
     </div>
   );
 };
